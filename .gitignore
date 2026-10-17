@@ -1,0 +1,48 @@
+# 本地环境与凭据
+.env
+.env.*
+!.env.example
+.aws/
+.azure/
+.gcloud/
+credentials/
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# 常见虚拟环境、依赖与缓存；不代表项目已选择对应技术栈
+.venv/
+venv/
+env/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+*.tsbuildinfo
+
+# 构建、测试和日志产物
+build/
+dist/
+out/
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.log
+
+# 编辑器、IDE 与操作系统临时文件
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.tmp
+.DS_Store
+Thumbs.db
+Desktop.ini
