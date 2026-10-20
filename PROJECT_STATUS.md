@@ -1,41 +1,48 @@
 # 项目状态
 
-更新日期：2026-10-17（Asia/Shanghai）。当前阶段：Phase 0，本地基础设施初始化；首次远程推送待批准。
+更新日期：2026-10-20（Asia/Shanghai）。当前阶段：基础设施已完成首次推送，第一版执行计划已形成；业务开发尚未开始。
 
 ## 已完成
 
 - 检查初始工作目录及上级指令：目录为空，无已有项目文件、Git 仓库或适用的 `AGENTS.md`。
-- 核实 GitHub 仓库 `cricket152/AI-Banking` 存在且公开；只读查询确认其为空，无远程分支或提交，当前账号具有管理权限。
+- 初始化前核实 GitHub 仓库 `cricket152/AI-Banking` 存在且公开，当时为空，无远程分支或提交，当前账号具有管理权限。
 - 初始化本地 `main`，将 `origin` 配置为 `https://github.com/cricket152/AI-Banking.git`。
 - 建立中文说明、需求与架构占位文档、路线图、双人协作规范、Codex 指令及 Issue / PR 模板。
 - 建立通用忽略、编辑器、换行和环境示例配置，保留 `src/`、`tests/` 空目录。
+- 创建首次提交 `014cbe6 chore: initialize project`；经用户明确批准，推送至远程 `main` 并建立 `origin/main` upstream。
+- 验证本地与远程 `main` 提交一致，领先 / 落后均为 0；远程 `HEAD` 指向 `main`。
+- 根据设计讨论编制 `docs/execution-plan.md`，拆分 T00–T18 及 G0–G5 验收关卡；长期记忆、RAG、多 Agent 等列为 F01–F07 后续目标。
+- 更新 README、路线图和 Codex 项目指令，要求每次只实现一个指定任务或子任务，不自动跨阶段开发。
 
 ## 未完成
 
-- 首次远程推送需用户明确批准；远程 `main` 与本地 upstream 尚未建立。
 - 两位成员的账号、职责分工与协作权限待确认。
-- 比赛规则、MVP、验收标准、技术栈、部署与评测环境、预算及许可证待确认。
+- 完整比赛规则、评分与交付限制仍待核实；讨论确定的 MVP 方向与推荐技术基线已写入执行计划，需求与架构文档尚待 T00 / T01 固化。
+- 模型供应商、具体版本、鉴权与交互方案、授权有效期、金额参数、运行及评测环境和许可证待确认。
+- T00–T18 均未开始；尚无任务进入实现或验收。当前下一任务为 T00，仅开展比赛要求与第一版范围确认。
 - GitHub 网页上的默认分支、审查规则及 Squash Merge 设置待维护者确认。
 - 尚无应用、依赖、业务测试或 CI；后续在出现实际需求时添加。
 
 ## 当前 Bug 与阻碍
 
 - 尚无业务实现，未发现业务 Bug；当前不具备业务测试条件。
-- 比赛文章读取失败，规则尚未核实；所有未知规则在 `docs/competition.md` 标记为 `TODO: 待确认`。
+- 比赛文章读取失败；已讨论用户提供的截图，但完整规则仍未核实，`docs/competition.md` 中未知项需在 T00 按来源核实。
 
 ## 最近修改文件
 
-- 根目录：`README.md`、`AGENTS.md`、`CONTRIBUTING.md`、`PROJECT_STATUS.md`。
-- 文档：`docs/competition.md`、`docs/requirements.md`、`docs/architecture.md`、`docs/roadmap.md`。
-- 配置：`.gitignore`、`.editorconfig`、`.gitattributes`、`.env.example`。
-- 模板：`.github/ISSUE_TEMPLATE/feature_request.md`、`.github/ISSUE_TEMPLATE/bug_report.md`、`.github/pull_request_template.md`。
-- 目录占位：`src/.gitkeep`、`tests/.gitkeep`。
+- 新增 `docs/execution-plan.md`；修改 `AGENTS.md`、`README.md`、`docs/roadmap.md`、`PROJECT_STATUS.md`。
+- 保留并整理本地已有的首次推送状态更新；本次计划文档按 `docs/execution-plan` 分支与 PR 流程交付，提交及合并状态以 Git / GitHub 记录为准。
 
 ## 已确认设计决策
 
-- 当前仅初始化基础设施，不决定业务架构，不安装依赖，不实现 Agent 等功能。
+- 第一版方向：自建模拟银行、账单分析 / 订阅管理 / 智能转账、单主 Agent 和跨场景闭环；少量工具直接暴露，未来按需要研究工具延迟加载。
+- 推荐 Python 后端；具体版本、依赖与接口在 T00 / T01 确认，当前未安装依赖或实现业务。
+- 人工审批与预先授权共用执行器；预先授权只向开启时指定的账户自动转账，累计支出不被收款抵消，执行中及未知结果保留额度占用。
+- 资金、授权、幂等和任务检查点由后端维护；上下文状态栏是带版本快照，历史摘要不能产生授权。XML 只是数据边界标记，不能替代权限检查。
+- 上下文超限前进行预算控制和压缩恢复；长期用户记忆、RAG 与多 Agent 不纳入第一版。
+- 每次只执行一个明确任务或子任务，前置验收完成后才推进；计划文档不自动授权执行任务。
 - `main` 为稳定分支；独立分支开发，通过另一位成员审查后优先 Squash Merge。
-- 首次本地提交信息为 `chore: initialize project`，首次推送须用户另行批准；不修改远程权限与保护规则。
+- 首次本地提交信息为 `chore: initialize project`，首次推送已获用户明确批准并完成；未修改远程权限与保护规则。
 - 比赛规则只在 `docs/competition.md` 维护；未知信息不作推断。
 - 文本统一 UTF-8 和 LF；没有真实检查任务时不创建 `.github/workflows/`。
 - 未确定配置变量前，`.env.example` 只保留说明，不臆造模型或服务配置。
@@ -43,16 +50,18 @@
 ## 验证记录
 
 - 已确认初始目录为空、Git / GitHub CLI 可用、Git 提交身份存在。
-- `git ls-remote --symref` 成功且无 refs；`gh repo view` 成功并返回空仓库状态。
-- 17 个预期文件齐备，无额外项目文件；18 个 Markdown 本地链接均可解析。
+- 初始化前 `git ls-remote --symref` 成功且无 refs；当时 `gh repo view` 成功并返回空仓库状态。
+- 首次推送前再次通过 Git 核实远程为空；`git push --set-upstream origin main` 成功。推送后远程 `main` 与本地 `HEAD` 均为 `014cbe6f92bcf83061060e62872d1f0ec7bb3956`，upstream 为 `origin/main`，领先 / 落后为 `0 / 0`，远程 `HEAD` 指向 `main`。
+- 初始化时 17 个预期文件齐备，18 个 Markdown 本地链接均可解析。
 - 严格 UTF-8（无 BOM）、LF、文件末尾换行、冲突标记及常见密钥模式检查通过。
 - 18 项忽略规则与 4 项应可跟踪文件检查通过；Git 属性确认文本为 LF、Windows 命令脚本为 CRLF、二进制不作文本转换。
 - `.env.example` 无臆造的活动配置，未创建占位 CI；提交前执行 `git diff --cached --check` 并审阅暂存清单。
 - 未运行应用测试、构建或 CI：技术栈和可执行项目尚未建立。
+- 本次 5 份变更文档的 19 个本地链接、UTF-8（无 BOM）、LF、文件末尾换行、空白和冲突标记检查通过；T00–T18 编号、前置条件和验收条目完整，依赖指向先前任务，G0–G5 与 F01–F07 齐备；`git diff --check` 通过。仅验证文档，未运行业务测试。
 
 ## 后续计划
 
-1. 报告本地验收与首次提交结果，征求首次推送批准。
-2. 获批后再次检查远程 refs；若仍为空，推送 `main` 并建立 upstream；若出现新提交，停止并确认处理方案。
-3. 维护者确认协作权限和主分支规则，两位成员核实比赛规则与代码公开要求。
-4. 确定 MVP 和技术栈后，拆分首批 Issue、约定接口并开始独立分支开发。
+1. 用户指定后，仅执行 T00：核实完整比赛要求与第一版范围，确认授权参数和成员分工。
+2. T00 验收后执行 T01 / T02，固化架构契约与工程环境，再按计划逐任务推进。
+3. 维护者确认协作权限、主分支审查规则及 Squash Merge 设置；后续提交与推送另行授权。
+4. 第一版验收后按实际评测选择长期记忆、RAG、多 Agent 等目标，先单独设计再实现。
