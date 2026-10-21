@@ -1,89 +1,51 @@
 # AI-Banking
 
-由两名开发者协作完成的 Agent 竞赛项目。本仓库用于管理需求、设计、代码、测试和竞赛交付材料。
+面向竞赛需求的本地可运行 AI Banking 演示版。提供中文对话工作台、六类金融场景、模拟银行工具和操作确认流。
 
-当前处于 **Phase 0：项目基础设施初始化**。尚未确定开发语言与整体技术架构，尚未实现 Agent、LLM 集成、工具调用、前端或部署能力。
+## 当前实现
 
-## 开发成员
+- 智能转账：联系人姓名、手机号或备注匹配；即时与预约转账；AA 收款单。
+- 账单分析：消费分类、月度 / 年度已记录交易汇总和需人工核对的异常提示。
+- 理财操作：按演示风险指标比较产品；申购、赎回前展示确认和风险说明。
+- 卡片管理：申请演示数字卡、修改总额度和单日限额、锁定及解锁。
+- 订阅管理：查看周期费用、续费日期；创建续费提醒或取消后续续费。
+- 跨场景生日联动：预留模拟资金，并创建提前两天的礼物提醒。
 
-| 成员 | GitHub 账号 | 分工 |
-| --- | --- | --- |
-| 开发者 A | TODO: 待确认 | TODO: 待确认 |
-| 开发者 B | TODO: 待确认 | TODO: 待确认 |
+对话解析使用本地中文规则与实体匹配，不调用外部大模型。页面和 JSON API 均在本机提供；所有账户、联系人、交易、理财产品及卡片均为虚构的内存数据。变更账户状态的操作必须先由用户确认。
 
-## 项目状态
+## 启动
 
-- 已建立：项目文档、Git 协作约定、Issue / PR 模板及通用工程配置。
-- 待完成：比赛规则核实、需求确认、技术选型及 MVP 定义。
-- 当前没有应用入口、依赖清单、自动化测试或 CI；详细进度见 [PROJECT_STATUS.md](PROJECT_STATUS.md)。
-- 首次远程推送需获得仓库维护者批准；推送前远程仓库可能仍为空。
+环境要求：Python 3.11 或更新版本。无第三方依赖、无密钥配置。
 
-## 目录结构
-
-```text
-.
-├── .github/
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.md
-│   │   └── feature_request.md
-│   └── pull_request_template.md
-├── docs/
-│   ├── architecture.md
-│   ├── competition.md
-│   ├── requirements.md
-│   └── roadmap.md
-├── src/                     # 后续源代码，当前仅有 .gitkeep
-├── tests/                   # 后续测试，当前仅有 .gitkeep
-├── .editorconfig
-├── .env.example
-├── .gitattributes
-├── .gitignore
-├── AGENTS.md
-├── CONTRIBUTING.md
-├── PROJECT_STATUS.md
-└── README.md
+```powershell
+python run.py
 ```
 
-存在真实且可执行的检查任务后，再创建 `.github/workflows/`。
+在浏览器打开启动信息显示的地址，默认是 `http://127.0.0.1:8765`。端口被占用时会尝试后续端口。按 `Ctrl+C` 停止服务；服务重启后演示状态会恢复初始样例。
 
-## 环境准备
+## 验证
 
-1. 安装 Git，准备支持 UTF-8、LF 和 EditorConfig 的编辑器。
-2. 配置本人的 Git 提交身份，并确认本人 GitHub 账号具有仓库协作权限。不要共用账号或凭据。
-3. 阅读本文及 [协作规范](CONTRIBUTING.md)。开发语言、运行时版本和依赖安装方式将在技术选型确定后补充。
-4. `.env.example` 当前仅包含说明，无已确定的配置变量。后续需要本地配置时，可复制为 `.env` 并按已确认的配置说明填写；真实密钥不得入库。
-
-## 克隆方式
-
-首次初始化推送完成后，另一位开发者执行：
-
-```sh
-git clone https://github.com/cricket152/AI-Banking.git
-cd AI-Banking
-git switch main
-git pull --ff-only origin main
+```powershell
+python -m unittest discover -s tests -v
+node --check src/ai_banking/web/app.js
 ```
 
-若远程仍为空，请先由维护者完成经批准的首次推送，再开始协作开发。
+## 本地 API
 
-## 运行说明
+- `GET /api/health`：检查本地演示服务。
+- `GET /api/state`：读取当前模拟账户状态。
+- `POST /api/chat`：发送自然语言需求，例如 `{"message":"转 88 元给周明"}`。
+- `POST /api/actions/{id}/confirm`：确认并执行待处理操作。
+- `POST /api/actions/{id}/reject`：取消待处理操作。
+- `POST /api/reset`：重置演示数据。
 
-当前没有可运行的业务程序、测试命令或部署命令。技术栈确定后，应在引入首个可运行功能时同步补充环境、安装、启动及验证说明，不使用占位脚本表示功能已实现。
+服务只绑定本机回环地址，不提供身份认证或真实金融接口，不应暴露到公网。预约转账在到期日首次读取账户状态时执行；页面每 15 秒刷新一次。服务重启会清空预约和其他变更。
 
-## 协作方式
+## 项目文档
 
-使用 Issue 明确目标和验收标准，从最新 `main` 创建独立分支，通过 PR 交由另一位开发者审查后合并。日常功能不直接提交到 `main`；优先使用 Squash Merge。详细步骤见 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
-双方使用 Codex 时均应阅读 [AGENTS.md](AGENTS.md) 和 [PROJECT_STATUS.md](PROJECT_STATUS.md)，并以仓库中的实际代码、文档和 Git 状态为准。
-
-## 文档索引
-
-| 文档 | 用途 |
-| --- | --- |
-| [比赛要求](docs/competition.md) | 仓库内比赛要求的唯一权威记录；未核实规则统一标记待确认 |
-| [项目需求](docs/requirements.md) | 目标、MVP、验收标准和待决问题 |
-| [架构设计](docs/architecture.md) | 技术选型、模块、接口和部署决策 |
-| [路线图](docs/roadmap.md) | 里程碑及完成条件 |
-| [协作规范](CONTRIBUTING.md) | 分支、提交、PR 和验证流程 |
-| [Codex 指令](AGENTS.md) | 项目级开发约束 |
-| [项目状态](PROJECT_STATUS.md) | 已完成、未完成、问题与后续计划 |
+- [项目状态](PROJECT_STATUS.md)
+- [项目需求](docs/requirements.md)
+- [架构设计](docs/architecture.md)
+- [比赛要求](docs/competition.md)
+- [项目路线图](docs/roadmap.md)
+- [协作规范](CONTRIBUTING.md)

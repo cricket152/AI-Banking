@@ -1,58 +1,64 @@
 # 项目状态
 
-更新日期：2026-10-17（Asia/Shanghai）。当前阶段：Phase 0，本地基础设施初始化；首次远程推送待批准。
+更新日期：2026-10-21（Asia/Hong_Kong）。当前阶段：本地可运行演示版已实现，官方比赛规则仍待核实。
 
 ## 已完成
 
-- 检查初始工作目录及上级指令：目录为空，无已有项目文件、Git 仓库或适用的 `AGENTS.md`。
-- 核实 GitHub 仓库 `cricket152/AI-Banking` 存在且公开；只读查询确认其为空，无远程分支或提交，当前账号具有管理权限。
-- 初始化本地 `main`，将 `origin` 配置为 `https://github.com/cricket152/AI-Banking.git`。
-- 建立中文说明、需求与架构占位文档、路线图、双人协作规范、Codex 指令及 Issue / PR 模板。
-- 建立通用忽略、编辑器、换行和环境示例配置，保留 `src/`、`tests/` 空目录。
+- 保留原有 Phase 0 文档、协作规范、仓库模板与通用配置。
+- 经用户确认本地演示范围：六类业务场景、虚构数据、无真实银行连接。
+- 实现 Python 标准库 HTTP 服务、中文工作台和本机 JSON API，无第三方依赖。
+- 实现转账 / 预约 / AA 收款、账单分析、理财对比与申赎、卡片管理、订阅提醒 / 取消、生日资金预留与礼物提醒。
+- 状态修改操作均先展示计划与风险说明，等待用户确认；拒绝或重复确认不重复变更。
+- 服务限回环地址，静态资源使用白名单，限制请求体和消息长度，并添加安全响应头。
+- 新增 27 项自动化测试，覆盖业务流程、主要错误边界及 HTTP API。
+- 更新 README、需求、架构、路线图与本文件，明确本地模拟的能力边界。
 
 ## 未完成
 
-- 首次远程推送需用户明确批准；远程 `main` 与本地 upstream 尚未建立。
-- 两位成员的账号、职责分工与协作权限待确认。
-- 比赛规则、MVP、验收标准、技术栈、部署与评测环境、预算及许可证待确认。
-- GitHub 网页上的默认分支、审查规则及 Squash Merge 设置待维护者确认。
-- 尚无应用、依赖、业务测试或 CI；后续在出现实际需求时添加。
+- 官方赛题限制、评分、赛程、交付物、模型 / MCP 要求尚未核实，详见 `docs/competition.md`。
+- 本地自然语言理解使用规则解析，不含外部 LLM；是否需接入模型取决于比赛规则与后续确认。
+- 登录、多用户隔离、持久化、真实服务与公网部署不在当前演示范围。
+- 两位成员职责、比赛材料公开要求及最终提交方式待确认。
+- 已在 320、390、768、1024、1440px 视口检查页面宽度和资产横幅，无横向溢出或按钮遮挡。
 
-## 当前 Bug 与阻碍
+## 当前 Bug 与风险
 
-- 尚无业务实现，未发现业务 Bug；当前不具备业务测试条件。
-- 比赛文章读取失败，规则尚未核实；所有未知规则在 `docs/competition.md` 标记为 `TODO: 待确认`。
+- 未发现已知阻断问题；当前实现仅用于本机样例演示。
+- 预约任务依赖页面或 API 读取状态来触发到期执行；进程停止期间不执行，重启后状态重置。
+- 规则解析无法覆盖任意自由表达；不匹配时会要求改写或补充信息。
+- 异常交易标记和产品指标均为固定样例，不可用于真实风控或投资判断。
 
-## 最近修改文件
+## 主要文件
 
-- 根目录：`README.md`、`AGENTS.md`、`CONTRIBUTING.md`、`PROJECT_STATUS.md`。
-- 文档：`docs/competition.md`、`docs/requirements.md`、`docs/architecture.md`、`docs/roadmap.md`。
-- 配置：`.gitignore`、`.editorconfig`、`.gitattributes`、`.env.example`。
-- 模板：`.github/ISSUE_TEMPLATE/feature_request.md`、`.github/ISSUE_TEMPLATE/bug_report.md`、`.github/pull_request_template.md`。
-- 目录占位：`src/.gitkeep`、`tests/.gitkeep`。
+- `run.py`：本地启动入口。
+- `src/ai_banking/agent.py`：意图解析、计划、查询和确认动作。
+- `src/ai_banking/domain.py`：模拟账户状态和业务规则。
+- `src/ai_banking/server.py`：本地静态页面与 JSON API。
+- `src/ai_banking/web/`：中文工作台与响应式样式。
+- `tests/test_agent.py`、`tests/test_server.py`：自动化验证。
+- `README.md`、`docs/requirements.md`、`docs/architecture.md`、`docs/roadmap.md`：运行与设计文档。
 
 ## 已确认设计决策
 
-- 当前仅初始化基础设施，不决定业务架构，不安装依赖，不实现 Agent 等功能。
-- `main` 为稳定分支；独立分支开发，通过另一位成员审查后优先 Squash Merge。
-- 首次本地提交信息为 `chore: initialize project`，首次推送须用户另行批准；不修改远程权限与保护规则。
-- 比赛规则只在 `docs/competition.md` 维护；未知信息不作推断。
-- 文本统一 UTF-8 和 LF；没有真实检查任务时不创建 `.github/workflows/`。
-- 未确定配置变量前，`.env.example` 只保留说明，不臆造模型或服务配置。
+- 演示范围覆盖图片中的六类场景，全部使用虚构数据。
+- 使用 Python 标准库 HTTP API 和原生 HTML / CSS / JavaScript；无第三方包或构建步骤。
+- 当前意图识别采用本地规则，不调用外部大模型；不得将其描述为通用 LLM。
+- 账户变更、资金操作和设置变更均须经用户确认。
+- 金额以整数分运算；数据在进程内存中，重启即重置。
+- 服务仅绑定本机回环地址，不提供真实银行连接或公网部署能力。
+- 官方规则仍只在 `docs/competition.md` 维护，未核实事项保留待确认标记。
 
 ## 验证记录
 
-- 已确认初始目录为空、Git / GitHub CLI 可用、Git 提交身份存在。
-- `git ls-remote --symref` 成功且无 refs；`gh repo view` 成功并返回空仓库状态。
-- 17 个预期文件齐备，无额外项目文件；18 个 Markdown 本地链接均可解析。
-- 严格 UTF-8（无 BOM）、LF、文件末尾换行、冲突标记及常见密钥模式检查通过。
-- 18 项忽略规则与 4 项应可跟踪文件检查通过；Git 属性确认文本为 LF、Windows 命令脚本为 CRLF、二进制不作文本转换。
-- `.env.example` 无臆造的活动配置，未创建占位 CI；提交前执行 `git diff --cached --check` 并审阅暂存清单。
-- 未运行应用测试、构建或 CI：技术栈和可执行项目尚未建立。
+- `python -m compileall -q run.py src\ai_banking tests`：通过。
+- `python -m unittest discover -s tests -v`：27 项通过。
+- `node --check src\ai_banking\web\app.js`：通过。
+- 浏览器检查：六类页面均可打开；转账确认、生日预留、AA 收款、账单分析、理财、卡片和订阅交互通过；新会话无控制台错误。
+- 未执行真实银行、模型服务或公网部署测试：当前没有这些集成。
 
 ## 后续计划
 
-1. 报告本地验收与首次提交结果，征求首次推送批准。
-2. 获批后再次检查远程 refs；若仍为空，推送 `main` 并建立 upstream；若出现新提交，停止并确认处理方案。
-3. 维护者确认协作权限和主分支规则，两位成员核实比赛规则与代码公开要求。
-4. 确定 MVP 和技术栈后，拆分首批 Issue、约定接口并开始独立分支开发。
+1. 完成桌面和移动视口的浏览器检查，并处理布局或控制台问题。
+2. 由两位成员核实 `docs/competition.md` 中的官方赛题、模型及提交约束。
+3. 根据核实后的评测要求，决定是否增加 LLM、MCP、持久化或其他运行环境。
+4. 整理竞赛演示流程，并由另一位成员按仓库协作规范审查。
