@@ -29,6 +29,7 @@ __pycache__/
 build/
 dist/
 out/
+*.egg-info/
 coverage/
 htmlcov/
 .coverage
