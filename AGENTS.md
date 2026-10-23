@@ -2,7 +2,7 @@
 
 ## 背景与范围
 
-AI-Banking 是两名开发者协作的 Agent 竞赛项目。T00–T02 的比赛范围记录、第一版架构基线和最小 Python 工程配置已在本地整理，待项目验收；业务功能尚未开始。官方规则以 `docs/competition.md` 为仓库内唯一权威记录；未知事项保留 `TODO: 待确认`。
+AI-Banking 是两名开发者协作的 Agent 竞赛项目。已有 Python / FastAPI / SQLite 单进程本地环境、服务端会话、只读 Agent、终端轨迹、模拟银行资金与授权后端和同源原生 Web 前端；资金契约见 `docs/banking-services.md`，实现范围与验证结果见 `PROJECT_STATUS.md`。Agent 写操作与资金交互界面仍待独立实施。官方规则以 `docs/competition.md` 为仓库内唯一权威记录；未知事项保留 `TODO: 待确认`。
 
 ## 开始任务前
 

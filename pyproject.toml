@@ -7,13 +7,25 @@ name = "ai-banking"
 version = "0.1.0"
 description = "A competition project for a simulated banking agent"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+  "fastapi>=0.115,<1",
+  "pydantic>=2.9,<3",
+  "uvicorn>=0.30,<1",
+  "argon2-cffi>=23.1,<26",
+  "httpx>=0.27,<1",
+  "python-dotenv>=1,<2",
+  "tzdata>=2025.1; sys_platform == 'win32'",
+]
 
 [project.optional-dependencies]
 dev = ["pytest==9.0.3", "ruff==0.15.1"]
+observability = ["langsmith>=0.14.12,<0.15"]
 
-[tool.setuptools]
-packages = []
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ai_banking = ["web/*.html", "web/*.css", "web/*.js", "web/*.svg"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -7,6 +7,7 @@
 .gcloud/
 credentials/
 secrets/
+.local/
 *.pem
 *.key
 *.p12
