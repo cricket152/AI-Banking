@@ -12,6 +12,7 @@ T01-A 的[身份认证与会话契约](authentication.md)已落实为本地用�
 - `auth/`：本机用户管理与服务端 Cookie 会话；`app.py`：同 Origin、CSRF、请求大小和资源归属校验。
 - `agent.py`：五个固定顺序直接暴露的只读工具、独立离线规则演示、Responses / Chat Completions 适配。模型不接触认证秘密，不执行资金变更。
 - `tracing.py`：带请求 ID 的终端阶段日志、供应商可见思考 / 摘要、工具参数与结果；凭据脱敏、长度截断、内容开关，不输出加密思考。
+- `observability.py`：可选 LangSmith SDK；通过上下文关联整轮 / 模型 / 工具，上传脱敏副本与实际 usage。默认关闭，32 轮有界队列由后台线程上传；模型消息、工具定义与业务执行不依赖追踪成功。连接配置与自检见 [LangSmith 接入](langsmith.md)。
 - `banking/`：确定性转账、双边账本、预占预算、两种审批模式、任务检查点、恢复与审计、账单和登记订阅；通过严格受控 API 使用，不直接开放给 Agent。
 - `web/`：FastAPI 同源提供原生 HTML / CSS / JavaScript；借鉴 Astryx 的布局、表单、响应式和无障碍模式，没有引入 React 依赖。
 - `conversations` / `chat_turns` 保存对话归属、完整回合和请求去重；短历史与字节预算只是初步边界，不是完整 T15 恢复机制。

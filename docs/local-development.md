@@ -76,6 +76,8 @@ AGENT_TRACE_CONTENT=true
 
 `AGENT_TRACE_CONTENT=false` 保留阶段、耗时等元数据，隐藏输入、回复、思考和工具内容；`AGENT_TRACE_ENABLED=false` 关闭自定义轨迹。修改后重启生效，已有系统环境变量仍优先于 `.env`。
 
+另可选安装 LangSmith SDK，将脱敏的整轮、模型与工具轨迹上传到指定 workspace 查看。终端开关与云端开关独立，默认 `LANGSMITH_TRACING=false`。创建 Key、配置、独立连接自检及排错见 [LangSmith 接入](langsmith.md)。没有引入 LangGraph 或改变模型请求；SDK / 上传故障不触发业务重试，关闭内容上传仍可记录实际 usage。
+
 日志会脱敏已知密钥、凭据字段和常见敏感模式，转义控制字符并截断长内容；这不能识别任意未标记的个人秘密。只使用合成测试数据，不分享未经检查的终端输出。不会打印认证请求、原始供应商 HTTP 响应或异常响应体。
 
 ## 4. 认证与运行边界

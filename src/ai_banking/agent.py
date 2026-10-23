@@ -13,8 +13,9 @@ from ai_banking.auth import Auth, AuthContext
 from ai_banking.banking.reports import Reports
 from ai_banking.banking.service import Bank, BankError
 from ai_banking.config import Settings
+from ai_banking.observability import Observer, llm_inputs, llm_output
 from ai_banking.store import Store
-from ai_banking.tracing import emit
+from ai_banking.tracing import CONVERSATION, TURN, emit
 
 SYSTEM = """你是 AI-Banking 中文模拟银行助手。所有金额为虚构的 CNY，工具中的整数金额单位为分。
 必须使用工具查询账户和流水，不能编造余额、交易或执行结果。你只有只读工具，无转账能力。
@@ -114,6 +115,7 @@ class Agent:
     def __init__(self, store: Store, auth: Auth, settings: Settings):
         self.store, self.auth, self.settings = store, auth, settings
         self.bank = Bank(store, auth)
+        self.observer = Observer(settings)
 
     def snapshot(self, context):
         return (
@@ -131,11 +133,14 @@ class Agent:
         }
 
     def tool(self, context: AuthContext, name: str, arguments: dict):
-        self.auth.assert_current(context)
-        emit(self.settings, "tool_call", name=name, arguments=arguments)
-        result = self.dispatch(context, name, arguments)
-        emit(self.settings, "tool_result", name=name, result=result)
-        return result
+        tool_name = name if name in {t["name"] for t in TOOLS} else "rejected_tool"
+        with self.observer.span(tool_name, "tool", inputs=arguments) as observation:
+            self.auth.assert_current(context)
+            emit(self.settings, "tool_call", name=name, arguments=arguments)
+            result = self.dispatch(context, name, arguments)
+            emit(self.settings, "tool_result", name=name, result=result)
+            observation.output(result, error=result.get("error"))
+            return result
 
     def dispatch(self, context: AuthContext, name: str, arguments: dict):
         try:
@@ -201,6 +206,21 @@ class Agent:
         )
 
     async def answer(self, context, question, history):
+        metadata = {"request_id": TURN.get(), "agent_mode": self.settings.agent_mode}
+        if CONVERSATION.get():
+            metadata["thread_id"] = CONVERSATION.get()
+        with self.observer.span(
+            "Agent 对话",
+            inputs={"messages": [{"role": "user", "content": question}]},
+            metadata=metadata,
+        ) as observation:
+            result = await self._answer(context, question, history)
+            observation.output(
+                {"messages": [{"role": "assistant", "content": result[0]}], "tools": result[1]}
+            )
+            return result
+
+    async def _answer(self, context, question, history):
         emit(self.settings, "user", mode=self.settings.agent_mode, text=question)
         if self.settings.agent_mode == "offline":
             result = self.offline(context, question)
@@ -269,6 +289,15 @@ class Agent:
         raise AgentError("TOOL_LIMIT")
 
     async def completion(self, client, messages):
+        with self.observer.span(
+            "模型调用",
+            "llm",
+            inputs=lambda: llm_inputs(messages),
+            metadata=self.observer.model_metadata(),
+        ) as observation:
+            return await self._completion(client, messages, observation)
+
+    async def _completion(self, client, messages, observation):
         started = time.monotonic()
         emit(
             self.settings,
@@ -370,6 +399,7 @@ class Agent:
                 status=body.get("status"),
                 incomplete=body.get("incomplete_details"),
             )
+            observation.output(llm_output(content, calls, visible, body.get("usage")))
             return content, calls, raw
         except (httpx.HTTPError, ValueError, KeyError, TypeError, IndexError) as error:
             emit(

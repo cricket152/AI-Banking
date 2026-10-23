@@ -21,6 +21,12 @@ class Settings:
     trace_enabled: bool = True
     trace_content: bool = True
     max_output_tokens: int = 1500
+    langsmith_enabled: bool = False
+    langsmith_key: str = field(default="", repr=False)
+    langsmith_endpoint: str = "https://api.smith.langchain.com"
+    langsmith_project: str = "ai-banking-local"
+    langsmith_workspace: str = ""
+    langsmith_content: bool = True
     idle_seconds: int = 900
     absolute_seconds: int = 28800
 
@@ -65,6 +71,21 @@ class Settings:
             raise ValueError("会话有效期必须为正数")
         if not 256 <= self.max_output_tokens <= 16384:
             raise ValueError("MODEL_MAX_OUTPUT_TOKENS 必须为 256–16384")
+        if self.langsmith_enabled:
+            endpoint = urlsplit(self.langsmith_endpoint)
+            if not self.langsmith_key.strip():
+                raise ValueError("开启 LangSmith 需要 LANGSMITH_API_KEY，请在本地 .env 配置")
+            if (
+                endpoint.scheme != "https"
+                or not endpoint.hostname
+                or endpoint.username
+                or endpoint.password
+                or endpoint.query
+                or endpoint.fragment
+            ):
+                raise ValueError("LANGSMITH_ENDPOINT 必须为不含凭据和查询参数的 HTTPS 地址")
+            if not self.langsmith_project.strip() or len(self.langsmith_project) > 128:
+                raise ValueError("LANGSMITH_PROJECT 必须为 1–128 字符的项目名称")
 
     @classmethod
     def from_env(cls):
@@ -81,4 +102,12 @@ class Settings:
             trace_enabled=os.getenv("AGENT_TRACE_ENABLED", "true").lower() == "true",
             trace_content=os.getenv("AGENT_TRACE_CONTENT", "true").lower() == "true",
             max_output_tokens=int(os.getenv("MODEL_MAX_OUTPUT_TOKENS", "1500")),
+            langsmith_enabled=os.getenv("LANGSMITH_TRACING", "false").lower() == "true",
+            langsmith_key=os.getenv("LANGSMITH_API_KEY", ""),
+            langsmith_endpoint=os.getenv(
+                "LANGSMITH_ENDPOINT", "https://api.smith.langchain.com"
+            ).rstrip("/"),
+            langsmith_project=os.getenv("LANGSMITH_PROJECT", "ai-banking-local"),
+            langsmith_workspace=os.getenv("LANGSMITH_WORKSPACE_ID", ""),
+            langsmith_content=os.getenv("LANGSMITH_TRACE_CONTENT", "true").lower() == "true",
         )

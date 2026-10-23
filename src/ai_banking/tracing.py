@@ -9,6 +9,7 @@ from contextvars import ContextVar
 
 LOGGER = logging.getLogger("ai_banking.trace")
 TURN = ContextVar("banking_turn", default="service")
+CONVERSATION = ContextVar("banking_conversation", default=None)
 LABELS = {
     "user": "用户输入",
     "model_request": "模型请求",
@@ -22,7 +23,8 @@ LABELS = {
     "bank_event": "银行事件",
 }
 SENSITIVE = re.compile(
-    r"password|secret|api.?key|(?:^|_)token(?:$|_)|cookie|authorization|challenge", re.I
+    r"password|secret|api.?key|(?:^|_)token(?:$|_)|cookie|authorization|challenge|encrypted_content",
+    re.I,
 )
 
 
@@ -39,11 +41,11 @@ def redact(value, secrets=()):
     for secret in secrets:
         if secret:
             value = value.replace(secret, "[REDACTED]")
-    value = re.sub(r"\b(?:sk-[\w-]{8,}|gh[pousr]_[\w]{16,})", "[REDACTED]", value)
+    value = re.sub(r"\b(?:sk-[\w-]{8,}|gh[pousr]_[\w]{16,}|lsv2_[\w-]{8,})", "[REDACTED]", value)
     value = re.sub(r"(?i)(bearer\s+)\S+", r"\1[REDACTED]", value)
     value = re.sub(
         r"(?i)((?:password|api[_ -]?key|token|cookie|authorization|密码|密钥)"
-        r"\s*(?:是|为|[:=：])\s*)[^\r\n]+",
+        r"[\"']?\s*(?:是|为|[:=：])\s*)[^\r\n]+",
         r"\1[REDACTED]",
         value,
     )
@@ -68,12 +70,14 @@ def configure_terminal():
 
 
 @contextmanager
-def trace_scope(turn_id):
+def trace_scope(turn_id, conversation_id=None):
     token = TURN.set(turn_id)
+    conversation_token = CONVERSATION.set(conversation_id)
     try:
         yield
     finally:
         TURN.reset(token)
+        CONVERSATION.reset(conversation_token)
 
 
 def emit(settings, event, **data):
@@ -84,7 +88,7 @@ def emit(settings, event, **data):
         for key in ("text", "arguments", "result"):
             if key in data:
                 data[key] = "[内容输出已关闭]"
-    safe = redact(data, (settings.model_key,))
+    safe = redact(data, (settings.model_key, settings.langsmith_key))
     LOGGER.info(
         "[%s] [%s] %s",
         TURN.get(),

@@ -47,6 +47,8 @@ python -m ai_banking
 
 终端默认显示用户输入、供应商返回的可见思考 / 摘要、工具调用与结果、助手回复。旧数据库启用新增银行服务前须确认并备份升级，步骤及 API 见 [模拟银行业务契约](docs/banking-services.md)；启动不会自动改造已有数据库。
 
+可选接入 LangSmith 查看树形轨迹、模型消息、工具结果与 usage。默认关闭，不改变 Agent 编排；安装可选依赖、创建 Key、配置 `.env` 并运行连接自检的步骤见 [LangSmith 接入](docs/langsmith.md)。
+
 ## 目录与协作
 
 `src/ai_banking/` 包含认证、数据服务、Agent 适配和 Web 页面，`tests/` 保存环境与安全集成测试，`docs/` 维护设计与计划，`.github/` 提供协作模板。两位成员的账号与职责仍待确认；日常开发使用独立分支及 PR，由另一位审查后优先 Squash Merge。
@@ -59,6 +61,7 @@ python -m ai_banking
 - [认证契约](docs/authentication.md)：T01-A 身份认证、会话生命周期及 T03 验收用例。
 - [模拟银行业务](docs/banking-services.md)：记账、恢复、审批、预授权、报表、订阅和升级说明。
 - [本地开发](docs/local-development.md)：安装、登录、模型配置、运行限制和验收方法。
+- [LangSmith 接入](docs/langsmith.md)：API Key、可选安装、连接自检、可视化追踪与隐私边界。
 - [分步执行计划](docs/execution-plan.md)：T00–T18 任务、依赖和验收关卡。
 - [路线图](docs/roadmap.md)：阶段完成条件。
 - [协作规范](CONTRIBUTING.md)：分支、提交、PR 与审查流程。

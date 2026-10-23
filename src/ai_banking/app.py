@@ -1,5 +1,6 @@
 """单进程、同源 Web API；应用服务持有身份，模型仅可调用只读工具。"""
 
+import asyncio
 import json
 import sqlite3
 import time
@@ -85,7 +86,11 @@ def create_app(settings: Settings | None = None, clock=time.time):
     async def lifespan(app):
         store.initialize()
         bank.recover_startup()
-        yield
+        agent.observer.start()
+        try:
+            yield
+        finally:
+            await asyncio.to_thread(agent.observer.close)
 
     app = FastAPI(
         title="AI-Banking 本地模拟环境",
@@ -187,6 +192,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
             "model_api": settings.model_api if settings.agent_mode == "model" else None,
             "bank_ready": bank_ready,
             "agent_funds_access": False,
+            "langsmith": agent.observer.status(),
         }
 
     @app.get("/api/auth/csrf")
@@ -325,7 +331,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                     raise AuthError("REQUEST_ID_CONFLICT", 409)
                 if existing["status"] != "succeeded":
                     raise AuthError("REQUEST_ALREADY_HANDLED", 409)
-                with trace_scope(body.request_id):
+                with trace_scope(body.request_id, body.conversation_id):
                     emit(settings, "cached", status="succeeded")
                 return {
                     "answer": existing["answer"],
@@ -354,7 +360,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
         while len(json.dumps(history_rows, ensure_ascii=False).encode()) > 20000:
             history_rows.pop(0)
         try:
-            with trace_scope(body.request_id):
+            with trace_scope(body.request_id, body.conversation_id):
                 answer, traces = await agent.answer(context, body.message, history_rows)
             auth.assert_current(context)
             with store.transaction() as db:
@@ -370,7 +376,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 "snapshot": agent.snapshot(context),
             }
         except (AgentError, AuthError) as error:
-            with trace_scope(body.request_id):
+            with trace_scope(body.request_id, body.conversation_id):
                 emit(settings, "error", code=error.code)
             with store.transaction() as db:
                 db.execute(
