@@ -135,7 +135,7 @@ def test_approval_challenge_bound_to_session_and_exact_summary(bank_env):
     assert balances(env)[env.source] == 1286450
 
 
-def test_zero_budget_policy_can_cancel_only_named_subscription(bank_env):
+def test_zero_budget_policy_can_cancel_named_subscription_below_balance_floor(bank_env):
     env = bank_env
     subscriptions = Reports(env.bank).subscriptions(env.context)["subscriptions"]
     grant_id = grant(
@@ -145,6 +145,7 @@ def test_zero_budget_policy_can_cancel_only_named_subscription(bank_env):
         subscription_ids=[subscriptions[0]["id"]],
         limit_minor=0,
         single_minor=0,
+        minimum_minor=balances(env)[env.source] + 1,
     )
     values = preparation(env, mode="PREAUTHORIZED", grant_id=grant_id)
     values.pop("payee_id")

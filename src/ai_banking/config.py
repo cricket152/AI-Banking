@@ -26,7 +26,7 @@ class Settings:
     langsmith_endpoint: str = "https://api.smith.langchain.com"
     langsmith_project: str = "ai-banking-local"
     langsmith_workspace: str = ""
-    langsmith_content: bool = True
+    langsmith_content: bool = False
     idle_seconds: int = 900
     absolute_seconds: int = 28800
 
@@ -109,5 +109,5 @@ class Settings:
             ).rstrip("/"),
             langsmith_project=os.getenv("LANGSMITH_PROJECT", "ai-banking-local"),
             langsmith_workspace=os.getenv("LANGSMITH_WORKSPACE_ID", ""),
-            langsmith_content=os.getenv("LANGSMITH_TRACE_CONTENT", "true").lower() == "true",
+            langsmith_content=os.getenv("LANGSMITH_TRACE_CONTENT", "false").lower() == "true",
         )

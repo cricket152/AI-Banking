@@ -32,17 +32,17 @@ LANGSMITH_API_KEY=替换为你刚创建的LangSmithKey
 LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 LANGSMITH_PROJECT=ai-banking-local
 LANGSMITH_WORKSPACE_ID=
-LANGSMITH_TRACE_CONTENT=true
+LANGSMITH_TRACE_CONTENT=false
 ```
 
 - 上述 endpoint 是官方默认 GCP US 地址。使用其他区域或部署时，从对应 workspace 的配置说明复制 API endpoint；不要填写网页地址。Key、workspace 和 endpoint 必须属于匹配的环境，应用仅接受 HTTPS 且不允许 URL 携带凭据或查询参数。
 - Key 可访问多个 workspace 时，明确填写目标 `LANGSMITH_WORKSPACE_ID`；在 **Settings → General** 查找 Workspace ID。仅一个 workspace 的 Key 可留空。
 - `LANGSMITH_PROJECT` 是追踪项目名；服务端在有创建项目权限时可于首次提交创建，否则使用自己有权限的已有项目。新版本界面可能同时显示 agent / environment，按对应项目查找。
-- `LANGSMITH_TRACE_CONTENT=false` 只保留阶段、耗时、关联 ID 和实际 usage，不上传对话 / 工具正文。SDK 的 `LANGSMITH_HIDE_INPUTS=true`、`LANGSMITH_HIDE_OUTPUTS=true` 也可进一步隐藏对应内容。
+- `LANGSMITH_TRACE_CONTENT` 默认关闭，只保留阶段、耗时、关联 ID 和实际 usage，不上传对话 / 工具正文。仅在使用合成数据并确有需要时显式设为 `true`；SDK 的 `LANGSMITH_HIDE_INPUTS=true`、`LANGSMITH_HIDE_OUTPUTS=true` 也可进一步隐藏对应内容。
 - LangSmith 内容开关与终端 `AGENT_TRACE_CONTENT` 独立。只关终端日志不会关闭云端采集；关闭云端需设置 `LANGSMITH_TRACING=false` 并重启。
 - 已有系统环境变量优先于 `.env`，配置修改后须重新启动服务。
 
-开启后会向指定 LangSmith 服务发送脱敏的合成对话和工具数据。当前脱敏覆盖已知模型 / 追踪 Key、凭据字段、常见敏感模式及长数字，移除加密推理，转义控制字符，截断单字符串和长列表；不采集认证对象、HTTP Header、密码接口、任意对象或 SDK 自动环境信息。模式匹配不能识别所有未标记的秘密，只使用虚构数据；不要把真实银行数据用于开发追踪。
+开启后默认只向指定 LangSmith 服务发送运行阶段、耗时、关联 ID 和 usage；显式设置 `LANGSMITH_TRACE_CONTENT=true` 后才上传脱敏后的输入 / 输出副本。内容脱敏覆盖已知模型 / 追踪 Key、凭据字段、常见敏感模式及长数字，移除加密推理，转义控制字符，截断单字符串和长列表；不采集认证对象、HTTP Header、密码接口、任意对象或 SDK 自动环境信息。模式匹配不能识别所有未标记的秘密；正文追踪只使用虚构数据，不要把真实银行数据用于开发追踪。
 
 ## 4. 先执行独立连接自检
 

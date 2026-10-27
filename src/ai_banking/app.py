@@ -375,9 +375,11 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 "mode": settings.agent_mode,
                 "snapshot": agent.snapshot(context),
             }
-        except (AgentError, AuthError) as error:
+        except Exception as error:
+            known_error = isinstance(error, (AgentError, AuthError))
+            code = error.code if known_error else "INTERNAL_ERROR"
             with trace_scope(body.request_id, body.conversation_id):
-                emit(settings, "error", code=error.code)
+                emit(settings, "error", code=code, error_type=type(error).__name__)
             with store.transaction() as db:
                 db.execute(
                     "UPDATE chat_turns SET status = 'failed' "
@@ -386,7 +388,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 )
             if isinstance(error, AuthError):
                 raise
-            return JSONResponse({"code": error.code}, 502)
+            return JSONResponse({"code": code}, 502 if isinstance(error, AgentError) else 500)
         finally:
             with store.transaction() as db:
                 db.execute(

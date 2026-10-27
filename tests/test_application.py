@@ -324,6 +324,58 @@ def test_failed_model_request_is_not_silently_replaced_or_retried(env, monkeypat
     assert turns[0]["status"] == "failed" and turns[0]["answer"] is None
 
 
+@pytest.mark.parametrize(
+    ("api_style", "payload"),
+    [
+        ("responses", {"output": [None]}),
+        ("chat", {"choices": [{"message": None}]}),
+    ],
+)
+def test_malformed_model_payload_marks_chat_turn_failed(env, monkeypatch, api_style, payload):
+    app, client, _, settings = env
+    login(client)
+    app.state.agent.settings = replace(
+        settings,
+        agent_mode="model",
+        model="test-model",
+        model_key="test-key-not-a-real-secret",
+        model_api=api_style,
+    )
+
+    def handler(request):
+        return httpx.Response(200, json=payload)
+
+    real_client = httpx.AsyncClient
+    monkeypatch.setattr(
+        "ai_banking.agent.httpx.AsyncClient",
+        lambda **kwargs: real_client(transport=httpx.MockTransport(handler), **kwargs),
+    )
+    conversation_id = post(client, "/api/conversations", {}).json()["id"]
+    request_id = uuid4().hex
+    response = question(client, conversation=conversation_id, request_id=request_id)
+    assert response.status_code == 502
+    assert response.json() == {"code": "MODEL_RESPONSE_INVALID"}
+    turns = client.get(f"/api/conversations/{conversation_id}").json()["turns"]
+    assert turns[0]["status"] == "failed" and turns[0]["answer"] is None
+
+
+def test_unexpected_agent_error_marks_chat_turn_failed_without_details(env, monkeypatch):
+    app, client, _, _ = env
+    login(client)
+
+    async def failure(*args):
+        raise RuntimeError("private provider response")
+
+    monkeypatch.setattr(app.state.agent, "answer", failure)
+    conversation_id = post(client, "/api/conversations", {}).json()["id"]
+    response = question(client, conversation=conversation_id)
+    assert response.status_code == 500
+    assert response.json() == {"code": "INTERNAL_ERROR"}
+    assert "private provider response" not in response.text
+    turns = client.get(f"/api/conversations/{conversation_id}").json()["turns"]
+    assert turns[0]["status"] == "failed" and turns[0]["answer"] is None
+
+
 @pytest.mark.parametrize("api_style", ["responses", "chat"])
 def test_model_roundtrip_uses_real_roles_and_tools_without_credentials(env, monkeypatch, api_style):
     app, client, _, settings = env
