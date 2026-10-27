@@ -341,8 +341,42 @@ class Agent:
                     if len(data) > 131072:
                         raise AgentError("MODEL_RESPONSE_INVALID")
             body = json.loads(data)
+            if not isinstance(body, dict):
+                raise AgentError("MODEL_RESPONSE_INVALID")
             if responses:
-                raw = body["output"]
+                raw = body.get("output")
+                if not isinstance(raw, list) or any(not isinstance(item, dict) for item in raw):
+                    raise AgentError("MODEL_RESPONSE_INVALID")
+                for item in raw:
+                    item_type = item.get("type")
+                    if not isinstance(item_type, str):
+                        raise AgentError("MODEL_RESPONSE_INVALID")
+                    if item_type == "reasoning":
+                        parts = item.get("summary", [])
+                        content_parts = item.get("content", [])
+                        if (
+                            not isinstance(parts, list)
+                            or not isinstance(content_parts, list)
+                            or any(not isinstance(part, dict) for part in parts + content_parts)
+                        ):
+                            raise AgentError("MODEL_RESPONSE_INVALID")
+                    elif item_type == "message":
+                        parts = item.get("content")
+                        if not isinstance(parts, list) or any(
+                            not isinstance(part, dict) for part in parts
+                        ):
+                            raise AgentError("MODEL_RESPONSE_INVALID")
+                        if any(
+                            part.get("type") == "output_text"
+                            and not isinstance(part.get("text"), str)
+                            for part in parts
+                        ):
+                            raise AgentError("MODEL_RESPONSE_INVALID")
+                    elif item_type == "function_call" and any(
+                        not isinstance(item.get(field), str)
+                        for field in ("call_id", "name", "arguments")
+                    ):
+                        raise AgentError("MODEL_RESPONSE_INVALID")
                 visible = [
                     part.get("text", "")
                     for item in raw
@@ -363,13 +397,40 @@ class Agent:
                     if part["type"] == "output_text"
                 )
             else:
-                item = body["choices"][0]["message"]
-                visible = [item.get("reasoning_content") or ""]
-                calls = [
-                    (c["id"], c["function"]["name"], c["function"]["arguments"])
-                    for c in item.get("tool_calls", [])
-                ]
+                choices = body.get("choices")
+                if (
+                    not isinstance(choices, list)
+                    or not choices
+                    or not isinstance(choices[0], dict)
+                    or not isinstance(choices[0].get("message"), dict)
+                ):
+                    raise AgentError("MODEL_RESPONSE_INVALID")
+                item = choices[0]["message"]
+                reasoning = item.get("reasoning_content")
+                if reasoning is not None and not isinstance(reasoning, str):
+                    raise AgentError("MODEL_RESPONSE_INVALID")
+                visible = [reasoning or ""]
+                raw_calls = item.get("tool_calls") or []
+                if not isinstance(raw_calls, list) or any(
+                    not isinstance(call, dict) for call in raw_calls
+                ):
+                    raise AgentError("MODEL_RESPONSE_INVALID")
+                calls = []
+                for call in raw_calls:
+                    function = call.get("function")
+                    if not isinstance(function, dict):
+                        raise AgentError("MODEL_RESPONSE_INVALID")
+                    call_id, name, arguments = (
+                        call.get("id"),
+                        function.get("name"),
+                        function.get("arguments"),
+                    )
+                    if not all(isinstance(value, str) for value in (call_id, name, arguments)):
+                        raise AgentError("MODEL_RESPONSE_INVALID")
+                    calls.append((call_id, name, arguments))
                 content = item.get("content")
+                if content is not None and not isinstance(content, str):
+                    raise AgentError("MODEL_RESPONSE_INVALID")
                 raw = [
                     {
                         "role": "assistant",
@@ -401,7 +462,9 @@ class Agent:
             )
             observation.output(llm_output(content, calls, visible, body.get("usage")))
             return content, calls, raw
-        except (httpx.HTTPError, ValueError, KeyError, TypeError, IndexError) as error:
+        except AgentError:
+            raise
+        except httpx.HTTPError as error:
             emit(
                 self.settings,
                 "error",
@@ -409,3 +472,6 @@ class Agent:
                 http_status=getattr(getattr(error, "response", None), "status_code", None),
             )
             raise AgentError() from error
+        except (ValueError, KeyError, TypeError, IndexError, AttributeError) as error:
+            emit(self.settings, "error", error_type=type(error).__name__)
+            raise AgentError("MODEL_RESPONSE_INVALID") from error

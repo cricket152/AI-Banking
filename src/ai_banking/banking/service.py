@@ -419,9 +419,8 @@ class Bank:
             }
             if op["mode"] == "PREAUTHORIZED":
                 grant = self._policy(db, context, op, reserving=True)
-                self._available(
-                    db, context.user_id, op["source_id"], amount, grant["minimum_minor"]
-                )
+                minimum = grant["minimum_minor"] if kind == "transfer" else 0
+                self._available(db, context.user_id, op["source_id"], amount, minimum)
                 op["expires_at"] = grant["expires_at"]
                 op["state"], op["reserved_minor"] = "authorized", amount
                 db.execute(
@@ -529,6 +528,8 @@ class Bank:
                 minimum = 0
                 if op["mode"] == "PREAUTHORIZED":
                     minimum = self._policy(db, context, op)["minimum_minor"]
+                    if op["kind"] != "transfer":
+                        minimum = 0
                 self._available(
                     db, context.user_id, op["source_id"], op["amount_minor"], minimum, op["id"]
                 )

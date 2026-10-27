@@ -43,6 +43,7 @@ def ingestion(monkeypatch):
 
 
 def traced_settings(**changes):
+    changes.setdefault("langsmith_content", True)
     return Settings(
         local_http=True,
         model_key=MODEL_SECRET,
@@ -68,6 +69,19 @@ def test_disabled_tracing_does_not_import_sdk_or_upload(monkeypatch):
         span.output({"answer": "works"})
     observer.close()
     assert observer.status()["status"] == "disabled" and observer.pending.empty()
+
+
+def test_langsmith_content_requires_explicit_opt_in(monkeypatch):
+    monkeypatch.setattr("ai_banking.config.load_dotenv", lambda override=False: None)
+    monkeypatch.setenv("BANK_ORIGIN", "http://127.0.0.1:8000")
+    monkeypatch.setenv("BANK_LOCAL_HTTP", "true")
+    monkeypatch.setenv("AGENT_MODE", "offline")
+    monkeypatch.setenv("LANGSMITH_TRACING", "true")
+    monkeypatch.setenv("LANGSMITH_API_KEY", TRACE_SECRET)
+    monkeypatch.delenv("LANGSMITH_TRACE_CONTENT", raising=False)
+    assert Settings.from_env().langsmith_content is False
+    monkeypatch.setenv("LANGSMITH_TRACE_CONTENT", "true")
+    assert Settings.from_env().langsmith_content is True
 
 
 def test_enabled_without_sdk_keeps_business_available(monkeypatch, caplog):
