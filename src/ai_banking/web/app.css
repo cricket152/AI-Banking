@@ -26,13 +26,14 @@
   --radius-lg: 16px;
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow-card: 0 1px 2px rgb(29 35 32 / 4%),
-    0 26px 48px -38px rgb(29 35 32 / 45%);
+  --shadow-card:
+    0 1px 2px rgb(29 35 32 / 4%), 0 26px 48px -38px rgb(29 35 32 / 45%);
   --shadow-float: 0 24px 50px -24px rgb(23 33 41 / 38%);
-  --font-sans: "Inter", "Segoe UI", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", sans-serif;
-  --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono",
-    monospace;
+  --font-sans:
+    "Inter", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    sans-serif;
+  --font-mono:
+    "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
   color: var(--ink);
   background: var(--paper);
@@ -1826,6 +1827,265 @@ dialog > .button {
   margin-top: 4px;
 }
 
+/* ---------- 业务办理与后端回执 ---------- */
+
+.bank-card {
+  min-width: 0;
+  margin-bottom: 22px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.bank-card .section-heading {
+  margin: 0 0 12px;
+}
+.bank-card h2,
+.bank-card summary {
+  font-size: 20px;
+  font-weight: 600;
+}
+.bank-card summary {
+  cursor: pointer;
+}
+.bank-card > p {
+  margin: 10px 0 18px;
+  font-size: 14px;
+}
+.bank-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.bank-form label,
+.bank-form legend {
+  font-size: 13px;
+  font-weight: 500;
+}
+.bank-form input:not([type="checkbox"]),
+.bank-form select,
+.agent-policy-form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--ink);
+  font-size: 14px;
+}
+.bank-form :is(input, select):focus-visible,
+.agent-policy-form select:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+.bank-form .button {
+  justify-self: start;
+  margin-top: 8px;
+}
+.bank-form fieldset {
+  min-width: 0;
+  margin: 4px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.bank-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.bank-form-grid label {
+  display: block;
+  margin-bottom: 8px;
+}
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.check-row input {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin-top: 3px;
+  accent-color: var(--navy);
+}
+.field-help {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.bank-message {
+  margin: 0 0 18px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.bank-message:empty {
+  display: none;
+}
+.bank-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+.operation-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+  overflow-wrap: anywhere;
+}
+.operation-card p {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.operation-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  font-size: 14px;
+}
+.operation-state {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--surface);
+}
+.state-succeeded {
+  color: var(--green);
+}
+.state-awaiting_confirmation,
+.state-outcome_unknown {
+  color: var(--brass);
+}
+.state-failed,
+.state-rejected {
+  color: var(--red);
+}
+.operation-card .operation-amount {
+  font-size: 23px;
+  font-variant-numeric: tabular-nums;
+}
+.bank-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.bank-actions .button {
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+.agent-policy-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--surface);
+}
+.agent-policy-form select {
+  padding: 8px;
+  min-height: 36px;
+  font-size: 12px;
+}
+.agent-policy-form button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.agent-policy-form p {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.agent-policy-form details {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: var(--muted);
+}
+.agent-policy-form summary {
+  cursor: pointer;
+}
+.agent-policy-form details p {
+  max-height: 150px;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+.agent-operation-list {
+  margin: 22px 0 6px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.agent-operation-list h3 {
+  font-size: 16px;
+}
+.agent-operation-list .operation-card {
+  margin-top: 12px;
+}
+.message.application-note {
+  padding: 8px 0;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+#operation-dialog {
+  max-width: 600px;
+  max-height: 85dvh;
+  overflow-y: auto;
+}
+#operation-summary {
+  margin: 18px 0 22px;
+}
+#operation-summary dt {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+#operation-summary dd {
+  margin-top: 4px;
+  color: var(--ink);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .bank-card {
+    padding: 18px;
+  }
+  .bank-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .agent-policy-form {
+    padding-inline: 18px;
+  }
+  .bank-actions .button {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar .brand-name {
+    display: none;
+  }
+}
+
 /* ---------- 响应式 ---------- */
 
 @media (min-width: 1600px) {
@@ -2393,5 +2653,37 @@ dialog > .button {
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .content.assistant-only {
+    padding: 12px 12px 18px;
+  }
+  .assistant-only .page-heading {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 12px;
+  }
+  .assistant-only .page-heading-copy {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  .assistant-only .page-heading > .button {
+    margin-top: 0;
+    min-height: 32px;
+    padding-block: 6px;
+    font-size: 12px;
+  }
+  .assistant-only .assistant-pane {
+    margin-top: 0;
+    height: calc(100dvh - 196px);
+    min-height: 480px;
   }
 }

@@ -21,7 +21,7 @@ def main():
         if args.command == "disable-user":
             auth.change_user(args.username)
         else:
-            password = getpass.getpass("密码（15–128 个字符）：")
+            password = getpass.getpass("密码（1–128 个字符）：")
             if password != getpass.getpass("再次输入密码："):
                 raise ValueError("两次密码不一致")
             if args.command == "create-user":

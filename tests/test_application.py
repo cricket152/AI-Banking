@@ -79,13 +79,15 @@ def test_password_storage_normalization_and_atomic_seed(env):
     assert client.get("/api/auth/me").json()["username"] == "alice"
 
 
-@pytest.mark.parametrize("password", ["x" * 14, "x" * 129])
+@pytest.mark.parametrize("password", ["", "x" * 129])
 def test_invalid_password_lengths(password):
     with pytest.raises(ValueError):
         password_hash(password)
 
 
-@pytest.mark.parametrize("password", ["你" * 15, "x" * 128, "  密码保留首尾空格测试   "])
+@pytest.mark.parametrize(
+    "password", ["x", "你", "123", "x" * 14, "你" * 15, "x" * 128, "  密码保留首尾空格测试   "]
+)
 def test_password_exact_value(password):
     encoded = password_hash(password)
     assert HASHER.verify(encoded, password)
@@ -564,16 +566,24 @@ def test_concurrent_turns_are_serialized(env, monkeypatch):
         assert first.result(timeout=3).status_code == 200
 
 
-def test_cli_creation_uses_interactive_password_and_never_prints_it(env, monkeypatch, capsys):
+@pytest.mark.parametrize("command", ["create-user", "reset-password"])
+@pytest.mark.parametrize("password", ["x", "123", PASSWORD])
+def test_cli_password_commands_use_interactive_input_and_never_print_it(
+    env, monkeypatch, capsys, command, password
+):
     from ai_banking.auth import cli
 
-    _, _, _, settings = env
+    app, client, _, settings = env
+    username = "charlie" if command == "create-user" else "alice"
     monkeypatch.setattr(cli.Settings, "from_env", lambda: settings)
-    monkeypatch.setattr("sys.argv", ["cli", "create-user", "charlie"])
-    monkeypatch.setattr(cli.getpass, "getpass", lambda prompt: PASSWORD)
+    monkeypatch.setattr("sys.argv", ["cli", command, username])
+    monkeypatch.setattr(cli.getpass, "getpass", lambda prompt: password)
     cli.main()
     output = capsys.readouterr().out
-    assert "操作完成" in output and PASSWORD not in output
+    assert "操作完成" in output and password not in output
+    login(client, username, password)
+    context = app.state.auth.authenticate(client.cookies.get(COOKIE))
+    app.state.auth.reauthenticate(context, password, "test-source")
 
 
 def test_preauth_allocation_and_source_limits_cannot_be_bypassed(env):

@@ -339,7 +339,7 @@ class Bank:
         if account["balance_minor"] - reserved - amount < minimum:
             raise BankError("INSUFFICIENT_BALANCE")
 
-    def prepare(self, context, values, kind="transfer"):
+    def prepare(self, context, values, kind="transfer", *, exclusive_task=False):
         if kind not in {"transfer", "cancel_subscription"}:
             raise BankError("INVALID_OPERATION_KIND", 422)
         if values.get("currency", "CNY") != "CNY":
@@ -362,6 +362,13 @@ class Bank:
                 if old["parameters_digest"] != signature:
                     raise BankError("STEP_PARAMETERS_CONFLICT")
                 return self._public(old)
+            if exclusive_task:
+                pending = db.execute(
+                    "SELECT id FROM bank_operations WHERE task_id=? AND state!='succeeded'",
+                    (values["task_id"],),
+                ).fetchone()
+                if pending:
+                    raise BankError("STEP_PARAMETERS_CONFLICT", operation_id=pending["id"])
             if (
                 db.execute(
                     "SELECT COUNT(*) FROM bank_operations WHERE task_id=?", (values["task_id"],)
@@ -452,6 +459,24 @@ class Bank:
             self._guard(db, context)
             self._expire(db, context.user_id)
             return self._public(self._operation(db, context.user_id, operation_id))
+
+    def operations(self, context, limit=50, task_id=None):
+        with self.store.transaction() as db:
+            self._guard(db, context)
+            self._expire(db, context.user_id)
+            if (
+                task_id
+                and not db.execute(
+                    "SELECT 1 FROM bank_tasks WHERE id=? AND owner_id=?", (task_id, context.user_id)
+                ).fetchone()
+            ):
+                raise BankError("RESOURCE_NOT_FOUND", 404)
+            rows = db.execute(
+                "SELECT * FROM bank_operations WHERE owner_id=? AND (? IS NULL OR task_id=?) "
+                "ORDER BY created_at DESC,id DESC LIMIT ?",
+                (context.user_id, task_id, task_id, limit),
+            ).fetchall()
+            return [self._public(row) for row in rows]
 
     def challenge(self, context, operation_id):
         with self.store.transaction() as db:

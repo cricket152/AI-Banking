@@ -22,8 +22,12 @@ const errors = {
   MODEL_UNAVAILABLE: "模型暂时不可用，请检查服务端配置或网络；本次未获得回答。",
   MODEL_TIMEOUT: "模型处理超过 90 秒，已停止本轮请求。不会自动重试。",
   MODEL_RESPONSE_INVALID: "模型返回格式异常，本次回答未保存。",
-  TOOL_LIMIT: "已达到本轮工具调用上限，请拆分问题后重试。",
-  CONTEXT_LIMIT: "本轮上下文超过安全预算，请开启新对话。",
+  MODEL_RESPONSE_INCOMPLETE:
+    "模型回复未完成，已停止本轮。请先核对原操作状态，不要重新发起付款。",
+  TOOL_LIMIT:
+    "已达到本轮工具调用上限，请先核对原操作，再在原对话继续，不要重新发起付款。",
+  CONTEXT_LIMIT:
+    "本轮上下文超过安全预算，请先核对原任务状态；暂不继续新增操作。",
   CONVERSATION_BUSY: "当前对话正在处理其他请求，请等待完成。",
   REQUEST_ALREADY_HANDLED: "此请求已处理或正在处理，请刷新查看记录。",
   STORAGE_UNAVAILABLE: "本地数据库暂时不可用，请检查服务端日志和文件权限。",
@@ -51,7 +55,12 @@ async function api(path, options = {}) {
   if (response.status === 204) return null;
   const data = await response.json();
   if (!response.ok) {
-    if (response.status === 401 && requestUser && state.user === requestUser)
+    if (
+      response.status === 401 &&
+      data.code === "AUTH_REQUIRED" &&
+      requestUser &&
+      state.user === requestUser
+    )
       showLogin("登录已失效，请重新登录。");
     const retry = response.headers.get("Retry-After");
     throw new Error(
@@ -101,6 +110,7 @@ function icon(name) {
 }
 
 function showLogin(message = "") {
+  resetBanking();
   state.user = null;
   state.csrf = "";
   state.conversation = null;
@@ -235,6 +245,7 @@ function renderMoney() {
     `更新于 ${new Date(state.snapshot.as_of).toLocaleTimeString("zh-CN")}`;
   renderAccounts();
   renderTransactions();
+  renderBanking();
 }
 
 async function loadData() {
@@ -276,6 +287,11 @@ const pageTitles = {
     "理清财务，从聊一聊开始",
     "账户与收支问题，交给你的 Banking 助手。",
   ],
+  banking: [
+    "业务办理",
+    "每次执行，都清楚确认",
+    "转账、订阅与预授权，在这里核对和管理。",
+  ],
 };
 
 function setPage(page) {
@@ -293,7 +309,8 @@ function setPage(page) {
     if (active) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   });
-  $("#finance-pane").hidden = page === "assistant";
+  $("#finance-pane").hidden = page === "assistant" || page === "banking";
+  $("#bank-pane").hidden = page !== "banking";
   $("#overview-section").hidden = page !== "overview";
   $("#accounts-section").hidden = page === "activity";
   $("#activity-section").hidden = page === "accounts";
@@ -314,7 +331,7 @@ function welcome() {
       "",
       state.health.agent_mode === "offline"
         ? "目前是离线演示：使用本地规则查询，不调用大模型。"
-        : "已配置模型：对话与模拟查询数据将发送给服务端配置的供应商。",
+        : "默认每笔在确认卡片批准；选择预授权后可在范围内执行。对话与模拟数据会发送给配置的供应商。",
     ),
   );
   $("#chat-log").replaceChildren(node);
@@ -326,7 +343,7 @@ function addMessage(role, text, traces = []) {
   const message = element("div", `message ${role}`, text);
   if (traces.length)
     message.append(
-      element("span", "tool-trace", `查询来源 · ${traces.join(" → ")}`),
+      element("span", "tool-trace", `工具轨迹 · ${traces.join(" → ")}`),
     );
   $("#chat-log").append(message);
   $("#chat-log").scrollTop = $("#chat-log").scrollHeight;
@@ -339,9 +356,13 @@ async function loadConversation() {
   if (!user || state.user !== user) return;
   if (list.conversations.length) {
     state.conversation = list.conversations[0].id;
-    const { turns } = await api(`/api/conversations/${state.conversation}`);
+    const { turns, operation_task, execution_policy } = await api(
+      `/api/conversations/${state.conversation}`,
+    );
     if (state.user !== user) return;
     welcome();
+    state.operationTask = operation_task;
+    state.executionPolicy = execution_policy;
     for (const turn of turns) {
       addMessage("user", turn.question);
       addMessage(
@@ -362,6 +383,8 @@ async function loadConversation() {
 
 async function enterWorkspace() {
   state.user = await api("/api/auth/me");
+  state.workflowReady = false;
+  updateBankButtons();
   await freshCsrf();
   $("#login-view").hidden = true;
   $("#workspace").hidden = false;
@@ -379,6 +402,7 @@ async function enterWorkspace() {
     : "offline · 未连接大模型";
   $("#app-error").hidden = true;
   await Promise.all([loadData(), loadConversation()]);
+  await loadBankData();
 }
 
 $("#login-form").addEventListener("submit", async (event) => {
@@ -447,7 +471,7 @@ $("#refresh").addEventListener("click", async () => {
   $("#refresh").disabled = true;
   $("#app-error").hidden = true;
   try {
-    await loadData();
+    await Promise.all([loadData(), loadBankData()]);
   } catch (error) {
     $("#app-error").textContent = error.message;
     $("#app-error").hidden = false;
@@ -459,16 +483,24 @@ $("#refresh").addEventListener("click", async () => {
 $("#chat-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const question = $("#chat-input").value.trim();
-  if (!question || state.sending || !state.conversation) return;
+  if (
+    !question ||
+    state.sending ||
+    state.bankBusy ||
+    !state.workflowReady ||
+    !state.conversation
+  )
+    return;
   const user = state.user;
   const conversation = state.conversation;
   state.sending = true;
+  updateBankButtons();
   $("#chat-send").disabled = true;
   $("#new-chat").disabled = true;
   $("#suggestions").hidden = true;
   $("#chat-input").value = "";
   addMessage("user", question);
-  const pending = addMessage("assistant", "正在查询，请稍候…");
+  const pending = addMessage("assistant", "正在处理，请稍候…");
   try {
     const result = await api("/api/chat", {
       method: "POST",
@@ -486,10 +518,21 @@ $("#chat-form").addEventListener("submit", async (event) => {
     if (state.user === user && state.conversation === conversation)
       addMessage("error", error.message);
   } finally {
+    if (state.user === user && state.conversation === conversation) {
+      try {
+        await Promise.all([loadData(), loadBankData()]);
+      } catch {
+        addMessage(
+          "error",
+          "暂时无法刷新后端操作状态，请点击刷新数据核实原操作，不要重复付款。",
+        );
+      }
+    }
     state.sending = false;
     $("#chat-send").disabled = false;
     $("#new-chat").disabled = false;
     if (state.user) $("#chat-input").focus();
+    updateBankButtons();
   }
 });
 $("#chat-input").addEventListener("keydown", (event) => {
@@ -505,17 +548,26 @@ document.querySelectorAll("[data-prompt]").forEach((button) =>
   }),
 );
 $("#new-chat").addEventListener("click", async () => {
+  if (state.sending || state.bankBusy || !state.workflowReady) return;
+  const previousConversation = state.conversation;
+  state.workflowReady = false;
+  updateBankButtons();
   $("#new-chat").disabled = true;
   try {
     state.conversation = (
       await api("/api/conversations", { method: "POST", body: "{}" })
     ).id;
+    state.operationTask = null;
+    state.executionPolicy = null;
     welcome();
+    await loadBankData();
     $("#chat-input").focus();
   } catch (error) {
+    if (state.conversation === previousConversation) state.workflowReady = true;
     if (state.user) addMessage("error", error.message);
   } finally {
     $("#new-chat").disabled = false;
+    updateBankButtons();
   }
 });
 $("#settings-open").addEventListener("click", () =>
@@ -549,4 +601,3 @@ async function boot() {
     if (state.user) $("#app-error").hidden = false;
   }
 }
-boot();

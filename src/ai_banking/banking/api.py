@@ -123,6 +123,14 @@ def router(bank, auth, identity, mutation):
     def operation(operation_id: str, context=Depends(identity)):
         return bank.operation(context, operation_id)
 
+    @routes.get("/operations")
+    def operations(
+        limit: int = Query(50, ge=1, le=100),
+        task_id: str | None = None,
+        context=Depends(identity),
+    ):
+        return {"operations": bank.operations(context, limit, task_id)}
+
     @routes.post("/operations/{operation_id}/challenge", dependencies=[Depends(mutation)])
     def challenge(operation_id: str, body: StrictBody, context=Depends(identity)):
         return bank.challenge(context, operation_id)

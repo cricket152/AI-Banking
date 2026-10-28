@@ -1,4 +1,4 @@
-"""单进程、同源 Web API；应用服务持有身份，模型仅可调用只读工具。"""
+"""单进程、同源 Web API；身份、任务绑定和资金审批由应用服务控制。"""
 
 import asyncio
 import json
@@ -6,6 +6,7 @@ import sqlite3
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 from urllib.parse import urlsplit
 from uuid import UUID, uuid4
 
@@ -17,6 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from ai_banking.agent import Agent, AgentError
 from ai_banking.auth import COOKIE, Auth, AuthError
+from ai_banking.banking.api import Identifier
 from ai_banking.banking.api import router as bank_router
 from ai_banking.banking.schema import ready
 from ai_banking.banking.service import Bank, BankError
@@ -73,6 +75,17 @@ class ChatBody(BaseModel):
     conversation_id: str = Field(min_length=32, max_length=36)
     request_id: str = Field(min_length=32, max_length=36)
     message: str = Field(min_length=1, max_length=2000)
+
+
+class ConversationPolicyBody(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    mode: Literal["HUMAN_APPROVAL", "PREAUTHORIZED"]
+    grant_id: Identifier | None = None
+
+
+class ContinueBody(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    operation_id: Identifier
 
 
 def create_app(settings: Settings | None = None, clock=time.time):
@@ -192,6 +205,8 @@ def create_app(settings: Settings | None = None, clock=time.time):
             "model_api": settings.model_api if settings.agent_mode == "model" else None,
             "bank_ready": bank_ready,
             "agent_funds_access": False,
+            "agent_operation_preparation": settings.agent_mode == "model" and bank_ready,
+            "agent_preauthorized_execution": settings.agent_mode == "model" and bank_ready,
             "langsmith": agent.observer.status(),
         }
 
@@ -309,7 +324,23 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 "ORDER BY id DESC LIMIT 50",
                 (conversation_id,),
             ).fetchall()
-        return {"turns": [dict(row) for row in reversed(rows)]}
+        return {
+            "turns": [dict(row) for row in reversed(rows)],
+            "operation_task": agent.operation_checkpoint(context, conversation_id),
+            "execution_policy": agent.operations.policy(context, conversation_id),
+        }
+
+    @app.get("/api/conversations/{conversation_id}/policy")
+    def conversation_policy(conversation_id: str, context=Depends(identity)):
+        conversation(context.user_id, conversation_id)
+        return agent.operations.policy(context, conversation_id)
+
+    @app.post("/api/conversations/{conversation_id}/policy", dependencies=[Depends(mutation)])
+    def select_conversation_policy(
+        conversation_id: str, body: ConversationPolicyBody, context=Depends(identity)
+    ):
+        conversation(context.user_id, conversation_id)
+        return agent.operations.select_policy(context, conversation_id, body.mode, body.grant_id)
 
     @app.post("/api/chat", dependencies=[Depends(mutation)])
     async def chat(body: ChatBody, context=Depends(identity)):
@@ -321,6 +352,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
         except ValueError as error:
             raise AuthError("INVALID_REQUEST", 422) from error
         conversation(context.user_id, body.conversation_id)
+        cached_operation_task = agent.operation_checkpoint(context, body.conversation_id)
         with store.transaction() as db:
             existing = db.execute(
                 "SELECT * FROM chat_turns WHERE conversation_id = ? AND request_id = ?",
@@ -337,6 +369,8 @@ def create_app(settings: Settings | None = None, clock=time.time):
                     "answer": existing["answer"],
                     "traces": json.loads(existing["traces"]),
                     "mode": settings.agent_mode,
+                    "operation_task": cached_operation_task,
+                    "cached": True,
                 }
             busy = db.execute(
                 "UPDATE conversations SET busy_until = ? WHERE id = ? AND busy_until <= ?",
@@ -374,6 +408,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 "traces": traces,
                 "mode": settings.agent_mode,
                 "snapshot": agent.snapshot(context),
+                "operation_task": agent.operation_checkpoint(context, body.conversation_id),
             }
         except Exception as error:
             known_error = isinstance(error, (AgentError, AuthError))
@@ -394,6 +429,19 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 db.execute(
                     "UPDATE conversations SET busy_until = 0 WHERE id = ?", (body.conversation_id,)
                 )
+
+    @app.post("/api/conversations/{conversation_id}/continue", dependencies=[Depends(mutation)])
+    async def continue_conversation(
+        conversation_id: str, body: ContinueBody, context=Depends(identity)
+    ):
+        conversation(context.user_id, conversation_id)
+        request_id, message = agent.operations.continuation(
+            context, conversation_id, body.operation_id
+        )
+        return await chat(
+            ChatBody(conversation_id=conversation_id, request_id=request_id, message=message),
+            context,
+        )
 
     app.mount("/static", StaticFiles(directory=WEB), name="static")
 

@@ -34,8 +34,8 @@ def username_key(value: str):
 
 
 def password_hash(password: str):
-    if not 15 <= len(password) <= 128:
-        raise ValueError("密码长度须为 15–128 个字符")
+    if not 1 <= len(password) <= 128:
+        raise ValueError("密码长度须为 1–128 个字符")
     return HASHER.hash(password)
 
 
