@@ -64,6 +64,8 @@ def test_tools_preserve_query_prefix_and_expose_no_approval_or_execution():
         "prepare_transfer",
         "prepare_subscription_cancellation",
         "get_operation",
+        "list_cards",
+        "list_wealth_products",
     ]
 
 
@@ -305,3 +307,22 @@ def test_model_intent_roundtrip_replay_and_failure_recovery(
     with env.app.state.store.transaction() as db:
         assert db.execute("SELECT COUNT(*) FROM bank_operations").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM bank_ledger").fetchone()[0] == 0
+
+
+def test_prepare_persists_structured_goal(intent_env):
+    env = intent_env
+    result = call(env)
+    goal = env.app.state.agent.operations.goal(env.context, env.conversation)
+    assert goal["conversation_id"] == env.conversation
+    assert goal["kind"] == "transfer"
+    assert goal["source_id"] == env.arguments["source_id"]
+    assert goal["target_id"] == env.arguments["payee_id"]
+    assert goal["amount_minor"] == env.arguments["amount_minor"]
+    assert goal["currency"] == "CNY"
+    assert goal["operation_id"] == result["operation"]["id"]
+    again = call(env)
+    assert again["operation"]["id"] == result["operation"]["id"]
+    latest = env.app.state.agent.operations.goal(env.context, env.conversation)
+    assert latest["operation_id"] == result["operation"]["id"]
+    other = post(env.client, "/api/conversations", {}).json()["id"]
+    assert env.app.state.agent.operations.goal(env.context, other) is None

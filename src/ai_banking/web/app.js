@@ -28,6 +28,8 @@ const errors = {
     "已达到本轮工具调用上限，请先核对原操作，再在原对话继续，不要重新发起付款。",
   CONTEXT_LIMIT:
     "本轮上下文超过安全预算，请先核对原任务状态；暂不继续新增操作。",
+  CONTEXT_BUDGET_EXCEEDED:
+    "上下文已达到安全预算，本轮已停止且没有执行新操作；请新建对话或缩小查询范围。",
   CONVERSATION_BUSY: "当前对话正在处理其他请求，请等待完成。",
   REQUEST_ALREADY_HANDLED: "此请求已处理或正在处理，请刷新查看记录。",
   STORAGE_UNAVAILABLE: "本地数据库暂时不可用，请检查服务端日志和文件权限。",
@@ -315,7 +317,178 @@ function setPage(page) {
   $("#accounts-section").hidden = page === "activity";
   $("#activity-section").hidden = page === "accounts";
   $(".content").classList.toggle("assistant-only", page === "assistant");
+  const content = $(".content");
+  content.classList.remove("page-enter");
+  void content.offsetWidth;
+  content.classList.add("page-enter");
   if (page === "assistant") $("#chat-input").focus();
+}
+
+function renderInline(text) {
+  const fragment = document.createDocumentFragment();
+  const pattern = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
+  let last = 0;
+  let match;
+  while ((match = pattern.exec(text))) {
+    if (match.index > last)
+      fragment.append(document.createTextNode(text.slice(last, match.index)));
+    const token = match[0];
+    if (token.startsWith("**"))
+      fragment.append(element("strong", "", token.slice(2, -2)));
+    else if (token.startsWith("`"))
+      fragment.append(element("code", "", token.slice(1, -1)));
+    else fragment.append(element("em", "", token.slice(1, -1)));
+    last = match.index + token.length;
+  }
+  if (last < text.length)
+    fragment.append(document.createTextNode(text.slice(last)));
+  return fragment;
+}
+
+function splitTableRow(line) {
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map((cell) => cell.trim());
+}
+
+function renderTable(headers, rows) {
+  const wrap = element("div", "table-wrap");
+  const table = element("table");
+  const thead = element("thead");
+  const headRow = element("tr");
+  for (const header of headers) {
+    const th = element("th");
+    th.append(renderInline(header));
+    headRow.append(th);
+  }
+  thead.append(headRow);
+  table.append(thead);
+  const tbody = element("tbody");
+  for (const row of rows) {
+    const tr = element("tr");
+    for (let index = 0; index < headers.length; index += 1) {
+      const td = element("td");
+      td.append(renderInline(row[index] || ""));
+      tr.append(td);
+    }
+    tbody.append(tr);
+  }
+  table.append(tbody);
+  wrap.append(table);
+  return wrap;
+}
+
+function renderMarkdown(text) {
+  const root = document.createDocumentFragment();
+  const lines = String(text ?? "")
+    .replace(/\r\n/g, "\n")
+    .split("\n");
+  const paragraph = [];
+  const flush = () => {
+    if (!paragraph.length) return;
+    const node = element("p");
+    node.append(renderInline(paragraph.join("\n")));
+    root.append(node);
+    paragraph.length = 0;
+  };
+  let index = 0;
+  while (index < lines.length) {
+    const line = lines[index];
+    if (/^\s*$/.test(line)) {
+      flush();
+      index += 1;
+      continue;
+    }
+    const next = lines[index + 1];
+    if (
+      /^\s*\|/.test(line) &&
+      next !== undefined &&
+      /^\s*\|?\s*:?-{2,}:?(\s*\|\s*:?-{2,}:?)*\s*\|?\s*$/.test(next)
+    ) {
+      flush();
+      const headers = splitTableRow(line);
+      const rows = [];
+      index += 2;
+      while (index < lines.length && /^\s*\|/.test(lines[index])) {
+        rows.push(splitTableRow(lines[index]));
+        index += 1;
+      }
+      root.append(renderTable(headers, rows));
+      continue;
+    }
+    if (/^```/.test(line)) {
+      flush();
+      index += 1;
+      const code = [];
+      while (index < lines.length && !/^```/.test(lines[index])) {
+        code.push(lines[index]);
+        index += 1;
+      }
+      index += 1;
+      const pre = element("pre");
+      pre.append(element("code", "", code.join("\n")));
+      root.append(pre);
+      continue;
+    }
+    const heading = line.match(/^(#{1,4})\s+(.*)$/);
+    if (heading) {
+      flush();
+      const node = element(heading[1].length <= 2 ? "h3" : "h4", "md-heading");
+      node.append(renderInline(heading[2]));
+      root.append(node);
+      index += 1;
+      continue;
+    }
+    if (/^\s*[-*]\s+/.test(line)) {
+      flush();
+      const list = element("ul", "md-list");
+      while (index < lines.length && /^\s*[-*]\s+/.test(lines[index])) {
+        const item = element("li");
+        item.append(renderInline(lines[index].replace(/^\s*[-*]\s+/, "")));
+        list.append(item);
+        index += 1;
+      }
+      root.append(list);
+      continue;
+    }
+    if (/^\s*\d+\.\s+/.test(line)) {
+      flush();
+      const list = element("ol", "md-list");
+      while (index < lines.length && /^\s*\d+\.\s+/.test(lines[index])) {
+        const item = element("li");
+        item.append(renderInline(lines[index].replace(/^\s*\d+\.\s+/, "")));
+        list.append(item);
+        index += 1;
+      }
+      root.append(list);
+      continue;
+    }
+    if (/^\s*>\s?/.test(line)) {
+      flush();
+      const quote = element("blockquote");
+      const buffer = [];
+      while (index < lines.length && /^\s*>\s?/.test(lines[index])) {
+        buffer.push(lines[index].replace(/^\s*>\s?/, ""));
+        index += 1;
+      }
+      quote.append(renderInline(buffer.join("\n")));
+      root.append(quote);
+      continue;
+    }
+    if (/^\s*---+\s*$/.test(line)) {
+      flush();
+      root.append(element("hr"));
+      index += 1;
+      continue;
+    }
+    paragraph.push(line);
+    index += 1;
+  }
+  flush();
+  return root;
 }
 
 function welcome() {
@@ -331,20 +504,30 @@ function welcome() {
       "",
       state.health.agent_mode === "offline"
         ? "目前是离线演示：使用本地规则查询，不调用大模型。"
-        : "默认每笔在确认卡片批准；选择预授权后可在范围内执行。对话与模拟数据会发送给配置的供应商。",
+        : "对话与查询到的模拟数据会发送给配置的供应商。",
     ),
   );
   $("#chat-log").replaceChildren(node);
   $("#suggestions").hidden = false;
 }
 
-function addMessage(role, text, traces = []) {
+function addMessage(role, text, traces = [], context = null) {
   $(".chat-welcome")?.remove();
-  const message = element("div", `message ${role}`, text);
-  if (traces.length)
-    message.append(
-      element("span", "tool-trace", `工具轨迹 · ${traces.join(" → ")}`),
+  const message = element("div", `message ${role}`);
+  if (role === "assistant") message.append(renderMarkdown(text));
+  else message.textContent = text;
+  if (context) message.dataset.context = JSON.stringify(context);
+  if (role === "assistant" && context?.compressed) {
+    const note = element(
+      "p",
+      "context-note",
+      `上下文已压缩 · 保留 ${context.kept_turns} 轮 · 省略 ${context.omitted_turns} 轮`,
     );
+    note.title = `估算 ${context.estimated_tokens}/${context.budget_tokens} tokens`;
+    message.append(note);
+  }
+  // 工具轨迹只在终端 / LangSmith 展示；界面保留隐藏数据供排查，不打扰用户。
+  if (traces.length) message.dataset.traces = traces.join(",");
   $("#chat-log").append(message);
   $("#chat-log").scrollTop = $("#chat-log").scrollHeight;
   return message;
@@ -431,15 +614,24 @@ $("#login-form").addEventListener("submit", async (event) => {
   }
 });
 
+const EYE_OPEN =
+  '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>';
+const EYE_CLOSED =
+  '<path d="M3 3l18 18"/><path d="M10.6 6.1A10.5 10.5 0 0 1 12 6c6.5 0 10 6 10 6a17.3 17.3 0 0 1-3.2 3.7M6.4 8.3C3.9 10 2 12 2 12s3.5 6 10 6c1.4 0 2.7-.3 3.9-.8"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>';
+
+function paintPasswordToggle(visible) {
+  const toggle = $("#toggle-password");
+  toggle.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${
+    visible ? EYE_CLOSED : EYE_OPEN
+  }</svg>`;
+  toggle.setAttribute("aria-label", visible ? "隐藏密码" : "显示密码");
+  toggle.setAttribute("aria-pressed", String(visible));
+}
+
 $("#toggle-password").addEventListener("click", () => {
   const visible = $("#password").type === "password";
   $("#password").type = visible ? "text" : "password";
-  $("#toggle-password").textContent = visible ? "隐藏" : "显示";
-  $("#toggle-password").setAttribute(
-    "aria-label",
-    visible ? "隐藏密码" : "显示密码",
-  );
-  $("#toggle-password").setAttribute("aria-pressed", visible);
+  paintPasswordToggle(visible);
 });
 
 $("#logout").addEventListener("click", async () => {
@@ -457,6 +649,13 @@ document
   .forEach((button) =>
     button.addEventListener("click", () => setPage(button.dataset.page)),
   );
+
+document.querySelectorAll(".brand").forEach((brand) =>
+  brand.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (state.user) setPage("overview");
+  }),
+);
 $("#account-filter").addEventListener("change", renderTransactions);
 $("#toggle-balance").addEventListener("click", () => {
   state.hidden = !state.hidden;
@@ -512,7 +711,7 @@ $("#chat-form").addEventListener("submit", async (event) => {
     });
     pending.remove();
     if (state.user === user && state.conversation === conversation)
-      addMessage("assistant", result.answer, result.traces);
+      addMessage("assistant", result.answer, result.traces, result.context);
   } catch (error) {
     pending.remove();
     if (state.user === user && state.conversation === conversation)

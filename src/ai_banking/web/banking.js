@@ -7,6 +7,7 @@ Object.assign(state, {
   grants: [],
   operationTask: null,
   executionPolicy: null,
+  policyBusy: false,
   bankBusy: false,
   workflowReady: false,
   workflowRevision: 0,
@@ -73,6 +74,54 @@ function bankAmount(id, zeroAllowed = false) {
   return minor;
 }
 
+function buildGrantValues() {
+  const allowed = [];
+  if ($("#grant-transfer").checked) allowed.push("transfer");
+  if ($("#grant-cancel").checked) allowed.push("cancel_subscription");
+  if (!allowed.length) throw new Error("请明确选择至少一种允许的操作。");
+  const sourceId = $("#grant-source").value;
+  if (!sourceId) throw new Error("请选择付款账户。");
+  const payeeIds = [
+    ...$("#grant-payees").querySelectorAll("input:checked"),
+  ].map((node) => node.value);
+  const subscriptionIds = [
+    ...$("#grant-subscriptions").querySelectorAll("input:checked"),
+  ].map((node) => node.value);
+  if (allowed.includes("transfer") && !payeeIds.length)
+    throw new Error("请选择至少一个允许的收款账户。");
+  if (allowed.includes("cancel_subscription") && !subscriptionIds.length)
+    throw new Error("请选择至少一个允许取消的订阅。");
+  normalizeGrantAmounts();
+  const limitMinor = bankAmount("#grant-limit", true);
+  const singleMinor = bankAmount("#grant-single", true);
+  const minimumMinor = bankAmount("#grant-minimum", true);  if (allowed.includes("transfer") && (limitMinor <= 0 || singleMinor <= 0))
+    throw new Error("允许转账时，累计与单笔上限必须大于 0。");
+  if (singleMinor > limitMinor)
+    throw new Error("单笔上限不能超过累计支出上限。");
+  const segments = expirySegments();
+  if (segments.some((value) => !value))
+    throw new Error("请填写完整的截止时间（东八区 UTC+8）。");
+  const expiresAt = readExpiryValue();
+  if (expiresAt === null) throw new Error("截止时间无效，请检查年月日时分。");
+  if (expiresAt <= Date.now() / 1000)
+    throw new Error("截止时间必须晚于当前时间（东八区 UTC+8）。");
+  return {
+    request_id: crypto.randomUUID(),
+    source_id: sourceId,
+    currency: "CNY",
+    payee_ids: allowed.includes("transfer") ? payeeIds : [],
+    subscription_ids: allowed.includes("cancel_subscription")
+      ? subscriptionIds
+      : [],
+    allowed_operations: allowed,
+    limit_minor: limitMinor,
+    single_minor: singleMinor,
+    minimum_minor: minimumMinor,
+    expires_at: expiresAt,
+    password: $("#grant-password").value,
+  };
+}
+
 function bankMessage(text, error = false) {
   $("#bank-message").textContent = text;
   $("#bank-message").classList.toggle("error", error);
@@ -90,12 +139,11 @@ function updateBankButtons() {
     !state.user ||
     state.bankBusy ||
     state.sending ||
+    state.policyBusy ||
     !state.workflowReady ||
     !state.health?.bank_ready;
   document
-    .querySelectorAll(
-      ".bank-action, #transfer-submit, #grant-submit, #agent-policy-apply",
-    )
+    .querySelectorAll(".bank-action, #transfer-submit, #grant-submit")
     .forEach((b) => {
       b.disabled = busy;
     });
@@ -114,25 +162,14 @@ function updateBankButtons() {
   $("#agent-policy-grant").disabled =
     busy || $("#agent-policy-mode").value !== "PREAUTHORIZED";
   const preauthorized = $("#agent-policy-mode").value === "PREAUTHORIZED";
-  $("#agent-policy-apply").textContent = preauthorized
-    ? "允许本对话按此授权执行"
-    : "应用逐笔人工确认";
-  $("#agent-policy-preview").hidden = !preauthorized;
-  const selected = state.grants.find(
-    (g) => g.id === $("#agent-policy-grant").value,
-  );
-  $("#agent-policy-details").textContent = selected
-    ? `付款账户：${bankAccountLabel(selected.source_id)}；允许：${selected.scopes.operations.map((k) => (k === "transfer" ? "转账" : "取消指定订阅")).join("、")}；单笔 ${currency(selected.single_minor)}，累计剩余 ${currency(selected.remaining_minor)}，最低余额 ${currency(selected.minimum_minor)}。收款范围：${
-        selected.payee_ids
-          .map((id) => {
-            const p = state.payees.find((p) => p.id === id);
-            return p
-              ? `${p.name} · ${p.suffix} · ${p.account_id.slice(-8)}`
-              : id;
-          })
-          .join("、") || "无"
-      }；订阅范围：${selected.scopes.subscription_ids.map((id) => state.subscriptions.find((s) => s.id === id)?.merchant || id).join("、") || "无"}；截止 ${new Date(selected.expires_at * 1000).toLocaleString("zh-CN")}。`
-    : "尚未选择有效预授权，不能自主执行。";
+  const createGrant = $("#agent-policy-create-grant");
+  if (createGrant)
+    createGrant.hidden = !(
+      preauthorized && !state.grants.some((g) => g.status === "active")
+    );
+  const viewGrant = $("#agent-policy-view");
+  if (viewGrant)
+    viewGrant.hidden = !(preauthorized && $("#agent-policy-grant").value);
 }
 
 async function runBank(action) {
@@ -167,6 +204,9 @@ function resetBanking() {
   $("#operation-dialog").close();
   $("#transfer-form").reset();
   $("#grant-form").reset();
+  grantError("");
+  grantInfo("");
+  updateGrantScopeState();
   for (const id of ["#subscriptions-list", "#operations-list", "#grants-list"])
     $(id).replaceChildren();
   bankMessage("");
@@ -177,6 +217,188 @@ function bankAccountLabel(id) {
   if (own) return `${own.name} · 尾号 ${own.suffix}`;
   const payee = state.payees.find((p) => p.account_id === id);
   return payee ? `${payee.name} · 尾号 ${payee.suffix}` : id || "—";
+}
+
+function payeeLabel(payee) {
+  return `${payee.name} · 模拟银行 · 尾号 ${payee.suffix}`;
+}
+
+function shanghaiTime(seconds) {
+  return new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(seconds * 1000));
+}
+
+function parseShanghaiTime(value) {
+  const match = value
+    .trim()
+    .match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})$/);
+  if (!match) return null;
+  const [year, month, day, hour, minute] = match.slice(1).map(Number);
+  const naive = Date.UTC(year, month - 1, day, hour, minute);
+  const probe = new Date(naive);
+  if (
+    probe.getUTCFullYear() !== year ||
+    probe.getUTCMonth() !== month - 1 ||
+    probe.getUTCDate() !== day ||
+    probe.getUTCHours() !== hour ||
+    probe.getUTCMinutes() !== minute
+  )
+    return null;
+  return (naive - 8 * 3600 * 1000) / 1000;
+}
+
+function grantError(message) {
+  const node = $("#grant-error");
+  node.textContent = message || "";
+  node.hidden = !message;
+  if (message) node.scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+function grantInfo(message) {
+  const node = $("#grant-info");
+  if (!node) return;
+  node.textContent = message || "";
+  node.hidden = !message;
+}
+
+const EXPIRY_FIELDS = [
+  ["#grant-expiry-year", 4],
+  ["#grant-expiry-month", 2],
+  ["#grant-expiry-day", 2],
+  ["#grant-expiry-hour", 2],
+  ["#grant-expiry-minute", 2],
+];
+
+function expirySegments() {
+  return EXPIRY_FIELDS.map(([id]) => $(id).value.trim());
+}
+
+function setExpirySegments(seconds) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date(seconds * 1000));
+  const part = (type) => parts.find((item) => item.type === type)?.value || "";
+  const values = [
+    part("year"),
+    part("month"),
+    part("day"),
+    part("hour"),
+    part("minute"),
+  ];
+  EXPIRY_FIELDS.forEach(([id], index) => {
+    $(id).value = values[index];
+  });
+}
+
+function setDefaultGrantExpiry() {
+  if (expirySegments().some((value) => value)) return;
+  setExpirySegments(Date.now() / 1000 + 86400);
+}
+
+function formatExpiryField(input, index) {
+  input.value = input.value
+    .replace(/\D/g, "")
+    .slice(0, EXPIRY_FIELDS[index][1]);
+  if (
+    input.value.length === EXPIRY_FIELDS[index][1] &&
+    index < EXPIRY_FIELDS.length - 1
+  )
+    $(EXPIRY_FIELDS[index + 1][0]).focus();
+}
+
+function readExpiryValue() {
+  const [year, month, day, hour, minute] = expirySegments();
+  if (!year || !month || !day || !hour || !minute) return null;
+  return parseShanghaiTime(`${year}-${month}-${day} ${hour}:${minute}`);
+}
+
+function fillGrantFormFromGrant(grant) {
+  $("#grant-form").reset();
+  $("#grant-source").value = grant.source_id;
+  const operations = grant.scopes?.operations || [];
+  $("#grant-transfer").checked = operations.includes("transfer");
+  $("#grant-cancel").checked = operations.includes("cancel_subscription");
+  updateGrantScopeState();
+  for (const id of grant.payee_ids || []) {
+    const node = document.querySelector(`#grant-payees input[value="${id}"]`);
+    if (node) node.checked = true;
+  }
+  for (const id of grant.scopes?.subscription_ids || []) {
+    const node = document.querySelector(
+      `#grant-subscriptions input[value="${id}"]`,
+    );
+    if (node) node.checked = true;
+  }
+  updateMultiSummary("#grant-payees", "#grant-payees-summary");
+  updateMultiSummary("#grant-subscriptions", "#grant-subscriptions-summary");
+  $("#grant-limit").value = (grant.limit_minor / 100).toFixed(2);
+  $("#grant-single").value = (grant.single_minor / 100).toFixed(2);
+  $("#grant-minimum").value = (grant.minimum_minor / 100).toFixed(2);
+  setExpirySegments(grant.expires_at);
+  grantError("");
+  grantInfo("已载入当前授权信息；如需新建，请修改范围与额度并重新输入登录密码。");
+}
+
+function normalizeAmount(id) {
+  const input = $(id);
+  if (!input) return;
+  const raw = input.value.trim().replace(/[,，\s¥￥]/g, "");
+  if (!raw) return;
+  const number = Number(raw);
+  if (!Number.isFinite(number)) return;
+  input.value = (Math.round(number * 100) / 100).toFixed(2);
+}
+
+function normalizeGrantAmounts() {
+  for (const id of ["#grant-limit", "#grant-single", "#grant-minimum"])
+    normalizeAmount(id);
+}
+
+function updateMultiSummary(listId, summaryId) {
+  const count = $(listId).querySelectorAll("input:checked").length;
+  $(summaryId).textContent = count ? `已选 ${count} 项` : "未选择";
+}
+
+function updateGrantScopeState() {
+  for (const [enabled, boxId, listId, summaryId] of [
+    [
+      $("#grant-transfer").checked,
+      "#grant-payees-select",
+      "#grant-payees",
+      "#grant-payees-summary",
+    ],
+    [
+      $("#grant-cancel").checked,
+      "#grant-subscriptions-select",
+      "#grant-subscriptions",
+      "#grant-subscriptions-summary",
+    ],
+  ]) {
+    const box = $(boxId);
+    box.dataset.disabled = enabled ? "false" : "true";
+    if (!enabled) {
+      box.open = false;
+      $(listId)
+        .querySelectorAll("input")
+        .forEach((node) => {
+          node.checked = false;
+        });
+    }
+    updateMultiSummary(listId, summaryId);
+  }
 }
 
 function renderBankOptions() {
@@ -195,16 +417,10 @@ function renderBankOptions() {
   const selectedPayee = $("#transfer-payee").value;
   $("#transfer-payee").replaceChildren(new Option("请选择收款人", ""));
   for (const p of state.payees)
-    $("#transfer-payee").add(
-      new Option(`${p.name} · ${p.suffix} · ${p.account_id.slice(-8)}`, p.id),
-    );
+    $("#transfer-payee").add(new Option(payeeLabel(p), p.id));
   $("#transfer-payee").value = selectedPayee;
   for (const [id, items, label] of [
-    [
-      "#grant-payees",
-      state.payees,
-      (p) => `${p.name} · ${p.suffix} · ${p.account_id.slice(-8)}`,
-    ],
+    ["#grant-payees", state.payees, (p) => payeeLabel(p)],
     [
       "#grant-subscriptions",
       state.subscriptions.filter((s) => s.status === "active"),
@@ -225,6 +441,8 @@ function renderBankOptions() {
       $(id).append(row);
     }
   }
+  updateGrantScopeState();
+  setDefaultGrantExpiry();
 }
 
 function renderPolicy() {
@@ -237,7 +455,7 @@ function renderPolicy() {
   for (const g of state.grants.filter((g) => g.status === "active")) {
     $("#agent-policy-grant").add(
       new Option(
-        `${bankAccountLabel(g.source_id)} · 剩余 ${currency(g.remaining_minor)} · ${g.id.slice(-6)}`,
+        `${bankAccountLabel(g.source_id)} · 剩余 ${currency(g.remaining_minor)}`,
         g.id,
       ),
     );
@@ -251,17 +469,91 @@ function renderPolicy() {
     );
   }
   $("#agent-policy-grant").value = policy.grant_id || "";
-  $("#agent-policy-status").textContent =
-    policy.mode === "PREAUTHORIZED"
+  const activeGrant = state.grants.find(
+    (g) => g.id === policy.grant_id && g.status === "active",
+  );
+  const safetyHelp = $("#agent-safety-help");
+  if (safetyHelp) {
+    const safetyText =
+      policy.mode === "PREAUTHORIZED"
+        ? "指定预授权 · 每笔仍由后端复核范围与额度"
+        : "默认逐笔确认 · 聊天文字不代替授权";
+    safetyHelp.dataset.tooltip = safetyText;
+    safetyHelp.setAttribute("aria-label", safetyText);
+  }
+  updatePolicyStatusText(activeGrant);
+  updatePolicySummary();
+  if (policy.mode === "PREAUTHORIZED" && !activeGrant) {
+    const panel = $("#agent-policy-panel");
+    if (panel) panel.open = true;
+  }
+}
+
+function currentActiveGrant() {
+  const grantId = $("#agent-policy-grant").value;
+  return state.grants.find((g) => g.id === grantId && g.status === "active");
+}
+
+function updatePolicyStatusText(activeGrant = currentActiveGrant()) {
+  const status = $("#agent-policy-status");
+  if (!status) return;
+  let message = "";
+  if (!state.workflowReady) {
+    message = "正在核对本对话执行策略，恢复完成前不能发起操作。";
+  } else if ($("#agent-policy-mode").value === "PREAUTHORIZED") {
+    message = activeGrant
       ? "本对话使用所选授权；超范围、超额度或失效时停止执行。"
-      : "本对话每笔人工确认；聊天中的“确认”不会批准操作。";
-  if (!state.workflowReady)
-    $("#agent-policy-status").textContent =
-      "正在核对本对话执行策略，恢复完成前不能发起操作。";
-  $("#agent-safety").textContent =
-    policy.mode === "PREAUTHORIZED"
-      ? "指定预授权 · 每笔仍由后端复核范围与额度"
-      : "默认逐笔确认 · 聊天文字不代替授权";
+      : "尚无有效预授权：请先在业务办理创建授权，再回到这里选择并应用。";
+  }
+  status.textContent = message;
+  status.hidden = !message;
+}
+
+function updatePolicySummary() {
+  const summary = $("#agent-policy-summary");
+  if (!summary) return;
+  if (!state.workflowReady) {
+    summary.textContent = "恢复中…";
+  } else if ($("#agent-policy-mode").value === "PREAUTHORIZED") {
+    summary.textContent = currentActiveGrant()
+      ? "预授权模式"
+      : "预授权 · 授权待选择";
+  } else {
+    summary.textContent = "每笔人工确认";
+  }
+}
+
+async function applyConversationPolicy() {
+  const conversation = state.conversation;
+  if (!conversation || state.policyBusy) return;
+  const mode = $("#agent-policy-mode").value;
+  const grantId =
+    mode === "PREAUTHORIZED" ? $("#agent-policy-grant").value : null;
+  if (mode === "PREAUTHORIZED" && !grantId) {
+    updatePolicyStatusText();
+    updatePolicySummary();
+    return;
+  }
+  state.policyBusy = true;
+  updateBankButtons();
+  try {
+    const policy = await api(`/api/conversations/${conversation}/policy`, {
+      method: "POST",
+      body: JSON.stringify({ mode, grant_id: grantId }),
+    });
+    if (state.conversation !== conversation) return;
+    state.executionPolicy = policy;
+    await loadBankData();
+  } catch (error) {
+    const status = $("#agent-policy-status");
+    if (status) {
+      status.textContent = error.message;
+      status.hidden = false;
+    }
+  } finally {
+    state.policyBusy = false;
+    updateBankButtons();
+  }
 }
 
 function renderOperation(op, compact = false) {
@@ -298,7 +590,7 @@ function renderOperation(op, compact = false) {
     element(
       "p",
       "field-help",
-      `${op.mode === "PREAUTHORIZED" ? "预授权" : "人工确认"} · 操作 ${op.id.slice(-8)}`,
+      `${op.mode === "PREAUTHORIZED" ? "预授权模式" : "人工确认"}`,
     ),
   );
   if (op.error_code)
@@ -414,7 +706,8 @@ function renderBanking() {
     $("#operations-list").append(element("p", "muted", "暂无操作记录。"));
   $("#grants-list").replaceChildren();
   for (const g of state.grants) {
-    const card = element("article", "operation-card");
+    const card = element("article", "operation-card grant-card");
+    card.dataset.grantId = g.id;
     card.append(
       element(
         "strong",
@@ -439,7 +732,7 @@ function renderBanking() {
     const payees = g.payee_ids
       .map((id) => state.payees.find((p) => p.id === id))
       .filter(Boolean)
-      .map((p) => `${p.name} · ${p.suffix} · ${p.account_id.slice(-8)}`);
+      .map((p) => payeeLabel(p));
     const subscriptions = g.scopes.subscription_ids.map(
       (id) => state.subscriptions.find((s) => s.id === id)?.merchant || id,
     );
@@ -447,11 +740,28 @@ function renderBanking() {
       element(
         "p",
         "field-help",
-        `收款范围：${payees.join("、") || "无"}；订阅范围：${subscriptions.join("、") || "无"}；截止 ${new Date(g.expires_at * 1000).toLocaleString("zh-CN")}`,
+        `收款范围：${payees.join("、") || "无"}；订阅范围：${subscriptions.join("、") || "无"}；截止 ${shanghaiTime(g.expires_at)}（UTC+8）`,
       ),
     );
     if (g.status === "active")
       card.append(
+        bankButton("在本对话启用", async () => {
+          const conversation = state.conversation;
+          if (!conversation) throw new Error("请先在 AI 助手创建对话。");
+          const policy = await api(
+            `/api/conversations/${conversation}/policy`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                mode: "PREAUTHORIZED",
+                grant_id: g.id,
+              }),
+            },
+          );
+          state.executionPolicy = policy;
+          await loadBankData();
+          bankMessage("已在本对话启用该预授权；助手在范围内可自主执行。");
+        }),
         bankButton("撤销这份授权", async () => {
           await api(`/api/bank/grants/${g.id}/revoke`, {
             method: "POST",
@@ -580,23 +890,17 @@ async function openOperation(id) {
   appendSummary("账户 ID", op.source_id);
   if (op.kind === "transfer") {
     appendSummary("收款账户", bankAccountLabel(op.target_id));
-    appendSummary("收款账户 ID", op.target_id);
     appendSummary("转账金额（CNY）", bankMoney(op.amount_minor));
   } else {
     appendSummary(
       "订阅",
       state.subscriptions.find((s) => s.id === op.subscription_id)?.merchant ||
-        op.subscription_id,
+        "未知订阅",
     );
-    appendSummary("订阅 ID", op.subscription_id);
     appendSummary("资金影响", "不退款、不扣款");
   }
   appendSummary("费用", bankMoney(op.fee_minor));
-  appendSummary("操作 ID", op.id);
-  appendSummary(
-    "确认截止",
-    new Date(op.expires_at * 1000).toLocaleString("zh-CN"),
-  );
+  appendSummary("确认截止", `${shanghaiTime(op.expires_at)}（UTC+8）`);
   $("#operation-acknowledged").checked = false;
   $("#operation-dialog-error").textContent = "";
   $("#operation-approve").textContent =
@@ -714,6 +1018,7 @@ function initializeBanking() {
   $("#transfer-form").addEventListener("submit", (event) => {
     event.preventDefault();
     runBank(async (user) => {
+      normalizeAmount("#transfer-amount");
       const values = {
         source_id: $("#transfer-source").value,
         payee_id: $("#transfer-payee").value,
@@ -751,65 +1056,111 @@ function initializeBanking() {
   });
   $("#grant-form").addEventListener("submit", (event) => {
     event.preventDefault();
+    grantError("");
+    grantInfo("");
+    let values;
+    try {
+      values = buildGrantValues();
+    } catch (error) {
+      grantError(error.message);
+      return;
+    }
+    $("#grant-password").value = "";
     runBank(async (user) => {
-      const allowed = [];
-      if ($("#grant-transfer").checked) allowed.push("transfer");
-      if ($("#grant-cancel").checked) allowed.push("cancel_subscription");
-      if (!allowed.length) throw new Error("请明确选择至少一种允许的操作。");
-      const values = {
-        request_id: crypto.randomUUID(),
-        source_id: $("#grant-source").value,
-        currency: "CNY",
-        payee_ids: [
-          ...$("#grant-payees").querySelectorAll("input:checked"),
-        ].map((n) => n.value),
-        subscription_ids: [
-          ...$("#grant-subscriptions").querySelectorAll("input:checked"),
-        ].map((n) => n.value),
-        allowed_operations: allowed,
-        limit_minor: bankAmount("#grant-limit", true),
-        single_minor: bankAmount("#grant-single", true),
-        minimum_minor: bankAmount("#grant-minimum", true),
-        expires_at: new Date($("#grant-expiry").value).getTime() / 1000,
-        password: $("#grant-password").value,
-      };
-      $("#grant-password").value = "";
       try {
         await api("/api/bank/grants", {
           method: "POST",
           body: JSON.stringify(values),
         });
+      } catch (error) {
+        grantError(error.message);
+        return;
       } finally {
         delete values.password;
         $("#grant-password").value = "";
       }
       if (state.user !== user) return;
+      $("#grant-form").reset();
+      updateGrantScopeState();
+      setDefaultGrantExpiry();
+      grantError("");
       await loadBankData();
-      bankMessage(
-        "预授权已创建。需要自主执行时，请在助手中明确选择并应用到本对话。",
-      );
+      bankMessage("预授权已创建。可在授权卡片点击“在本对话启用”。");
     });
   });
-  $("#agent-policy-mode").addEventListener("change", updateBankButtons);
-  $("#agent-policy-grant").addEventListener("change", updateBankButtons);
+  EXPIRY_FIELDS.forEach(([id, length], index) => {
+    const input = $(id);
+    input?.addEventListener("input", () => formatExpiryField(input, index));
+    input?.addEventListener("blur", () => {
+      if (input.value && input.value.length < length)
+        input.value = input.value.padStart(length, "0");
+    });
+  });
+  for (const id of ["#grant-limit", "#grant-single", "#grant-minimum"]) {
+    $(id)?.addEventListener("blur", () => normalizeAmount(id));
+    $(id)?.addEventListener("change", () => normalizeAmount(id));
+  }
+  $("#transfer-amount")?.addEventListener("blur", () =>
+    normalizeAmount("#transfer-amount"),
+  );
+  for (const id of ["#grant-transfer", "#grant-cancel"]) {
+    $(id).addEventListener("change", updateGrantScopeState);
+  }
+  for (const [listId, summaryId] of [
+    ["#grant-payees", "#grant-payees-summary"],
+    ["#grant-subscriptions", "#grant-subscriptions-summary"],
+  ]) {
+    $(listId).addEventListener("change", () =>
+      updateMultiSummary(listId, summaryId),
+    );
+  }
+  document.addEventListener("click", (event) => {
+    for (const box of document.querySelectorAll(".multi-select[open]"))
+      if (!box.contains(event.target)) box.open = false;
+  });
+  $("#agent-policy-mode").addEventListener("change", () => {
+    const select = $("#agent-policy-grant");
+    if ($("#agent-policy-mode").value === "PREAUTHORIZED" && !select.value) {
+      const firstActive = [...select.options].find((option) => option.value);
+      if (firstActive) select.value = firstActive.value;
+    }
+    updatePolicyStatusText();
+    updatePolicySummary();
+    updateBankButtons();
+    applyConversationPolicy();
+  });
+  $("#agent-policy-grant").addEventListener("change", () => {
+    updatePolicyStatusText();
+    updatePolicySummary();
+    updateBankButtons();
+    applyConversationPolicy();
+  });
+  $("#agent-policy-create-grant")?.addEventListener("click", () => {
+    setPage("banking");
+    const settings = $("#grant-settings");
+    if (settings) settings.open = true;
+    $("#grant-form")?.scrollIntoView({ block: "start", behavior: "smooth" });
+  });
+  $("#agent-policy-view")?.addEventListener("click", () => {
+    const grantId = $("#agent-policy-grant").value;
+    const grant = state.grants.find((item) => item.id === grantId);
+    if (!grant) return;
+    setPage("banking");
+    const settings = $("#grant-settings");
+    if (settings) settings.open = true;
+    fillGrantFormFromGrant(grant);
+    $("#grant-form")?.scrollIntoView({ block: "center", behavior: "smooth" });
+    const card = document.querySelector(
+      `.grant-card[data-grant-id="${grantId}"]`,
+    );
+    if (card) {
+      card.classList.add("grant-highlight");
+      setTimeout(() => card.classList.remove("grant-highlight"), 1600);
+    }
+  });
   $("#agent-policy-form").addEventListener("submit", (event) => {
     event.preventDefault();
-    runBank(async (user) => {
-      const conversation = state.conversation,
-        mode = $("#agent-policy-mode").value;
-      const grantId =
-        mode === "PREAUTHORIZED" ? $("#agent-policy-grant").value : null;
-      if (mode === "PREAUTHORIZED" && !grantId)
-        throw new Error("请选择一份有效预授权，系统不会自动选择。");
-      const policy = await api(`/api/conversations/${conversation}/policy`, {
-        method: "POST",
-        body: JSON.stringify({ mode, grant_id: grantId }),
-      });
-      if (state.user === user && state.conversation === conversation) {
-        state.executionPolicy = policy;
-        await loadBankData();
-      }
-    });
+    applyConversationPolicy();
   });
   $("#operation-acknowledged").addEventListener("change", updateBankButtons);
   $("#operation-dialog-close").addEventListener("click", () => {

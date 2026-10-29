@@ -69,7 +69,6 @@
             />
             <div class="password-label">
               <label for="password">密码</label>
-              <span>本地模拟身份认证</span>
             </div>
             <div class="password-wrap">
               <input
@@ -87,7 +86,12 @@
                 aria-label="显示密码"
                 aria-pressed="false"
               >
-                显示
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"
+                  />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
               </button>
             </div>
             <p id="login-error" class="error" role="alert"></p>
@@ -102,17 +106,8 @@
               </svg>
             </button>
           </form>
-          <p class="login-security">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path
-                d="M12 3.5l7 2.6v5.1c0 4.4-2.9 7.7-7 9.3-4.1-1.6-7-4.9-7-9.3V6.1z"
-              />
-              <path d="m9 12 2.2 2.2L15.5 10" />
-            </svg>
-            密码仅用于本地登录，不会发送给模型
-          </p>
           <div class="login-footnote">
-            竞赛开发环境 <span>·</span> 不连接真实银行或支付渠道
+            密码仅用于本地登录 <span>·</span> 不连接真实银行或支付渠道
           </div>
         </div>
         <p class="login-bottom">
@@ -136,7 +131,13 @@
             aria-current="page"
           >
             <span class="nav-icon" aria-hidden="true">
-              <svg class="icon" viewBox="0 0 24 24">
+              <svg class="icon icon-default" viewBox="0 0 24 24">
+                <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+                <rect x="13.5" y="3.5" width="7" height="7" rx="2" />
+                <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+                <rect x="13.5" y="13.5" width="7" height="7" rx="2" />
+              </svg>
+              <svg class="icon icon-active icon-filled" viewBox="0 0 24 24">
                 <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
                 <rect x="13.5" y="3.5" width="7" height="7" rx="2" />
                 <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
@@ -147,37 +148,62 @@
           </button>
           <button class="nav-item" data-page="accounts">
             <span class="nav-icon" aria-hidden="true">
-              <svg class="icon" viewBox="0 0 24 24">
+              <svg class="icon icon-default" viewBox="0 0 24 24">
                 <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
                 <path d="M3 10h18M6.5 14.5h4" />
+              </svg>
+              <svg class="icon icon-active icon-filled" viewBox="0 0 24 24">
+                <rect x="3" y="5.5" width="18" height="13" rx="2.5" />
+                <rect
+                  class="icon-cut"
+                  x="3.5"
+                  y="9.6"
+                  width="17"
+                  height="1.8"
+                />
               </svg>
             </span>
             我的账户
           </button>
           <button class="nav-item" data-page="activity">
             <span class="nav-icon" aria-hidden="true">
-              <svg class="icon" viewBox="0 0 24 24">
-                <path d="M4 8h13M14 5l3 3-3 3" />
-                <path d="M20 16H7M10 13l-3 3 3 3" />
+              <svg class="icon icon-default" viewBox="0 0 24 24">
+                <path d="M6 3.5h12A1.5 1.5 0 0 1 19.5 5v16l-3-2-3 2-3-2-3 2V5A1.5 1.5 0 0 1 6 3.5z" />
+                <path d="M8.5 8.5h7M8.5 12h4" />
+              </svg>
+              <svg class="icon icon-active icon-filled" viewBox="0 0 24 24">
+                <path d="M6 3.5h12A1.5 1.5 0 0 1 19.5 5v16l-3-2-3 2-3-2-3 2V5A1.5 1.5 0 0 1 6 3.5z" />
+                <path class="icon-cut" d="M8.5 8.5h7M8.5 12h4" />
               </svg>
             </span>
             收支明细
           </button>
           <button class="nav-item" data-page="assistant">
             <span class="nav-icon" aria-hidden="true">
-              <svg class="icon" viewBox="0 0 24 24">
+              <svg class="icon icon-default" viewBox="0 0 24 24">
                 <path
                   d="M20 11.5a7 7 0 0 1-7 7H9.5L5 21v-3.6a7 7 0 0 1-2-12.3 7 7 0 0 1 13 6.4z"
                 />
                 <path d="M9 10.5h6M9 14h3.5" />
+              </svg>
+              <svg class="icon icon-active icon-filled" viewBox="0 0 24 24">
+                <path
+                  d="M20 11.5a7 7 0 0 1-7 7H9.5L5 21v-3.6a7 7 0 0 1-2-12.3 7 7 0 0 1 13 6.4z"
+                />
+                <path class="icon-cut" d="M9 10.5h6M9 14h3.5" />
               </svg>
             </span>
             AI 助手
           </button>
           <button class="nav-item" data-page="banking" title="业务办理">
             <span class="nav-icon" aria-hidden="true">
-              <svg class="icon" viewBox="0 0 24 24">
-                <path d="M4 8h15m-4-4 4 4-4 4M20 16H5m4-4-4 4 4 4" />
+              <svg class="icon icon-default" viewBox="0 0 24 24">
+                <path d="M4 12 20 5l-6.3 15-2.5-6.2L4 12z" />
+                <path d="m11.2 13.8 3.6-3.6" />
+              </svg>
+              <svg class="icon icon-active icon-filled" viewBox="0 0 24 24">
+                <path d="M4 12 20 5l-6.3 15-2.5-6.2L4 12z" />
+                <path class="icon-cut" d="m11.2 13.8 3.6-3.6" />
               </svg>
             </span>
             业务办理
@@ -186,7 +212,7 @@
         <div class="sidebar-bottom">
           <div class="sandbox-note">
             <span class="live-dot"></span> 模拟银行环境
-            <p>使用虚构资金。<br />逐笔确认，或明确限定预授权。</p>
+            <p>使用虚构资金</p>
           </div>
           <button id="settings-open" class="nav-item">
             <span class="nav-icon" aria-hidden="true">
@@ -451,9 +477,7 @@
               </section>
               <details class="bank-card" id="grant-settings">
                 <summary>预授权管理</summary>
-                <p class="muted">
-                  所有范围和额度由你明确填写。创建后，还需在助手中选择用于当前对话。
-                </p>
+                <p class="muted">范围与额度须明确填写；创建后在授权卡片或助手策略面板启用。</p>
                 <form id="grant-form" class="bank-form">
                   <label for="grant-source">付款账户</label>
                   <select id="grant-source" required>
@@ -471,14 +495,33 @@
                       />取消指定订阅</label
                     >
                   </fieldset>
-                  <fieldset>
-                    <legend>允许的收款账户</legend>
-                    <div id="grant-payees" class="scope-options"></div>
-                  </fieldset>
-                  <fieldset>
-                    <legend>允许取消的订阅</legend>
-                    <div id="grant-subscriptions" class="scope-options"></div>
-                  </fieldset>
+                  <div class="bank-form-grid">
+                    <div>
+                      <span class="field-label">允许的收款账户</span>
+                      <details class="multi-select" id="grant-payees-select">
+                        <summary id="grant-payees-summary">未选择</summary>
+                        <div
+                          id="grant-payees"
+                          class="multi-select-menu scope-options"
+                        ></div>
+                      </details>
+                    </div>
+                    <div>
+                      <span class="field-label">允许取消的订阅</span>
+                      <details
+                        class="multi-select"
+                        id="grant-subscriptions-select"
+                      >
+                        <summary id="grant-subscriptions-summary"
+                          >未选择</summary
+                        >
+                        <div
+                          id="grant-subscriptions"
+                          class="multi-select-menu scope-options"
+                        ></div>
+                      </details>
+                    </div>
+                  </div>
                   <div class="bank-form-grid">
                     <div>
                       <label for="grant-limit">累计支出上限（元）</label
@@ -486,7 +529,7 @@
                         id="grant-limit"
                         inputmode="decimal"
                         required
-                        placeholder="需明确填写"
+                        placeholder="如 1000.00"
                       />
                     </div>
                     <div>
@@ -495,7 +538,7 @@
                         id="grant-single"
                         inputmode="decimal"
                         required
-                        placeholder="需明确填写"
+                        placeholder="如 1000.00"
                       />
                     </div>
                     <div>
@@ -504,19 +547,63 @@
                         id="grant-minimum"
                         inputmode="decimal"
                         required
-                        placeholder="需明确填写"
+                        placeholder="如 1000.00"
                       />
                     </div>
                     <div>
-                      <label for="grant-expiry">授权截止时间（本机时间）</label
-                      ><input
-                        id="grant-expiry"
-                        type="datetime-local"
-                        required
-                      />
+                      <label id="grant-expiry-label" for="grant-expiry-year"
+                        >授权截止时间（东八区 UTC+8）</label
+                      >
+                      <div
+                        class="time-input"
+                        id="grant-expiry-group"
+                        role="group"
+                        aria-labelledby="grant-expiry-label"
+                      >
+                        <input
+                          id="grant-expiry-year"
+                          inputmode="numeric"
+                          maxlength="4"
+                          placeholder="YYYY"
+                          aria-label="年"
+                          required
+                        /><span class="time-sep">-</span>
+                        <input
+                          id="grant-expiry-month"
+                          inputmode="numeric"
+                          maxlength="2"
+                          placeholder="MM"
+                          aria-label="月"
+                          required
+                        /><span class="time-sep">-</span>
+                        <input
+                          id="grant-expiry-day"
+                          inputmode="numeric"
+                          maxlength="2"
+                          placeholder="DD"
+                          aria-label="日"
+                          required
+                        /><span class="time-sep time-space"></span>
+                        <input
+                          id="grant-expiry-hour"
+                          inputmode="numeric"
+                          maxlength="2"
+                          placeholder="HH"
+                          aria-label="时"
+                          required
+                        /><span class="time-sep">:</span>
+                        <input
+                          id="grant-expiry-minute"
+                          inputmode="numeric"
+                          maxlength="2"
+                          placeholder="MM"
+                          aria-label="分"
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
-                  <label for="grant-password">重新验证登录密码</label>
+                  <label for="grant-password">验证登录密码</label>
                   <input
                     id="grant-password"
                     type="password"
@@ -524,9 +611,8 @@
                     maxlength="128"
                     required
                   />
-                  <p class="field-help">
-                    密码只用于后端再认证，不进入模型。收入不补回已用额度，撤销不回滚已完成交易。
-                  </p>
+                  <p id="grant-info" class="field-help" hidden></p>
+                  <p id="grant-error" class="error" role="alert" hidden></p>
                   <button
                     id="grant-submit"
                     class="button primary"
@@ -571,6 +657,18 @@
                   <span id="agent-mode">正在连接…</span>
                 </div>
                 <button
+                  id="agent-safety-help"
+                  class="icon-button info-button"
+                  type="button"
+                  aria-label="默认逐笔确认，聊天文字不代替授权"
+                  data-tooltip="默认逐笔确认 · 聊天文字不代替授权"
+                >
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 11v6M12 7.4v.6" />
+                  </svg>
+                </button>
+                <button
                   id="new-chat"
                   class="icon-button"
                   aria-label="新建对话"
@@ -581,16 +679,17 @@
                   </svg>
                 </button>
               </div>
-              <div class="assistant-safety">
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M12 3.5l7 2.6v5.1c0 4.4-2.9 7.7-7 9.3-4.1-1.6-7-4.9-7-9.3V6.1z"
-                  />
-                  <path d="m9 12 2.2 2.2L15.5 10" />
-                </svg>
-                <span id="agent-safety">默认逐笔确认 · 聊天文字不代替授权</span>
-              </div>
-              <form id="agent-policy-form" class="agent-policy-form">
+              <details class="agent-policy-panel" id="agent-policy-panel">
+                <summary>
+                  <span>执行方式与预授权</span>
+                  <span id="agent-policy-summary" class="agent-policy-summary"
+                    >每笔人工确认</span
+                  >
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </summary>
+                <form id="agent-policy-form" class="agent-policy-form">
                 <label class="sr-only" for="agent-policy-mode"
                   >当前对话执行方式</label
                 >
@@ -605,20 +704,24 @@
                   <option value="">请选择有效预授权</option>
                 </select>
                 <button
-                  id="agent-policy-apply"
+                  id="agent-policy-create-grant"
                   class="button secondary"
-                  type="submit"
+                  type="button"
+                  hidden
                 >
-                  应用到本对话
+                  去业务办理创建预授权
                 </button>
-                <p id="agent-policy-status" role="status">
-                  默认逐笔确认，不会自动创建授权。
-                </p>
-                <details id="agent-policy-preview" hidden>
-                  <summary>核对所选授权范围</summary>
-                  <p id="agent-policy-details"></p>
-                </details>
-              </form>
+                <button
+                  id="agent-policy-view"
+                  class="text-button"
+                  type="button"
+                  hidden
+                >
+                  查看授权详情
+                </button>
+                <p id="agent-policy-status" role="status"></p>
+                </form>
+              </details>
               <div
                 id="chat-log"
                 class="chat-log"
@@ -695,10 +798,7 @@
           设为 model 后重启。密钥无需输入浏览器。
         </dd>
       </dl>
-      <p class="muted">
-        详细步骤见
-        docs/local-development.md。模型模式会将本人的问题及工具查询到的模拟财务数据发给所配置的供应商。
-      </p>
+      <p class="muted">详细步骤见 docs/local-development.md。</p>
       <button id="settings-done" class="button primary">知道了</button>
     </dialog>
     <dialog

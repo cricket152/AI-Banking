@@ -24,7 +24,7 @@ from ai_banking.banking.schema import ready
 from ai_banking.banking.service import Bank, BankError
 from ai_banking.config import Settings
 from ai_banking.store import Store
-from ai_banking.tracing import emit, trace_scope
+from ai_banking.tracing import CONTEXT, emit, trace_scope
 
 WEB = Path(__file__).parent / "web"
 
@@ -371,6 +371,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                     "mode": settings.agent_mode,
                     "operation_task": cached_operation_task,
                     "cached": True,
+                    "context": None,
                 }
             busy = db.execute(
                 "UPDATE conversations SET busy_until = ? WHERE id = ? AND busy_until <= ?",
@@ -379,8 +380,8 @@ def create_app(settings: Settings | None = None, clock=time.time):
             if not busy.rowcount:
                 raise AuthError("CONVERSATION_BUSY", 409)
             rows = db.execute(
-                "SELECT question, answer FROM chat_turns WHERE conversation_id = ? "
-                "AND status = 'succeeded' ORDER BY id DESC LIMIT 12",
+                "SELECT id, question, answer FROM chat_turns WHERE conversation_id = ? "
+                "AND status = 'succeeded' ORDER BY id DESC LIMIT 60",
                 (body.conversation_id,),
             ).fetchall()
             db.execute(
@@ -390,12 +391,12 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 (body.conversation_id, body.request_id, body.message, clock()),
             )
         history_rows = list(reversed([dict(row) for row in rows]))
-        # 只裁剪完整回合，不保留悬空工具调用；资金事实始终重新查询后端。
-        while len(json.dumps(history_rows, ensure_ascii=False).encode()) > 20000:
-            history_rows.pop(0)
+        # 完整回合交给上下文装配器按预算压缩；资金事实始终重新查询后端。
         try:
+            context_info = None
             with trace_scope(body.request_id, body.conversation_id):
                 answer, traces = await agent.answer(context, body.message, history_rows)
+                context_info = CONTEXT.get()
             auth.assert_current(context)
             with store.transaction() as db:
                 db.execute(
@@ -409,6 +410,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 "mode": settings.agent_mode,
                 "snapshot": agent.snapshot(context),
                 "operation_task": agent.operation_checkpoint(context, body.conversation_id),
+                "context": context_info,
             }
         except Exception as error:
             known_error = isinstance(error, (AgentError, AuthError))
@@ -423,6 +425,13 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 )
             if isinstance(error, AuthError):
                 raise
+            if code == "CONTEXT_BUDGET_EXCEEDED":
+                # 无法安全恢复上下文时暂停该对话的新增写操作，避免在信息不完整时继续执行。
+                try:
+                    with trace_scope(body.request_id, body.conversation_id):
+                        agent.operations.pause(context, body.conversation_id, code)
+                except Exception:
+                    pass
             return JSONResponse({"code": code}, 502 if isinstance(error, AgentError) else 500)
         finally:
             with store.transaction() as db:
