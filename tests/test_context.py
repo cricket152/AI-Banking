@@ -222,4 +222,81 @@ def test_chat_compresses_long_history_and_keeps_latest_question(tmp_path):
     assert state_data["conversation_goal"]["kind"] == "transfer"
     assert state_data["recovery"]
     assert state_data["operation_task"]["steps"][0]["state"] == "awaiting_confirmation"
+    roles = [message.get("role") for message in messages if message.get("role")]
+    assert roles[0] == "system"
+    assert roles[-1] == roles[-2] == "user"
+    assert roles.count("assistant") == 3
     assert messages_tokens(messages) >= 1
+
+
+def test_budget_failure_pauses_new_writes_until_policy_reselected(tmp_path):
+    settings = Settings(database=tmp_path / "paused.sqlite3", local_http=True)
+    app = create_app(settings, clock=lambda: 1800000000.0)
+    tight = replace(
+        settings,
+        agent_mode="model",
+        model="test-model",
+        model_key="test-only-key",
+        model_url="https://api.example.com/v1",
+        context_tokens=1024,
+        max_output_tokens=256,
+        context_tool_reserve=0,
+    )
+    with TestClient(app, base_url=ORIGIN) as client:
+        app.state.auth.create_user("alice", PASSWORD)
+
+        def post(path, body):
+            token = client.get("/api/auth/csrf", headers={"X-Requested-With": "AI-Banking"}).json()[
+                "csrf_token"
+            ]
+            return client.post(
+                path,
+                json=body,
+                headers={"Origin": ORIGIN, "X-CSRF-Token": token},
+            )
+
+        assert (
+            post("/api/auth/login", {"username": "alice", "password": PASSWORD}).status_code == 200
+        )
+        conversation_id = post("/api/conversations", {}).json()["id"]
+        app.state.agent.settings = tight
+        response = post(
+            "/api/chat",
+            {
+                "conversation_id": conversation_id,
+                "request_id": uuid4().hex,
+                "message": "查询我的账户余额",
+            },
+        )
+        assert response.status_code == 502
+        assert response.json()["code"] == "CONTEXT_BUDGET_EXCEEDED"
+
+        context = app.state.auth.authenticate(client.cookies.get("ai_banking_session"))
+        accounts = app.state.store.accounts(context.user_id)
+        checking = next(item for item in accounts if item["kind"] == "checking")
+        savings = next(item for item in accounts if item["kind"] == "savings")
+        payee = next(
+            item for item in app.state.bank.payees(context) if item["account_id"] == savings["id"]
+        )
+        arguments = {
+            "source_id": checking["id"],
+            "payee_id": payee["id"],
+            "amount_minor": 100,
+            "currency": "CNY",
+        }
+        with trace_scope(uuid4().hex, conversation_id):
+            blocked = app.state.agent.tool(context, "prepare_transfer", arguments)
+        assert blocked["error"] == "TASK_PAUSED"
+
+        assert (
+            post(
+                f"/api/conversations/{conversation_id}/policy",
+                {"mode": "HUMAN_APPROVAL", "grant_id": None},
+            ).status_code
+            == 200
+        )
+        with trace_scope(uuid4().hex, conversation_id):
+            prepared = app.state.agent.tool(context, "prepare_transfer", arguments)
+        assert prepared["operation"]["state"] == "awaiting_confirmation"
+        with app.state.store.transaction() as db:
+            assert db.execute("SELECT COUNT(*) FROM bank_ledger").fetchone()[0] == 0

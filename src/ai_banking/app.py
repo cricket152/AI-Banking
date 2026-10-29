@@ -421,6 +421,13 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 )
             if isinstance(error, AuthError):
                 raise
+            if code == "CONTEXT_BUDGET_EXCEEDED":
+                # 无法安全恢复上下文时暂停该对话的新增写操作，避免在信息不完整时继续执行。
+                try:
+                    with trace_scope(body.request_id, body.conversation_id):
+                        agent.operations.pause(context, body.conversation_id, code)
+                except Exception:
+                    pass
             return JSONResponse({"code": code}, 502 if isinstance(error, AgentError) else 500)
         finally:
             with store.transaction() as db:

@@ -1,3 +1,4 @@
+import html
 import json
 import threading
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
@@ -469,3 +470,88 @@ def test_model_round_budget_is_bounded_without_hiding_partial_state(workflow_env
     assert env.client.get("/api/bank/operations").json()["operations"] == []
     turns = env.client.get(f"/api/conversations/{env.conversation}").json()["turns"]
     assert turns[-1]["status"] == "failed"
+
+
+@pytest.mark.parametrize(
+    "point,expected_state",
+    [("after_debit", "outcome_unknown"), ("after_commit", "succeeded")],
+)
+def test_context_compression_preserves_goal_recovery_and_budget(
+    workflow_env, point, expected_state
+):
+    env = workflow_env
+    select_policy(env, create_grant(env))
+
+    def fail(current):
+        if current == point:
+            raise TimeoutError("test-only injected interruption")
+
+    env.app.state.agent.bank.fault_hook = fail
+    failed = call(env)
+    assert failed["error"] in {"OUTCOME_UNKNOWN", "RESULT_UNAVAILABLE"}
+    operation_id = failed["operation_id"]
+    env.app.state.agent.bank.fault_hook = None
+
+    with env.app.state.store.transaction() as db:
+        for index in range(20):
+            db.execute(
+                "INSERT INTO chat_turns (conversation_id, request_id, question, answer, "
+                "status, created_at) VALUES (?, ?, ?, ?, 'succeeded', ?)",
+                (
+                    env.conversation,
+                    uuid4().hex,
+                    f"历史问题{index}：账单与订阅",
+                    "历史答复：" + "较长的历史答复。" * 20,
+                    1800000000.0 + index,
+                ),
+            )
+
+    captured = []
+
+    async def completion(_client, messages):
+        captured.append(json.loads(json.dumps(messages)))
+        return "已核对后端状态", [], []
+
+    env.app.state.agent.settings = replace(
+        env.settings,
+        agent_mode="model",
+        model="test-model",
+        model_key="test-only-key",
+        model_url="https://api.example.com/v1",
+        context_tokens=6000,
+        max_output_tokens=256,
+        context_tool_reserve=0,
+        context_recent_turns=3,
+        context_summary_tokens=300,
+    )
+    env.app.state.agent.completion = completion
+    response = question(env.client, "现在这笔转账是什么状态？", env.conversation)
+    assert response.status_code == 200, response.text
+    assert captured, "模型未被调用"
+    messages = captured[0]
+    assert messages[-1]["content"] == "现在这笔转账是什么状态？"
+    assert messages[-2]["content"].startswith("<bank_state>")
+    state = json.loads(
+        html.unescape(messages[-2]["content"])
+        .removeprefix("<bank_state>")
+        .removesuffix("</bank_state>")
+    )
+    assert state["conversation_goal"]["operation_id"] == operation_id
+    assert state["conversation_goal"]["amount_minor"] == 10000
+    step = state["operation_task"]["steps"][0]
+    assert step["id"] == operation_id and step["state"] == expected_state
+    assert bool(state["recovery"]) == (expected_state == "outcome_unknown")
+
+    with env.app.state.store.transaction() as db:
+        assert db.execute("SELECT COUNT(*) FROM bank_operations").fetchone()[0] == 1
+        assert db.execute("SELECT COUNT(*) FROM bank_ledger").fetchone()[0] == (
+            2 if expected_state == "succeeded" else 0
+        )
+    grant = env.client.get("/api/bank/grants").json()["grants"][0]
+    if expected_state == "succeeded":
+        assert grant["spent_minor"] == 10000 and grant["reserved_minor"] == 0
+    else:
+        assert grant["spent_minor"] == 0 and grant["reserved_minor"] == 10000
+        assert (
+            call(env, arguments={**env.arguments, "amount_minor": 1000})["error"] == "TASK_PAUSED"
+        )
