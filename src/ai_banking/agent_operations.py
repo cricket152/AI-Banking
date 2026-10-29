@@ -81,6 +81,59 @@ class AgentOperations:
             )
         return result
 
+    def goal(self, context, conversation_id):
+        """返回该对话最近一次结构化目标；不依赖可能被压缩的聊天历史。"""
+        if not conversation_id or not self.bank.available():
+            return None
+        self.request_id(context, conversation_id)
+        with self.store.transaction() as db:
+            rows = db.execute(
+                "SELECT detail FROM bank_events WHERE owner_id=? "
+                "AND event='agent_conversation_goal' ORDER BY seq DESC",
+                (context.user_id,),
+            ).fetchall()
+        for row in rows:
+            detail = json.loads(row["detail"])
+            if detail.get("conversation_id") == conversation_id:
+                return detail
+        return None
+
+    def _record_goal(self, context, conversation_id, kind, arguments, operation):
+        goal = {
+            "conversation_id": conversation_id,
+            "kind": kind,
+            "source_id": arguments.get("source_id"),
+            "target_id": arguments.get("payee_id") or arguments.get("subscription_id"),
+            "amount_minor": arguments.get("amount_minor"),
+            "currency": arguments.get("currency", "CNY"),
+            "operation_id": operation["id"],
+        }
+        with self.store.transaction() as db:
+            self.bank._guard(db, context)
+            row = db.execute(
+                "SELECT detail FROM bank_events WHERE owner_id=? "
+                "AND event='agent_conversation_goal' ORDER BY seq DESC LIMIT 1",
+                (context.user_id,),
+            ).fetchone()
+            if row:
+                previous = json.loads(row["detail"])
+                if (
+                    previous.get("conversation_id") == conversation_id
+                    and previous.get("operation_id") == operation["id"]
+                ):
+                    return
+            db.execute(
+                "INSERT INTO bank_events (owner_id,operation_id,event,detail,created_at) "
+                "VALUES (?,?,?,?,?)",
+                (
+                    context.user_id,
+                    None,
+                    "agent_conversation_goal",
+                    json.dumps(goal, ensure_ascii=False),
+                    self.store.clock(),
+                ),
+            )
+
     def select_policy(self, context, conversation_id, mode, grant_id):
         self.request_id(context, conversation_id)
         if mode not in {"HUMAN_APPROVAL", "PREAUTHORIZED"}:
@@ -155,6 +208,7 @@ class AgentOperations:
                 if policy["mode"] == "PREAUTHORIZED" and error.code != "STEP_PARAMETERS_CONFLICT":
                     self.pause(context, conversation_id, error.code)
                 raise
+        self._record_goal(context, conversation_id, kind, arguments, operation)
         if (
             operation["state"] == "authorized"
             and operation["mode"] == "PREAUTHORIZED"

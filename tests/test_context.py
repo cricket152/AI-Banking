@@ -1,5 +1,6 @@
 """T15 上下文预算、确定性摘录与安全恢复测试。"""
 
+import html
 import json
 from dataclasses import replace
 from uuid import uuid4
@@ -20,6 +21,7 @@ from ai_banking.context import (
     projected_tokens,
     summarize_turns,
 )
+from ai_banking.tracing import trace_scope
 
 ORIGIN = "http://127.0.0.1:8000"
 PASSWORD = "context fixture password"
@@ -173,6 +175,27 @@ def test_chat_compresses_long_history_and_keeps_latest_question(tmp_path):
                         1800000000.0 + index,
                     ),
                 )
+        auth_context = app.state.auth.authenticate(client.cookies.get("ai_banking_session"))
+        accounts = app.state.store.accounts(auth_context.user_id)
+        checking = next(item for item in accounts if item["kind"] == "checking")
+        savings = next(item for item in accounts if item["kind"] == "savings")
+        payee = next(
+            item
+            for item in app.state.bank.payees(auth_context)
+            if item["account_id"] == savings["id"]
+        )
+        with trace_scope(uuid4().hex, conversation_id):
+            prepared = app.state.agent.tool(
+                auth_context,
+                "prepare_transfer",
+                {
+                    "source_id": checking["id"],
+                    "payee_id": payee["id"],
+                    "amount_minor": 100,
+                    "currency": "CNY",
+                },
+            )
+        assert prepared["operation"]["state"] == "awaiting_confirmation"
         app.state.agent.settings = agent_settings
         app.state.agent.completion = completion
         response = post(
@@ -191,4 +214,12 @@ def test_chat_compresses_long_history_and_keeps_latest_question(tmp_path):
     assert any("<history_summary>" in message.get("content", "") for message in messages)
     assert messages[-1]["content"] == "最新问题：查询我的账户余额"
     assert messages[-2]["content"].startswith("<bank_state>")
+    state_message = messages[-2]["content"]
+    state_data = json.loads(
+        html.unescape(state_message.removeprefix("<bank_state>").removesuffix("</bank_state>"))
+    )
+    assert state_data["conversation_goal"]["amount_minor"] == 100
+    assert state_data["conversation_goal"]["kind"] == "transfer"
+    assert state_data["recovery"]
+    assert state_data["operation_task"]["steps"][0]["state"] == "awaiting_confirmation"
     assert messages_tokens(messages) >= 1

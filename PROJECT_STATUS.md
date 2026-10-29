@@ -30,6 +30,7 @@
 - 已有观察层：脱敏终端轨迹及可选 LangSmith，后台有界上传与业务解耦；默认不上传正文，异常不触发交易重试。
 - 旧库此前经用户明确批准备份并新增 9 张银行表；7 张既有业务表逐行未变，未改原密码、余额、流水或聊天，未创建授权。备份与运行库留在忽略目录。
 - T15 初始版（2026-10-29 本机）：新增 `src/ai_banking/context.py` 上下文装配器：按 `MODEL_CONTEXT_TOKENS` 估算预算，系统提示与工具定义保持稳定前缀，最近 12 个完整回合保留原文，更早回合压成带轮次编号、最初目标与省略数量的确定性摘录；`bank_state` 与最新问题固定在末尾；工具结果超过 `MODEL_TOOL_OUTPUT_CHARS` 截断并提示分页；预算无法安全容纳时返回 `CONTEXT_BUDGET_EXCEEDED`，本轮不执行新操作并保留检查点。新增 `tests/test_context.py` 8 项（含 API 级长历史压缩）。
+- T15 增量（2026-10-29 本机）：准备操作时在 `bank_events` 持久化 `agent_conversation_goal`（对话、操作类型、付款账户、目标、金额、币种、操作 ID），与 `operation_task` 一起进入 `bank_state`；当前对话有未完成步骤时附带 `recovery` 提示，要求先查询原操作、不重建任务或重发资金。上下文压缩后目标和任务状态不依赖聊天历史；新增回归覆盖压缩+待确认操作。
 - 助手页布局（2026-10-29 本机）：页面改为全高对话布局并隐藏大标题区，执行方式 / 预授权收进可折叠面板，建议按钮改为紧凑一行；1440×900 下助手页对话区约 86px→424px、工作台侧栏约 227px→508px；820 / 390 宽度截图无横向溢出。
 - 理财目录与卡片只读扩展（2026-10-29 本机）：新增 `src/ai_banking/catalog.py` 与只读工具 `list_cards`（按账户派生、卡号脱敏、仅本人）、`list_wealth_products`（3 个模拟产品、R1–R3、模拟收益区间）；系统提示补充"仅查询"边界；没有资金变动或状态写入工具。新增 `tests/test_catalog.py` 6 项。
 - 前端体验与交互修复（2026-10-29 本机）：助手页改为全宽布局；回答按安全 Markdown 渲染（标题 / 列表 / 表格 / 代码），消息宽度随内容自适应；工具轨迹不再显示给用户；安全提示改为标题旁图标悬浮；页面切换加入淡入动画；策略选择改为选中即生效。
@@ -83,6 +84,7 @@
 - 2026-10-29 本机（场景扩展）：新增 `src/ai_banking/catalog.py`、`tests/test_catalog.py`；更新 `agent.py`、`tests/test_agent_intents.py`、`docs/agent-operations.md`、`README.md` 与本状态文件。
 - 2026-10-29 本机（交互与预授权修复）：更新 `agent.py` 的对话级状态、`web/index.html`、`web/app.css`、`web/app.js`、`web/banking.js`、`.env.example`、`docs/local-development.md`、`docs/agent-operations.md`、`docs/agent-evaluation.md`、`README.md` 与本状态文件；未新增依赖、未改数据库结构。
 - 2026-10-29 本机（表单细节与主题）：更新 `web/index.html`、`web/app.css`、`web/app.js`、`web/banking.js`、`docs/agent-operations.md` 与本状态文件；未新增依赖、未改数据库结构。
+- 2026-10-29 本机（T15 增量）：更新 `agent_operations.py`、`agent.py`、`tests/test_context.py`、`tests/test_agent_intents.py`、`docs/agent-operations.md` 与本状态文件；未增表、未新增依赖。
 
 ## 已确认设计决策
 
@@ -125,6 +127,7 @@
 - 2026-10-29 预授权表单 UI 验证（Chromium 1440×960）：登录页仅一个密码显示控件；未勾选操作时收款/订阅下拉禁用，勾选转账后收款启用；下拉多选勾选 2 项显示"已选 2 项"；过去时间提交显示"截止时间必须晚于当前时间（东八区 UTC+8）"；未来时间创建成功，授权卡片只显示"模拟银行 · 尾号 xxxx"，无随机 ID。完整 `pytest -q` 183 项通过，Ruff、JS 语法与差异检查通过。
 - 2026-10-29 LangSmith 真实连接：`observability check` 上传成功；真实对话后 `/api/health` 的 langsmith 为 `connected`、`sent_traces:1`；Tracing Only Key 无读取项目权限（403 属预期）。
 - 2026-10-29 表单与交互验证：截止时间分段默认东八区次日；逐段输入 `2026/10/30/18/00` 可拼成 `2026-10-30 18:00`；金额 `1000`→`1000.00`、`500.5`→`500.50`；过去时间内联报错、未来时间创建成功；选择预授权后自动生效（无"应用"按钮），"查看授权详情"跳转业务办理并把授权额度、时间、范围回填到表单；登录为眼睛图标；导航默认/选中图标切换；暖色主题恢复；1440 与 390 宽度均无溢出。完整 `pytest -q` 183 项通过。
+- 2026-10-29 T15 增量：持久化结构化目标并附加 `recovery` 提示；压缩场景测试确认 `bank_state` 同时包含 `conversation_goal`、`operation_task` 与 `recovery`，待确认操作在压缩后仍可见。完整 `pytest -q` 184 项通过；Ruff、JS 语法与差异检查通过。
 
 ## 后续计划
 
