@@ -128,6 +128,7 @@
 - 2026-10-29 LangSmith 真实连接：`observability check` 上传成功；真实对话后 `/api/health` 的 langsmith 为 `connected`、`sent_traces:1`；Tracing Only Key 无读取项目权限（403 属预期）。
 - 2026-10-29 表单与交互验证：截止时间分段默认东八区次日；逐段输入 `2026/10/30/18/00` 可拼成 `2026-10-30 18:00`；金额 `1000`→`1000.00`、`500.5`→`500.50`；过去时间内联报错、未来时间创建成功；选择预授权后自动生效（无"应用"按钮），"查看授权详情"跳转业务办理并把授权额度、时间、范围回填到表单；登录为眼睛图标；导航默认/选中图标切换；暖色主题恢复；1440 与 390 宽度均无溢出。完整 `pytest -q` 183 项通过。
 - 2026-10-29 T15 增量：持久化结构化目标并附加 `recovery` 提示；压缩场景测试确认 `bank_state` 同时包含 `conversation_goal`、`operation_task` 与 `recovery`，待确认操作在压缩后仍可见。完整 `pytest -q` 184 项通过；Ruff、JS 语法与差异检查通过。
+- 2026-10-29 T15 真实恢复验证：同一对话先由模型准备 1 元转账（`awaiting_confirmation`，并写入 `agent_conversation_goal`），再追加 20 个历史回合触发压缩（`compressed=true, kept_turns=12, omitted_turns=9`）；后续提问模型只调用 `get_operation`，回答"等待确认、未扣款"，未重复准备或扣款。LangSmith 保持开启。
 
 ## 后续计划
 
