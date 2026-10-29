@@ -21,6 +21,11 @@ class Settings:
     trace_enabled: bool = True
     trace_content: bool = True
     max_output_tokens: int = 1500
+    context_tokens: int = 32000
+    context_recent_turns: int = 12
+    context_summary_tokens: int = 800
+    context_tool_reserve: int = 4000
+    tool_output_chars: int = 6000
     langsmith_enabled: bool = False
     langsmith_key: str = field(default="", repr=False)
     langsmith_endpoint: str = "https://api.smith.langchain.com"
@@ -71,6 +76,16 @@ class Settings:
             raise ValueError("会话有效期必须为正数")
         if not 256 <= self.max_output_tokens <= 16384:
             raise ValueError("MODEL_MAX_OUTPUT_TOKENS 必须为 256–16384")
+        if not 1024 <= self.context_tokens <= 200000:
+            raise ValueError("MODEL_CONTEXT_TOKENS 必须为 1024–200000")
+        if not 1 <= self.context_recent_turns <= 60:
+            raise ValueError("MODEL_CONTEXT_RECENT_TURNS 必须为 1–60")
+        if not 120 <= self.context_summary_tokens <= 8000:
+            raise ValueError("MODEL_CONTEXT_SUMMARY_TOKENS 必须为 120–8000")
+        if not 0 <= self.context_tool_reserve <= 20000:
+            raise ValueError("MODEL_CONTEXT_TOOL_RESERVE 必须为 0–20000")
+        if not 500 <= self.tool_output_chars <= 50000:
+            raise ValueError("MODEL_TOOL_OUTPUT_CHARS 必须为 500–50000")
         if self.langsmith_enabled:
             endpoint = urlsplit(self.langsmith_endpoint)
             if not self.langsmith_key.strip():
@@ -102,6 +117,11 @@ class Settings:
             trace_enabled=os.getenv("AGENT_TRACE_ENABLED", "true").lower() == "true",
             trace_content=os.getenv("AGENT_TRACE_CONTENT", "true").lower() == "true",
             max_output_tokens=int(os.getenv("MODEL_MAX_OUTPUT_TOKENS", "1500")),
+            context_tokens=int(os.getenv("MODEL_CONTEXT_TOKENS", "32000")),
+            context_recent_turns=int(os.getenv("MODEL_CONTEXT_RECENT_TURNS", "12")),
+            context_summary_tokens=int(os.getenv("MODEL_CONTEXT_SUMMARY_TOKENS", "800")),
+            context_tool_reserve=int(os.getenv("MODEL_CONTEXT_TOOL_RESERVE", "4000")),
+            tool_output_chars=int(os.getenv("MODEL_TOOL_OUTPUT_CHARS", "6000")),
             langsmith_enabled=os.getenv("LANGSMITH_TRACING", "false").lower() == "true",
             langsmith_key=os.getenv("LANGSMITH_API_KEY", ""),
             langsmith_endpoint=os.getenv(

@@ -64,6 +64,8 @@ def test_tools_preserve_query_prefix_and_expose_no_approval_or_execution():
         "prepare_transfer",
         "prepare_subscription_cancellation",
         "get_operation",
+        "list_cards",
+        "list_wealth_products",
     ]
 
 

@@ -379,8 +379,8 @@ def create_app(settings: Settings | None = None, clock=time.time):
             if not busy.rowcount:
                 raise AuthError("CONVERSATION_BUSY", 409)
             rows = db.execute(
-                "SELECT question, answer FROM chat_turns WHERE conversation_id = ? "
-                "AND status = 'succeeded' ORDER BY id DESC LIMIT 12",
+                "SELECT id, question, answer FROM chat_turns WHERE conversation_id = ? "
+                "AND status = 'succeeded' ORDER BY id DESC LIMIT 60",
                 (body.conversation_id,),
             ).fetchall()
             db.execute(
@@ -390,9 +390,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 (body.conversation_id, body.request_id, body.message, clock()),
             )
         history_rows = list(reversed([dict(row) for row in rows]))
-        # 只裁剪完整回合，不保留悬空工具调用；资金事实始终重新查询后端。
-        while len(json.dumps(history_rows, ensure_ascii=False).encode()) > 20000:
-            history_rows.pop(0)
+        # 完整回合交给上下文装配器按预算压缩；资金事实始终重新查询后端。
         try:
             with trace_scope(body.request_id, body.conversation_id):
                 answer, traces = await agent.answer(context, body.message, history_rows)
