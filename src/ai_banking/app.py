@@ -24,7 +24,7 @@ from ai_banking.banking.schema import ready
 from ai_banking.banking.service import Bank, BankError
 from ai_banking.config import Settings
 from ai_banking.store import Store
-from ai_banking.tracing import emit, trace_scope
+from ai_banking.tracing import CONTEXT, emit, trace_scope
 
 WEB = Path(__file__).parent / "web"
 
@@ -371,6 +371,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                     "mode": settings.agent_mode,
                     "operation_task": cached_operation_task,
                     "cached": True,
+                    "context": None,
                 }
             busy = db.execute(
                 "UPDATE conversations SET busy_until = ? WHERE id = ? AND busy_until <= ?",
@@ -392,8 +393,10 @@ def create_app(settings: Settings | None = None, clock=time.time):
         history_rows = list(reversed([dict(row) for row in rows]))
         # 完整回合交给上下文装配器按预算压缩；资金事实始终重新查询后端。
         try:
+            context_info = None
             with trace_scope(body.request_id, body.conversation_id):
                 answer, traces = await agent.answer(context, body.message, history_rows)
+                context_info = CONTEXT.get()
             auth.assert_current(context)
             with store.transaction() as db:
                 db.execute(
@@ -407,6 +410,7 @@ def create_app(settings: Settings | None = None, clock=time.time):
                 "mode": settings.agent_mode,
                 "snapshot": agent.snapshot(context),
                 "operation_task": agent.operation_checkpoint(context, body.conversation_id),
+                "context": context_info,
             }
         except Exception as error:
             known_error = isinstance(error, (AgentError, AuthError))

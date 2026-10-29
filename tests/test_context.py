@@ -208,6 +208,11 @@ def test_chat_compresses_long_history_and_keeps_latest_question(tmp_path):
         )
 
     assert response.status_code == 200, response.text
+    context_info = response.json()["context"]
+    assert context_info["compressed"] is True
+    assert context_info["kept_turns"] == 3
+    assert context_info["omitted_turns"] > 0
+    assert context_info["estimated_tokens"] <= context_info["budget_tokens"]
     assert captured, "模型未被调用"
     messages = captured[0]
     assert messages[0]["role"] == "system" and messages[0]["content"] == SYSTEM

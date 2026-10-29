@@ -24,7 +24,7 @@ from ai_banking.context import (
 )
 from ai_banking.observability import Observer, llm_inputs, llm_output
 from ai_banking.store import Store
-from ai_banking.tracing import CONVERSATION, TURN, emit
+from ai_banking.tracing import CONTEXT, CONVERSATION, TURN, emit
 
 SYSTEM = """你是 AI-Banking 中文模拟银行助手。所有金额为虚构的 CNY，工具中的整数金额单位为分。
 用户页面的转账金额和授权金额输入框单位是元，100元在页面填100；仅工具amount_minor填10000。
@@ -418,6 +418,7 @@ class Agent:
             raise AgentError("MODEL_TIMEOUT") from error
 
     async def model_answer(self, context, question, history):
+        CONTEXT.set(None)
         state_data = self.snapshot(context)
         checkpoint = self.operation_checkpoint(context)
         state_data["operation_task"] = checkpoint
@@ -460,6 +461,15 @@ class Agent:
             kept_turns=plan.kept_turns,
             omitted_turns=plan.omitted_turns,
             compressed=plan.compressed,
+        )
+        CONTEXT.set(
+            {
+                "compressed": plan.compressed,
+                "kept_turns": plan.kept_turns,
+                "omitted_turns": plan.omitted_turns,
+                "estimated_tokens": plan.estimated_tokens,
+                "budget_tokens": plan.budget_tokens,
+            }
         )
         messages = list(plan.messages)
         traces = []

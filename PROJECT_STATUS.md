@@ -39,6 +39,8 @@
 - 预授权表单与前端精简（2026-10-29 本机）：截止时间改为手动填写东八区（UTC+8），移除日历控件并校验格式与未来时间；收款账户 / 订阅改为下拉多选并随操作勾选联动启用；创建失败在表单内显示原因；清理重复提示与内部 ID；聊天消息改为左右对齐、深浅对比，增加页面/对话框/消息进入动画。
 - LangSmith（2026-10-29 本机）：使用用户提供的 Tracing Only Key 开启，连接自检上传成功；真实对话后健康检查为 `connected`，`sent_traces` 增加，云端调用树可在 LangSmith 项目查看。
 
+- 上下文状态可见（2026-10-29 本机）：`/api/chat` 返回本轮 `context` 统计；发生压缩时助手回答下方显示“上下文已压缩 · 保留 N 轮 · 省略 M 轮”，未压缩不显示，便于前端验收。
+
 ## 未完成与待验收
 
 | 任务 | 当前状态 | 剩余事项 |
@@ -85,6 +87,7 @@
 - 2026-10-29 本机（交互与预授权修复）：更新 `agent.py` 的对话级状态、`web/index.html`、`web/app.css`、`web/app.js`、`web/banking.js`、`.env.example`、`docs/local-development.md`、`docs/agent-operations.md`、`docs/agent-evaluation.md`、`README.md` 与本状态文件；未新增依赖、未改数据库结构。
 - 2026-10-29 本机（表单细节与主题）：更新 `web/index.html`、`web/app.css`、`web/app.js`、`web/banking.js`、`docs/agent-operations.md` 与本状态文件；未新增依赖、未改数据库结构。
 - 2026-10-29 本机（T15 增量）：更新 `agent_operations.py`、`agent.py`、`app.py`、`tests/test_context.py`、`tests/test_agent_intents.py`、`tests/test_agent_workflow.py`、`docs/agent-operations.md` 与本状态文件；未增表、未新增依赖。
+- 2026-10-29 本机（上下文状态可见）：更新 `tracing.py`、`agent.py`、`app.py`、`web/app.js`、`web/app.css`、`tests/test_context.py`、`docs/agent-operations.md` 与本状态文件。
 
 ## 已确认设计决策
 
@@ -130,6 +133,7 @@
 - 2026-10-29 T15 增量：持久化结构化目标并附加 `recovery` 提示；压缩场景测试确认 `bank_state` 同时包含 `conversation_goal`、`operation_task` 与 `recovery`，待确认操作在压缩后仍可见。完整 `pytest -q` 184 项通过；Ruff、JS 语法与差异检查通过。
 - 2026-10-29 T15 恢复覆盖：参数化测试覆盖"提交后成功"和"结果未知"两种状态下，压缩后的 `bank_state` 仍包含结构化目标、任务步骤和恢复提示；成功时额度只扣一次、未知时预占保留；预算失败后新写操作被暂停，重新选择策略后恢复。完整 `pytest -q` 187 项通过；Ruff、JS 语法与差异检查通过。
 - 2026-10-29 T15 真实恢复验证：同一对话先由模型准备 1 元转账（`awaiting_confirmation`，并写入 `agent_conversation_goal`），再追加 20 个历史回合触发压缩（`compressed=true, kept_turns=12, omitted_turns=9`）；后续提问模型只调用 `get_operation`，回答"等待确认、未扣款"，未重复准备或扣款。LangSmith 保持开启。
+- 2026-10-29 上下文提示前端验证：小窗口配置（`MODEL_CONTEXT_RECENT_TURNS=2`、`MODEL_CONTEXT_TOKENS=6000`、输出 1024、工具预留 0）下第 4 轮出现“上下文已压缩 · 保留 2 轮 · 省略 1 轮”，`dataset.context` 为 `compressed:true, kept_turns:2, omitted_turns:1`；默认配置未压缩时不显示。
 
 ## 后续计划
 

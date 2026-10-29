@@ -511,11 +511,21 @@ function welcome() {
   $("#suggestions").hidden = false;
 }
 
-function addMessage(role, text, traces = []) {
+function addMessage(role, text, traces = [], context = null) {
   $(".chat-welcome")?.remove();
   const message = element("div", `message ${role}`);
   if (role === "assistant") message.append(renderMarkdown(text));
   else message.textContent = text;
+  if (context) message.dataset.context = JSON.stringify(context);
+  if (role === "assistant" && context?.compressed) {
+    const note = element(
+      "p",
+      "context-note",
+      `上下文已压缩 · 保留 ${context.kept_turns} 轮 · 省略 ${context.omitted_turns} 轮`,
+    );
+    note.title = `估算 ${context.estimated_tokens}/${context.budget_tokens} tokens`;
+    message.append(note);
+  }
   // 工具轨迹只在终端 / LangSmith 展示；界面保留隐藏数据供排查，不打扰用户。
   if (traces.length) message.dataset.traces = traces.join(",");
   $("#chat-log").append(message);
@@ -701,7 +711,7 @@ $("#chat-form").addEventListener("submit", async (event) => {
     });
     pending.remove();
     if (state.user === user && state.conversation === conversation)
-      addMessage("assistant", result.answer, result.traces);
+      addMessage("assistant", result.answer, result.traces, result.context);
   } catch (error) {
     pending.remove();
     if (state.user === user && state.conversation === conversation)

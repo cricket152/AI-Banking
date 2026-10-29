@@ -10,6 +10,7 @@ from contextvars import ContextVar
 LOGGER = logging.getLogger("ai_banking.trace")
 TURN = ContextVar("banking_turn", default="service")
 CONVERSATION = ContextVar("banking_conversation", default=None)
+CONTEXT = ContextVar("banking_context", default=None)
 LABELS = {
     "user": "用户输入",
     "model_request": "模型请求",
@@ -73,11 +74,13 @@ def configure_terminal():
 def trace_scope(turn_id, conversation_id=None):
     token = TURN.set(turn_id)
     conversation_token = CONVERSATION.set(conversation_id)
+    context_token = CONTEXT.set(None)
     try:
         yield
     finally:
         TURN.reset(token)
         CONVERSATION.reset(conversation_token)
+        CONTEXT.reset(context_token)
 
 
 def emit(settings, event, **data):
