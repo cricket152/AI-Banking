@@ -3,12 +3,12 @@
   "pdfs": {
     "technical-document.pdf": {
       "pages": 12,
-      "sha256": "a9c3e95ae66a9da4891b5be506f51a716d6788a74d2dab4a7bc83d25693c80eb",
+      "sha256": "e8c4e35690956517b4c0740bc8402442e2c2add48175d76c34c4233864e148bd",
       "text": "pass"
     },
     "security-self-assessment.pdf": {
       "pages": 9,
-      "sha256": "498bda392c483af79b6db281921fc360d179e84d0e72565021a2813e8b3cb9a8",
+      "sha256": "f88589c838c43c10c21ed45b6625521baf6dfc256d138612916e518d94cc3aff",
       "text": "pass"
     }
   },

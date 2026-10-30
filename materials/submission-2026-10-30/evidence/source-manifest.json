@@ -1,5 +1,5 @@
 {
-  "base_commit": "eb3a0ab86a741d535f894f86a41b111476f8c221",
+  "base_commit": "9febd921bae67f7160e64181559b3e4ff3978371",
   "branch": "feat/cards-scenarios",
   "working_tree_uncommitted": false,
   "files": [
@@ -75,8 +75,8 @@
     },
     {
       "path": "docs/cards-and-scenarios.md",
-      "bytes": 3288,
-      "sha256": "0f46fa750073c92d369c0f9b52dcfb835cbe6a8081074d527c68fd2d56d8a47a"
+      "bytes": 3707,
+      "sha256": "ea3e1e9a5d2d8b10e3f5ef184a4f38ea8d48920fb17caee5b6446424e4ec427d"
     },
     {
       "path": "docs/competition.md",
@@ -215,8 +215,8 @@
     },
     {
       "path": "src/ai_banking/banking/service.py",
-      "bytes": 37480,
-      "sha256": "b83227267a75d5218b19181ebfb41789b77c3c3cc5b1d22d532aba237443ed57"
+      "bytes": 38507,
+      "sha256": "fa31db03292a3496eec5f187ab89d8013a895aac9beb193d1b6afe08b0548bd2"
     },
     {
       "path": "src/ai_banking/banking/subscriptions.py",
@@ -385,8 +385,8 @@
     },
     {
       "path": "tests/test_scenarios.py",
-      "bytes": 5336,
-      "sha256": "4ccb27ae04d975bea61ae7c5ead4b39c234370c6941a8268d945a1b23e7d49b9"
+      "bytes": 5762,
+      "sha256": "22982fffb24201c085c72dfa81f130147240a226cebb4996c9ced4e1b1f29ff0"
     },
     {
       "path": "tests/test_tracing.py",
