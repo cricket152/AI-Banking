@@ -484,6 +484,12 @@ def test_static_assets_and_security_headers(env):
     assert response.status_code == 200 and '<html lang="zh-CN">' in response.text
     assert "script-src 'self'" in response.headers["content-security-policy"]
     assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["referrer-policy"] == "no-referrer"
+    assert response.headers["cache-control"] == "no-store"
+    assert "camera=()" in response.headers["permissions-policy"]
+    assert response.headers["cross-origin-opener-policy"] == "same-origin"
+    assert response.headers["cross-origin-resource-policy"] == "same-origin"
     for asset in ("app.css", "app.js", "mark.svg"):
         assert client.get("/static/" + asset).status_code == 200
 

@@ -10,7 +10,7 @@ from ai_banking.tracing import emit, redact, trace_scope
 
 
 def test_trace_separates_events_and_redacts_secrets(caplog):
-    settings = Settings(local_http=True, model_key="test-key-known-to-redactor")
+    settings = Settings(local_http=True, model_key="test-key-known-to-redactor", trace_content=True)
     with trace_scope("request-123"):
         emit(settings, "user", text="MODEL_API_KEY=test-key-known-to-redactor")
         emit(settings, "tool_call", name="list_accounts", arguments={})
@@ -24,6 +24,7 @@ def test_trace_separates_events_and_redacts_secrets(caplog):
 
 
 def test_metadata_only_and_disabled_trace(caplog):
+    assert Settings(local_http=True).trace_content is False
     settings = Settings(local_http=True, trace_content=False)
     emit(settings, "user", text="不应输出的内容")
     assert "不应输出的内容" not in caplog.text
@@ -33,7 +34,7 @@ def test_metadata_only_and_disabled_trace(caplog):
 
 
 def test_visible_reasoning_and_chat_roundtrip_are_preserved(caplog):
-    settings = Settings(local_http=True, model_api="chat")
+    settings = Settings(local_http=True, model_api="chat", trace_content=True)
     agent = Agent(None, None, settings)
 
     def handler(request):
@@ -73,7 +74,7 @@ def test_visible_reasoning_and_chat_roundtrip_are_preserved(caplog):
 
 
 def test_encrypted_reasoning_is_never_logged_or_decrypted(caplog):
-    settings = Settings(local_http=True, model_api="responses")
+    settings = Settings(local_http=True, model_api="responses", trace_content=True)
     agent = Agent(None, None, settings)
 
     def handler(request):

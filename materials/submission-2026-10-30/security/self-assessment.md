@@ -12,10 +12,12 @@
 | 明确预授权 | 范围和有效期内的限定执行 | 逐次复核单笔/累计/余额、最低保留及对象范围 |
 
 ## 已实现控制与证据
-Argon2id密码哈希、服务端不透明会话和令牌摘要、HttpOnly/SameSite Cookie、CSRF/Origin/Host校验、登录限流、跨用户归属、严格参数和32KB请求体限制。参见 auth/、app.py、banking/api.py 及 tests/test_application.py。
+Argon2id密码哈希、服务端不透明会话和令牌摘要、HttpOnly/SameSite Cookie、CSRF/Origin/Host校验、登录限流、跨用户归属、严格参数和32KB请求体限制。响应默认附带 CSP、nosniff、frame-ancestors、Referrer-Policy、Permissions-Policy、COOP/CORP 与 no-store。参见 auth/、app.py、banking/api.py 及 tests/test_application.py。
 整数分、双边记账、SQLite事务、稳定操作幂等、预算预占、未知结果不释放未核实占用，参见 banking/service.py 及 test_banking*.py。
 模型无批准、创建授权、直接执行、任意SQL或Shell工具；商户/备注等作为不可信数据转义。真正权限由业务服务强制执行，XML和提示词不是安全边界。
 固定联动计划强制对象/金额/顺序；预览证据变化拒绝；新联系人不会进入旧授权，参见 tests/test_transfer_workflows.py。候选登记无扣款/授权副作用，参见 test_insights.py。
+默认日志正文关闭、LangSmith 正文默认关闭；响应启用 CSP、nosniff、frame-ancestors、Referrer/Permissions-Policy、COOP/CORP 与 no-store。全新 venv（Python 3.14.6）复测 222 项通过。
+卡片申请、调额、冻结、挂失均需重新验证登录密码并校验本人归属；跨场景计划只保存日期与预算，模拟下单复用既有待确认转账，不连接外部商户、不自动定时执行。
 
 ## 已知风险与处置
 | 风险 | 当前限制/处置 | 提交或后续事项 |
@@ -24,7 +26,7 @@ Argon2id密码哈希、服务端不透明会话和令牌摘要、HttpOnly/SameSi
 | 历史压缩丢失条件 | 预算不足停止、后端检查点回填 | 启发式token估算未校准；摘录非无损 |
 | 短密码 | 本地测试允许1–128字符，仍哈希和限流 | 不能把此测试配置作为公网认证方案 |
 | HTTP、单进程、SQLite本地部署 | 仅回环显式开发例外 | 未提供生产TLS/高可用/灾备部署 |
-| 日志和第三方模型/追踪数据 | 终端正文默认开启；可关闭正文和追踪，不把日志当账本 | 检查合成数据与导出内容，依供应商实际规则核实 |
+| 日志和第三方模型/追踪数据 | 终端正文默认关闭，可显式开启；LangSmith 默认关闭且正文默认关闭；不把日志当账本 | 检查合成数据与导出内容，依供应商实际规则核实 |
 | 疑似订阅/异常误报漏报 | 规则与证据公开、用户确认 | 不证明欺诈、闲置或自动续费存在 |
 | 业务部分成功、失败或未知 | 保留原操作与预算，停止后续 | 不能承诺多步骤业务整体自动回滚 |
 | 固定测试集调优偏差 | 保留失败和版本边界 | 35/36结构比率不能当总体语义成功率 |

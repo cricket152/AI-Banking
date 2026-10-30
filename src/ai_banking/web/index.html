@@ -12,6 +12,8 @@
     <script src="/static/banking.js" defer></script>
     <script src="/static/insights.js" defer></script>
     <script src="/static/transfers.js" defer></script>
+    <script src="/static/cards.js" defer></script>
+    <script src="/static/scenarios.js" defer></script>
   </head>
   <body>
     <a class="skip" href="#main">跳到主要内容</a>
@@ -580,6 +582,46 @@
                   </button>
                 </form>
               </section>
+              <section class="bank-card" aria-labelledby="cards-title">
+                <div class="section-heading">
+                  <h2 id="cards-title">卡片管理</h2>
+                  <span class="tag">模拟卡</span>
+                </div>
+                <p class="muted">
+                  申请、调额、冻结与挂失只作用于本地虚构卡，不连接真实卡组织，也不产生真实信用记录。
+                </p>
+                <div id="cards-list" class="bank-list"></div>
+                <details class="contact-demo-settings">
+                  <summary>申请一张模拟卡</summary>
+                  <form id="card-apply-form" class="bank-form">
+                    <label for="card-apply-source">绑定账户</label>
+                    <select id="card-apply-source" required>
+                      <option value="">请选择账户</option>
+                    </select>
+                    <label for="card-apply-kind">卡类型</label>
+                    <select id="card-apply-kind">
+                      <option value="debit">借记卡</option>
+                      <option value="credit">信用卡</option>
+                    </select>
+                    <label for="card-apply-limit">日限额（元）</label>
+                    <input
+                      id="card-apply-limit"
+                      inputmode="decimal"
+                      placeholder="例如 5000.00"
+                    />
+                    <label for="card-apply-password">验证登录密码</label>
+                    <input
+                      id="card-apply-password"
+                      type="password"
+                      autocomplete="current-password"
+                      required
+                    />
+                    <button class="button secondary bank-action" type="submit">
+                      申请模拟卡
+                    </button>
+                  </form>
+                </details>
+              </section>
               <section class="bank-card" aria-labelledby="subscriptions-title">
                 <div class="section-heading">
                   <h2 id="subscriptions-title">订阅管理</h2>
@@ -638,6 +680,80 @@
                 >
                   创建方案并前往助手
                 </button>
+              </details>
+              <details class="bank-card" id="scenario-builder">
+                <summary>跨场景计划：纪念日 / 生日</summary>
+                <p class="muted">
+                  先保存日期与预算；临近时由你点击“模拟下单”，只准备一笔待确认的模拟转账，不连接外部商户、不定时扣款。
+                </p>
+                <form id="scenario-form" class="bank-form">
+                  <label for="scenario-kind">场景类型</label>
+                  <select id="scenario-kind">
+                    <option value="birthday">生日计划</option>
+                    <option value="anniversary">纪念日计划</option>
+                    <option value="custom">自定义场景</option>
+                  </select>
+                  <label for="scenario-title">计划名称</label>
+                  <input
+                    id="scenario-title"
+                    maxlength="40"
+                    placeholder="例如：妈妈的生日"
+                    required
+                  />
+                  <label id="scenario-date-label" for="scenario-date-year"
+                    >日期（YYYY - MM - DD）</label
+                  >
+                  <div
+                    class="time-input"
+                    id="scenario-date-group"
+                    role="group"
+                    aria-labelledby="scenario-date-label"
+                  >
+                    <input
+                      id="scenario-date-year"
+                      inputmode="numeric"
+                      maxlength="4"
+                      placeholder="YYYY"
+                      aria-label="年"
+                      required
+                    /><span class="time-sep">-</span>
+                    <input
+                      id="scenario-date-month"
+                      inputmode="numeric"
+                      maxlength="2"
+                      placeholder="MM"
+                      aria-label="月"
+                      required
+                    /><span class="time-sep">-</span>
+                    <input
+                      id="scenario-date-day"
+                      inputmode="numeric"
+                      maxlength="2"
+                      placeholder="DD"
+                      aria-label="日"
+                      required
+                    />
+                  </div>
+                  <label for="scenario-budget">预算（元）</label>
+                  <input
+                    id="scenario-budget"
+                    inputmode="decimal"
+                    placeholder="例如 1000.00"
+                    required
+                  />
+                  <label for="scenario-source">付款账户</label>
+                  <select id="scenario-source" required>
+                    <option value="">请选择账户</option>
+                  </select>
+                  <label for="scenario-payee">模拟商户 / 收款人</label>
+                  <select id="scenario-payee" required>
+                    <option value="">请选择收款人</option>
+                  </select>
+                  <button class="button secondary bank-action" type="submit">
+                    保存计划
+                  </button>
+                </form>
+                <div id="scenarios-list" class="bank-list"></div>
               </details>
               <details class="bank-card" id="grant-settings">
                 <summary>预授权管理</summary>

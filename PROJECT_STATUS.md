@@ -22,6 +22,8 @@
 ## 已完成
 
 - 主分支提交准备：已同步远程main且无上游增量；通过222项回归、Ruff lint/36文件格式、4份JS语法及差异检查。参赛文档随功能代码入库，授权发布结果由Git提交和PR状态记录。
+- 安全加固与材料指标（2026-10-30 本机）：终端日志正文改为默认关闭，显式开启才输出脱敏内容；响应新增 Permissions-Policy、COOP/CORP 等安全头并由测试覆盖；安全自评将日志风险从高降为中，补充安全响应头与干净 venv（Python 3.14.6）222 项通过证据；技术文档图 3/4 换成无边框确认框，默认日志与风险行同步更新。
+- 卡片管理与跨场景 MVP（2026-10-30 本机）：新增 `banking/cards.py`（账户派生卡 + 申请/调额/冻结/挂失，事件持久化，全部写操作密码再认证）与 `banking/scenarios.py`（纪念日/生日计划、日期/预算/收款人、临近 0–2 天模拟下单，复用既有待确认转账）；前端新增卡片管理与跨场景计划区块；Agent 只保留动态 `list_cards` 查询，卡片写操作不暴露给模型。新增 `tests/test_cards.py`、`tests/test_scenarios.py`。
 - v1.1材料修订：技术PDF第3-4页直观展示Agent工具循环、四处安全检查、六类问题与12工具映射及压缩触发条件；导出独立PNG/SVG。根据用户明确反馈登记10项人工用例审核通过；README包含产品意图、使用路径、三种启动方式与图片。人工结论不外推为第三方审计或新统计样本。
 - 文档生成：按用户授权产出技术文档、安全自评PDF及配套README、测试清单与部署指南；嵌入中文字体、适配A4矢量架构与局部截图，保留未提交版本及模型证据边界。源码审查ZIP隔离解压后使用本机已有依赖复测222项通过（40.14s），不冒充全新依赖安装验收。
 - 材料准备：按用户 2026-10-30 作品材料截图补充 `docs/competition.md`，整理四项必交素材、可用主张和证据边界；保存当前工作树源码哈希及不含配置密钥 / 数据库 / 浏览器会话的源码 ZIP。架构源码引用固定在已合并基线，新功能增量另记，未把未提交内容伪装成 HEAD 证据。
@@ -100,6 +102,8 @@
 ## 最近修改文件
 
 - 发布轮：更新本状态与.gitignore，排除浏览器会话/临时输出/旧总包；本批功能、测试和当前参赛交付材料统一提交。
+- 安全加固与材料轮（2026-10-30 本机）：`config.py`、`app.py`、`tests/test_tracing.py`、`tests/test_application.py`、`.env.example`、README、`docs/local-development.md`；素材 `technical/figures/`、技术/安全 PDF、两份安全自评源稿、README、`document-manifest.json`、`revision-checks.json`、`quality-checks.json` 与本状态。未提交、未推送。
+- 卡片 / 跨场景轮（2026-10-30 本机）：新增 `banking/cards.py`、`banking/scenarios.py`、`web/cards.js`、`web/scenarios.js` 与 `docs/cards-and-scenarios.md`；更新 `banking/api.py`、`agent.py`、`catalog.py`、`web/index.html`、`web/banking.js`、`web/app.css`、`tests/test_catalog.py` 及新增测试与本状态。未新增表或依赖。
 - v1.1材料轮：根README、素材deliverables/中的两份PDF/文字源/README/用例/人工记录、diagrams/agent-runtime与context-routing的PNG/SVG、交付包及本状态；业务代码与测试断言不变。
 - 文档轮：新增 `materials/submission-2026-10-30/deliverables/`（两份PDF、可修改文字源、README、测试清单、部署指南、收集节点和复测日志）；更新素材入口、提交对照与本状态。不改变业务实现和项目依赖。
 - 材料轮：新增 `materials/submission-2026-10-30/`，更新 `docs/competition.md` 与本状态；不修改业务实现、默认数据库、依赖或本地模型配置。
@@ -142,6 +146,8 @@
 
 ## 验证记录
 
+- 2026-10-30 卡片 / 跨场景验收：新增 7 项后端测试覆盖申请、调额、冻结/挂失、密码再认证、跨用户隔离、计划创建/下单/取消、重复下单幂等与越权；浏览器实测申请信用卡、调额、冻结、创建生日计划、模拟下单打开确认单，无 JS 错误。当前完整回归 229 项通过；材料 PDF 中的 222 项统计需在冻结版本时同步更新。
+- 2026-10-30 安全加固复验：终端正文默认关闭（`AGENT_TRACE_CONTENT` 默认 false）、响应新增 Permissions-Policy/COOP/CORP 等安全头；`pytest tests/test_tracing.py tests/test_application.py` 50 项通过，干净 venv（Python 3.14.6，dev+observability）复跑 222 项通过；技术/安全 PDF 图 3/4、默认日志文案与风险等级已更新并重新核对渲染。
 - 2026-10-30提交前复验：`pytest -q` 222 passed in 31.13s；Ruff lint通过，36个Python文件格式通过；app.js、banking.js、insights.js、transfers.js均`node --check`通过；`git diff --check`通过。未把材料人工确认改写成新的模型统计结果。
 - 2026-10-30 文档轮：源码ZIP隔离解压复测 `222 passed in 40.14s`（已有本机依赖）；`pytest --collect-only` 收集222节点，30项关键用例映射核对到实际函数；技术PDF10页、安全PDF7页，Poppler渲染并检查字体/表格/分页，正文可提取。新增功能真实模型验收及全新依赖安装仍待完成。
 - 2026-10-30 材料轮：完整 `pytest -q` 222 项通过（31.83s，日志在素材 evidence/），Ruff lint 和 36 个 Python 文件格式检查通过；独立合成库逐笔确认完成“取消订阅→转账1元”，采集 1440 宽桌面与 390×844 移动视口。Archify showcase 的 validate / deliver / check / browser-check 及 visual-check 自动检查通过，已导出 PNG / SVG；无新真实模型调用。

@@ -2,7 +2,7 @@
   "technical_pages": 10,
   "security_pages": 7,
   "rendered_with": "Poppler 90 dpi (v1.1 review)",
-  "visual_review": "17 pages inspected; no overlap, missing glyphs or cut tables",
+  "visual_review": "17 pages inspected; no overlap, missing glyphs or cut tables; figures 3/4 replaced with cropped dialogs",
   "test_nodes": 222,
   "key_case_functions": 30,
   "manual_cases": 10,
@@ -28,7 +28,7 @@
     "crc": "pass",
     "manifest": "pass"
   },
-  "clean_install": "not_run",
+  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability extras, 222 passed",
   "revision": "v1.1",
   "manual_review": {
     "cases": 10,
@@ -36,5 +36,19 @@
     "basis": "项目负责人确认",
     "date": "2026-10-30"
   },
-  "independent_model_statistics": "not_run"
+  "independent_model_statistics": "not_run",
+  "security_hardening": {
+    "default_log_content": "off; explicit AGENT_TRACE_CONTENT=true required",
+    "response_headers": [
+      "Content-Security-Policy",
+      "X-Content-Type-Options",
+      "Referrer-Policy",
+      "X-Frame-Options",
+      "Permissions-Policy",
+      "Cross-Origin-Opener-Policy",
+      "Cross-Origin-Resource-Policy",
+      "Cache-Control: no-store"
+    ],
+    "verified_by": "tests/test_application.py::test_static_assets_and_security_headers"
+  }
 }

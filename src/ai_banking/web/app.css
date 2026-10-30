@@ -3295,3 +3295,28 @@ dialog > .button {
     flex-basis: 100%;
   }
 }
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.card-actions .card-limit,
+.card-actions .card-password {
+  width: 104px;
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.card-actions .card-password {
+  width: 132px;
+}

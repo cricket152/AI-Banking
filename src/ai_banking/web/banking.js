@@ -683,6 +683,10 @@ function renderBanking() {
   renderPolicy();
   renderContacts();
   renderWorkflowOptions();
+  if (typeof renderCardOptions === "function") renderCardOptions();
+  if (typeof renderCards === "function") renderCards();
+  if (typeof renderScenarioOptions === "function") renderScenarioOptions();
+  if (typeof renderScenarios === "function") renderScenarios();
   $("#subscriptions-list").replaceChildren();
   for (const s of state.subscriptions) {
     const row = element("article", "operation-card");
@@ -797,7 +801,7 @@ async function loadBankData() {
   }
   const user = state.user,
     conversation = state.conversation;
-  const [payees, subscriptions, operations, grants, history] =
+  const [payees, subscriptions, operations, grants, history, cards, scenarios] =
     await Promise.all([
       api("/api/bank/payees"),
       api("/api/bank/subscriptions"),
@@ -806,6 +810,8 @@ async function loadBankData() {
       conversation
         ? api(`/api/conversations/${conversation}`)
         : Promise.resolve(null),
+      api("/api/bank/cards"),
+      api("/api/bank/scenarios"),
     ]);
   if (state.user !== user || revision !== state.workflowRevision) return;
   state.payees = payees.payees;
@@ -813,6 +819,8 @@ async function loadBankData() {
   state.subscriptionCandidates = subscriptions.inferred_candidates;
   state.operations = operations.operations;
   state.grants = grants.grants;
+  state.cards = cards.cards;
+  state.scenarios = scenarios.scenarios;
   if (conversation === state.conversation && history) {
     state.operationTask = history.operation_task;
     state.executionPolicy = history.execution_policy;

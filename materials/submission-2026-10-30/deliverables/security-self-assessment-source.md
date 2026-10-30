@@ -76,7 +76,7 @@ AI-BANKING / SUBMISSION 2026
 
 Argon2id存储密码哈希；会话令牌在数据库中保存摘要。登录轮换会话，重置密码或停用可使相关身份版本失效。Cookie设HttpOnly和SameSite；Secure随本地HTTP例外配置。默认空闲900秒、绝对28800秒会话期限。
 
-请求执行Origin、Host、CSRF与JSON类型约束，并有登录限流和32KB请求体边界。确认挑战必须绑定当前会话及准确参数；聊天中的“同意”不代替独立批准。
+请求执行Origin、Host、CSRF与JSON类型约束，并有登录限流和32KB请求体边界。响应默认附带 CSP（script/style/connect 限定为 self，frame-ancestors none）、X-Content-Type-Options、Referrer-Policy、Permissions-Policy、COOP/CORP 与 no-store；不会放宽为跨源嵌入或缓存敏感响应。确认挑战必须绑定当前会话及准确参数；聊天中的“同意”不代替独立批准。
 
 依据：auth/__init__.py、app.py、banking/api.py；tests/test_application.py、test_banking_edges.py。
 
@@ -130,7 +130,7 @@ awaiting_confirmation经有效挑战批准后进入authorized；预授权通过�
 
 模型模式发送问题、历史和本人模拟财务数据，使用HTTPS；密码、认证Cookie和CSRF不进入模型消息。store=false是应用请求参数，不能作为供应商零保留保证。供应商政策需独立核实。
 
-终端轨迹默认开启且正文默认开启。AGENT_TRACE_CONTENT=false隐藏内容，AGENT_TRACE_ENABLED=false关闭自定义轨迹。云追踪LANGSMITH_TRACING默认false，LANGSMITH_TRACE_CONTENT默认false；云端开关独立。追踪可失败或丢失，不能作为可靠资金账本。
+终端轨迹默认开启但正文默认关闭；显式设置AGENT_TRACE_CONTENT=true才输出脱敏正文，AGENT_TRACE_ENABLED=false关闭自定义轨迹。云追踪LANGSMITH_TRACING默认false，LANGSMITH_TRACE_CONTENT默认false；云端开关独立。追踪可失败或丢失，不能作为可靠资金账本。
 
 材料与源码交付
 
@@ -144,7 +144,7 @@ awaiting_confirmation经有效挑战批准后进入authorized；预授权通过�
 
 验证面 | 现有证据 | 结论限制
 
-身份 / 请求边界 | test_application：CSRF、Origin/Host、会话、限流、归属 | 自动化不是独立渗透测试
+身份 / 请求边界 | test_application：CSRF、Origin/Host、会话、限流、归属与安全响应头 | 自动化不是独立渗透测试
 
 授权与挑战 | test_banking_edges：会话绑定、摘要、期限、重置失效 | 人工仍须核对收款对象和金额
 
@@ -156,9 +156,13 @@ awaiting_confirmation经有效挑战批准后进入authorized；预授权通过�
 
 上下文 | test_context：预算、摘要、固定状态与停写 | 不能证明长对话意图无损
 
+卡片 / 跨场景 | test_cards、test_scenarios：密码再认证、归属隔离、状态机、计划幂等与下单 | 模拟卡与模拟商户，不连接真实卡组织或外部订购
+
+干净环境 | 新建 venv（Python 3.14.6，dev+observability） | 222 passed；最低3.12、其他OS与全新依赖源未复测
+
 已记录结果
 
-现有完整回归222项通过，日志记录31.83秒，Ruff lint与36文件格式检查通过。参数化节点计数为测试项，不当作222条真实模型业务任务。
+现有完整回归222项通过，日志记录31.83秒，Ruff lint与36文件格式检查通过。参数化节点计数为测试项，不当作222条真实模型业务任务。另在全新 venv（Python 3.14.6，安装 dev+observability extras）复测 222 项通过；最低 Python 3.12 与其他 OS 仍待复测。
 
 历史36条真实模型固定样本，35条结构检查通过；1条耗尽输出预算被保护拦截，无扣款。提高输出预算后的3次诊断不替代原失败。留出样本已用于诊断，不再是未见验证。
 
@@ -184,7 +188,9 @@ awaiting_confirmation经有效挑战批准后进入authorized；预授权通过�
 
 本地短密码与HTTP / 高 | Argon2id、限流、仅显式回环例外 | 公网前重新设计认证、TLS与会话部署
 
-日志 / 外部数据 / 高 | 正文和追踪可关闭；凭据不进模型 | 演示前检查开关，核实供应商保留规则
+卡片 / 跨场景误操作 / 中 | 卡片写操作密码再认证与归属校验；计划只创建待确认转账 | 模拟数据，不连接真实卡组织或外部商户；需人工复核语义
+
+日志 / 外部数据 / 中 | 终端正文默认关闭、云端正文默认关闭；凭据不进模型 | 演示前检查开关，核实供应商保留规则
 
 未知结果与部分成功 / 中 | 保留预占、原编号回查、停止后续 | 人工故障恢复演练与说明
 
@@ -194,13 +200,13 @@ awaiting_confirmation经有效挑战批准后进入authorized；预授权通过�
 
 工作树与远程差异 / 中 | 源码快照、文件清单与归档哈希 | 冻结提交、队友审查并重新打包
 
-可复现性与部署 / 中 | 锁文件、测试、明确本机步骤 | 全新环境安装、最低Python版本复测
+可复现性与部署 / 中 | 锁文件、测试、明确本机步骤；干净 venv 3.14.6 复测 222 通过 | 最低 Python 3.12、其他 OS 与全新依赖源复测
 
 提交前核对
 
 1. 补齐团队、责任人和审查记录，不编造签名。2. 保留人工审核记录，完成冻结版本的最终试讲。3. 冻结代码版本，确认源码包、文档、截图一致。4. 在干净环境安装并执行配套测试。5. 复核敏感信息与文件格式后再上传。
 
-自评结论：本地竞赛原型已形成受控资金闭环，222项自动化通过，列示人工用例由负责人审核通过。评估范围为本地模拟环境；公网部署、监管认证和第三方审计属于独立验证事项。
+自评结论：本地竞赛原型已形成受控资金闭环，222项自动化通过，列示人工用例由负责人审核通过；默认日志正文关闭并启用安全响应头。评估范围为本地模拟环境；公网部署、监管认证和第三方审计属于独立验证事项。
 
 
 ---

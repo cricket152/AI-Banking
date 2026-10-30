@@ -19,7 +19,7 @@ class Settings:
     model: str = ""
     model_key: str = field(default="", repr=False)
     trace_enabled: bool = True
-    trace_content: bool = True
+    trace_content: bool = False
     max_output_tokens: int = 1500
     context_tokens: int = 32000
     context_recent_turns: int = 12
@@ -115,7 +115,7 @@ class Settings:
             model=os.getenv("MODEL_NAME", ""),
             model_key=os.getenv("MODEL_API_KEY", ""),
             trace_enabled=os.getenv("AGENT_TRACE_ENABLED", "true").lower() == "true",
-            trace_content=os.getenv("AGENT_TRACE_CONTENT", "true").lower() == "true",
+            trace_content=os.getenv("AGENT_TRACE_CONTENT", "false").lower() == "true",
             max_output_tokens=int(os.getenv("MODEL_MAX_OUTPUT_TOKENS", "1500")),
             context_tokens=int(os.getenv("MODEL_CONTEXT_TOKENS", "32000")),
             context_recent_turns=int(os.getenv("MODEL_CONTEXT_RECENT_TURNS", "12")),

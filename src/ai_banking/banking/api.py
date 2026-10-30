@@ -38,6 +38,32 @@ class DemoPayeesBody(StrictBody):
     password: Password
 
 
+class CardApplyBody(StrictBody):
+    account_id: Identifier
+    kind: Literal["debit", "credit"] = "debit"
+    daily_limit_minor: int = Field(default=500000, ge=0, le=10_000_000)
+    password: Password
+
+
+class CardLimitBody(StrictBody):
+    daily_limit_minor: int = Field(ge=0, le=10_000_000)
+    password: Password
+
+
+class CardStatusBody(StrictBody):
+    status: Literal["active", "frozen", "lost"]
+    password: Password
+
+
+class ScenarioBody(StrictBody):
+    kind: Literal["birthday", "anniversary", "custom"]
+    title: str = Field(min_length=1, max_length=40)
+    occasion_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
+    budget_minor: Amount
+    source_id: Identifier
+    payee_id: Identifier
+
+
 class PayeeNoteBody(DemoPayeesBody):
     note: str = Field(max_length=64)
 
@@ -142,6 +168,59 @@ def router(bank, auth, identity, mutation):
 
         reauth(request, context, body.password)
         return set_note(bank, context, payee_id, body.note)
+
+    @routes.get("/cards")
+    def cards(context=Depends(identity)):
+        from ai_banking.banking.cards import list_cards
+
+        return list_cards(bank, context)
+
+    @routes.post("/cards/apply", dependencies=[Depends(mutation)])
+    def apply_card(body: CardApplyBody, request: Request, context=Depends(identity)):
+        from ai_banking.banking.cards import apply_card as create
+
+        reauth(request, context, body.password)
+        return create(bank, context, body.account_id, body.kind, body.daily_limit_minor)
+
+    @routes.post("/cards/{card_id}/limit", dependencies=[Depends(mutation)])
+    def card_limit(card_id: str, body: CardLimitBody, request: Request, context=Depends(identity)):
+        from ai_banking.banking.cards import update_limit
+
+        reauth(request, context, body.password)
+        return update_limit(bank, context, card_id, body.daily_limit_minor)
+
+    @routes.post("/cards/{card_id}/status", dependencies=[Depends(mutation)])
+    def card_status(
+        card_id: str, body: CardStatusBody, request: Request, context=Depends(identity)
+    ):
+        from ai_banking.banking.cards import set_status
+
+        reauth(request, context, body.password)
+        return set_status(bank, context, card_id, body.status)
+
+    @routes.get("/scenarios")
+    def scenarios(context=Depends(identity)):
+        from ai_banking.banking.scenarios import list_scenarios
+
+        return list_scenarios(bank, context)
+
+    @routes.post("/scenarios", dependencies=[Depends(mutation)])
+    def create_scenario(body: ScenarioBody, context=Depends(identity)):
+        from ai_banking.banking.scenarios import create_scenario as create
+
+        return create(bank, context, body.model_dump())
+
+    @routes.post("/scenarios/{scenario_id}/order", dependencies=[Depends(mutation)])
+    def order_scenario(scenario_id: str, body: StrictBody, context=Depends(identity)):
+        from ai_banking.banking.scenarios import order_scenario as order
+
+        return order(bank, context, scenario_id)
+
+    @routes.post("/scenarios/{scenario_id}/cancel", dependencies=[Depends(mutation)])
+    def cancel_scenario(scenario_id: str, body: StrictBody, context=Depends(identity)):
+        from ai_banking.banking.scenarios import cancel_scenario as cancel
+
+        return cancel(bank, context, scenario_id)
 
     @routes.post("/tasks", dependencies=[Depends(mutation)])
     def create_task(body: TaskBody, context=Depends(identity)):
