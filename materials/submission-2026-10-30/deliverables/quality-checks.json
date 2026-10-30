@@ -1,34 +1,34 @@
 {
-  "technical_pages": 10,
-  "security_pages": 7,
+  "technical_pages": 11,
+  "security_pages": 8,
   "rendered_with": "Poppler 90 dpi (v1.1 review)",
   "visual_review": "17 pages inspected; no overlap, missing glyphs or cut tables; figures 3/4 replaced with cropped dialogs",
-  "test_nodes": 222,
+  "test_nodes": 229,
   "key_case_functions": 30,
   "manual_cases": 10,
-  "archive_retest": "222 passed in 40.14s; existing local dependencies",
+  "archive_retest": "source archive rebuilt from b2284f0; current worktree and clean venv: 229 passed",
   "pdf_checks": {
     "technical-document.pdf": {
-      "pages": 10,
+      "pages": 11,
       "encrypted": false,
       "text_extraction": "pass",
       "size_limit": "pass"
     },
     "security-self-assessment.pdf": {
-      "pages": 7,
+      "pages": 8,
       "encrypted": false,
       "text_extraction": "pass",
       "size_limit": "pass"
     }
   },
   "source_package": {
-    "bytes": 3413564,
-    "sha256": "5e444140e9274405f53b341ee1b6d22771727f2b7ac3ab3d1795147729df1400",
-    "entries": 119,
+    "bytes": 265688,
+    "sha256": "2e24b5852150f9eeac3e3ab2ae58bdca04cc6a4ce10d35769d89836bcfe92c5f",
+    "entries": 77,
     "crc": "pass",
     "manifest": "pass"
   },
-  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability extras, 222 passed",
+  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability extras, 229 passed",
   "revision": "v1.1",
   "manual_review": {
     "cases": 10,

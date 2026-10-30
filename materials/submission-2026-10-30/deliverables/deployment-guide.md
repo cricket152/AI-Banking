@@ -4,7 +4,7 @@
 
 Python 3.12+；现有本机测试Windows / Python 3.13.12。最低版本3.12及其他操作系统未做本轮实际安装验证。单进程SQLite、本机回环HTTP；无需Node或前端编译。不能把本机HTTP与短密码测试策略用于公网。
 
-源码来自配套source-review.zip中的AI-Banking目录；不要用git clone远程main替代本地未提交功能。先核对archive-info.json和source-manifest.json，再在新目录解压。压缩包不含.env、运行数据库或实际凭据。
+源码来自配套source-review.zip中的AI-Banking目录；不要用git clone远程main替代冻结版本。先核对archive-info.json和source-manifest.json，再在新目录解压。压缩包不含.env、运行数据库或实际凭据。
 
 ## 2. 新目录安装
 

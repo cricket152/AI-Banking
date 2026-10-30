@@ -1,6 +1,6 @@
 # 本轮素材核验
 
-- pytest -q：222 passed in 31.83s；退出码0，原始日志pytest.txt。
+- pytest -q：229 passed in 79.30s；退出码0，原始日志pytest.txt。
 - Ruff check：All checks passed；Ruff format --check：36 files already formatted。
 - 浏览器：独立合成库、脚本化Agent、真实工具与执行器；逐笔确认完成取消订阅与1元转账，2/2步；14张PNG。未调用真实供应商，不增加真实模型评测样本。
 - 架构：Archify 3.2.0 showcase，当前review-3的validate/deliver/check/browser-check通过；visual-check四个明暗/尺寸状态自动测量通过。已检查原生PNG与对应页面布局；自动回执仍区分visualReview pending和人工观察，不改写工具回执。

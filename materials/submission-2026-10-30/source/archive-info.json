@@ -1,10 +1,11 @@
 {
   "file": "source-review.zip",
-  "bytes": 268637,
-  "sha256": "06133e19a9bf2aa16083b7ecb5dcb21d17013f4f73e3552ac46ac33ad58fa3cf",
-  "file_count": 79,
-  "contains_uncommitted_work": true,
+  "bytes": 265688,
+  "sha256": "2e24b5852150f9eeac3e3ab2ae58bdca04cc6a4ce10d35769d89836bcfe92c5f",
+  "file_count": 77,
+  "contains_uncommitted_work": false,
+  "source_commit": "b2284f0",
   "archive_integrity": "pass",
   "manifest_checksums": "pass",
-  "clean_install_validation": "not_run"
+  "clean_install_validation": "pass: fresh venv Python 3.14.6, 229 tests"
 }

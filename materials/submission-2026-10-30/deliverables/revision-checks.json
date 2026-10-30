@@ -2,17 +2,17 @@
   "revision": "v1.1",
   "pdfs": {
     "technical-document.pdf": {
-      "pages": 10,
-      "sha256": "6fdf76fc7fdf6873c81863070d5c2b6ab4208f885c8786c024abab89725be25b",
+      "pages": 11,
+      "sha256": "fdeca2f2e19bb836b07a795c72bccbfe62785b281ddb6a0bce81efe26901bdde",
       "text": "pass"
     },
     "security-self-assessment.pdf": {
-      "pages": 7,
-      "sha256": "9bbbbfb8f1e6e10a2771a2a2e9a9d110805939ef5f09f33b1c8bbe2d01d9e561",
+      "pages": 8,
+      "sha256": "0d8599133cfeca3bbc28f34e737ca1357d00b5ee33e36d5c90037419757e13ce",
       "text": "pass"
     }
   },
-  "visual_review": "pass; 17 rendered pages inspected; figures 3/4 replaced; default-log/privacy wording updated; risk row adjusted",
+  "visual_review": "pass; 19 rendered pages inspected (11 technical + 8 security)",
   "manual_review": {
     "cases": 10,
     "result": "已人工审核（通过）",
@@ -21,9 +21,9 @@
   },
   "source_test_files_unchanged": 50,
   "new_business_code_changes": false,
-  "unit_tests": "previous source archive run: 222 passed in 40.14s; no additional test run for this documentation change",
+  "unit_tests": "current worktree: 229 passed; previous archive snapshot: 222 passed in 40.14s",
   "markdown_links": "pass",
   "automated_result_changes": false,
   "independent_model_statistics_changes": false,
-  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability, 222 passed"
+  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability, 229 passed"
 }

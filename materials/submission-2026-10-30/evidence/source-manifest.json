@@ -1,7 +1,7 @@
 {
-  "base_commit": "2b63eba2539c787dc67b22f19a02ac92ba9c7fb9",
-  "branch": "codex/payees-transfer-workflow",
-  "working_tree_uncommitted": true,
+  "base_commit": "b2284f04c44f51aabc2c6e3053b4f8255c102639",
+  "branch": "feat/cards-scenarios",
+  "working_tree_uncommitted": false,
   "files": [
     {
       "path": ".editorconfig",
@@ -10,8 +10,8 @@
     },
     {
       "path": ".env.example",
-      "bytes": 2020,
-      "sha256": "b8e149b3bc8530e705ce90b9c59894ef0c8760f026fa4a91b97b780e9a4d1833"
+      "bytes": 2014,
+      "sha256": "6c99a0f7a27e4511cee7e1f2250ec6a3f6ddfe6d4c20a9b2d041d541f621d0d1"
     },
     {
       "path": ".gitattributes",
@@ -19,24 +19,9 @@
       "sha256": "e4f8fbb817845830ec1ab6dd1b4c86d405db30f35e4244f1dfe14adae545116a"
     },
     {
-      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
-      "bytes": 427,
-      "sha256": "ad50a322785040c87756e305bc5d53c1f57dff650aedb90e910e1bdcc292146c"
-    },
-    {
-      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
-      "bytes": 534,
-      "sha256": "beac80b91672ba8595e093cccc6fb7379815650fa9f58a7e529f4264f710dcb1"
-    },
-    {
-      "path": ".github/pull_request_template.md",
-      "bytes": 757,
-      "sha256": "5f75af283367690df218b0f8dbdabaa3822341e3db0c7a8d31c4797dfa6ac188"
-    },
-    {
       "path": ".gitignore",
-      "bytes": 567,
-      "sha256": "e8956bdec3cee2e95e04616d0f4270e79bd2b6a7f01cba0c951e7eb9ce0cbac3"
+      "bytes": 813,
+      "sha256": "be77eb5bfa2ff32e7317cdf1025a21eb7ad958aa955e0d0d7ddd97ca9690e258"
     },
     {
       "path": "AGENTS.md",
@@ -47,6 +32,11 @@
       "path": "CONTRIBUTING.md",
       "bytes": 3280,
       "sha256": "1cb47a22b6e056e05b1af9b7c8ef8fda8a88a0a2ecaf7f73426ec5a1b8684b15"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7360,
+      "sha256": "2dbe0f841105efe03db57dab299494e93242efc0814a2b0d082fedfbd0cfd918"
     },
     {
       "path": "docs/agent-evaluation-results.md",
@@ -84,6 +74,11 @@
       "sha256": "6f27a010426273d3a99a48c7da8007905b7cf61ac1675897300af78dc5110d3c"
     },
     {
+      "path": "docs/cards-and-scenarios.md",
+      "bytes": 2813,
+      "sha256": "c2301d991e7742d5f906818b7f15ebd183d039e4dd4d0c729af77694355b94b1"
+    },
+    {
       "path": "docs/competition.md",
       "bytes": 6301,
       "sha256": "37c9049f4a672656004c7c4cb66524011a0bf284e191a0c05bb77b893baeb49a"
@@ -100,8 +95,8 @@
     },
     {
       "path": "docs/local-development.md",
-      "bytes": 13237,
-      "sha256": "2a78e7af2e243b2b436da06de62453ca60048f837c474dbb12bac7f027b2990a"
+      "bytes": 13285,
+      "sha256": "a807dcd8841f33d74010efc4ba7e3286b09436e62dc984391951fa778e880c1d"
     },
     {
       "path": "docs/requirements.md",
@@ -124,19 +119,9 @@
       "sha256": "373825fc3267d2c700962432e8cdc7704876cc08024f0c6e8253dc223abc85e9"
     },
     {
-      "path": "PROJECT_STATUS.md",
-      "bytes": 39244,
-      "sha256": "f28c40ae148ed0a7cc892f661af4ff194be06b0a7dd3fdee7b0931b875b3cc00"
-    },
-    {
       "path": "pyproject.toml",
       "bytes": 891,
       "sha256": "c8e64d5882076f2b5981c36fd3cefd901373cec0234d8d9f23fc6a645b070d0f"
-    },
-    {
-      "path": "README.md",
-      "bytes": 5190,
-      "sha256": "9bded7fc47b04302133d1310f81f5f772ca052d29556f6a42ea99168d12a6679"
     },
     {
       "path": "requirements-dev.lock",
@@ -165,8 +150,8 @@
     },
     {
       "path": "src/ai_banking/agent.py",
-      "bytes": 37578,
-      "sha256": "406efae8b1be533af93ddfc75427100e5d5e701fb17e5a1cbbce52de2ccc77f0"
+      "bytes": 38543,
+      "sha256": "8c7ab88ded23868584360649ef2e32e13204c83f73d9b3edcf6f29f8495bb46b"
     },
     {
       "path": "src/ai_banking/agent_operations.py",
@@ -175,8 +160,8 @@
     },
     {
       "path": "src/ai_banking/app.py",
-      "bytes": 19303,
-      "sha256": "9806cd031ad26f6081430ff565b38d930d1ff174548fda64bddcb3f6ce1d9ff4"
+      "bytes": 19521,
+      "sha256": "ace111d08adc6bbd513e0e869b84d48aa03d06b64aea34ce80c81987481e0d00"
     },
     {
       "path": "src/ai_banking/auth/__init__.py",
@@ -195,8 +180,13 @@
     },
     {
       "path": "src/ai_banking/banking/api.py",
-      "bytes": 9183,
-      "sha256": "1b26eee9254628d6c6c6aebd4780cd7ecbb2995d2302d857c60bfe375fc5346c"
+      "bytes": 12191,
+      "sha256": "25e26db841b97ca67ec426f37a20f939afc44f62e88cd149b46eb33fbe1b2863"
+    },
+    {
+      "path": "src/ai_banking/banking/cards.py",
+      "bytes": 5794,
+      "sha256": "a689f1ed58e8562c40eee1010f4c3809f4af3177dd169ccc79e013ee95592a96"
     },
     {
       "path": "src/ai_banking/banking/cli.py",
@@ -212,6 +202,11 @@
       "path": "src/ai_banking/banking/reports.py",
       "bytes": 9429,
       "sha256": "ef7c25d916c318e32ab09be1e01138bb0a1cfca63834511fd391db028796d50e"
+    },
+    {
+      "path": "src/ai_banking/banking/scenarios.py",
+      "bytes": 7177,
+      "sha256": "fbe5a1dd0381772d272eeb448cdd0ad9af94c166951338374b77b8353c7efc4c"
     },
     {
       "path": "src/ai_banking/banking/schema.py",
@@ -235,13 +230,13 @@
     },
     {
       "path": "src/ai_banking/catalog.py",
-      "bytes": 2200,
-      "sha256": "6ff6791b9de0b9522828773050aa196706b216b95660b458ba9c313bb4b56fcd"
+      "bytes": 2260,
+      "sha256": "2e17a7a06ceec72693b93042b685db58eb00b091dfb633fa668c68e8dacacb75"
     },
     {
       "path": "src/ai_banking/config.py",
-      "bytes": 6461,
-      "sha256": "ad83826575650ffbe882c64495b70f25310a399c84119b9eca45aff4273491cf"
+      "bytes": 6463,
+      "sha256": "81862a69800194d103dcb1d4e82f242f1feffcee6f088c82315f6129d9ae8c28"
     },
     {
       "path": "src/ai_banking/context.py",
@@ -270,8 +265,8 @@
     },
     {
       "path": "src/ai_banking/web/app.css",
-      "bytes": 52827,
-      "sha256": "8fe9d54e9ded15216f09fd7b73531178020786e6211ac4e58621b6528a90338a"
+      "bytes": 53236,
+      "sha256": "b305a0b12848dfbd4d10d3ed1feec292fee6b3e68f42ea07b24c16430a0ee454"
     },
     {
       "path": "src/ai_banking/web/app.js",
@@ -280,13 +275,18 @@
     },
     {
       "path": "src/ai_banking/web/banking.js",
-      "bytes": 40855,
-      "sha256": "cdaee8f96e7998c4ffe2115b6e88a9a834976ec8cbaedf1c28626514831fefd7"
+      "bytes": 41271,
+      "sha256": "0ce779ecbbdf0f5ba4943d45745ba8477fc1180979563dde519373a0774ecfa2"
+    },
+    {
+      "path": "src/ai_banking/web/cards.js",
+      "bytes": 5612,
+      "sha256": "dbb5ccf64f1f9c267bc061edf0a41d5b566eb4b88b3ce82d03ec9c89f30e7f1a"
     },
     {
       "path": "src/ai_banking/web/index.html",
-      "bytes": 43556,
-      "sha256": "9cbe452c2ca4068d75ca4f2038b0d34d110bcf028cf99b1d367d5770c550b576"
+      "bytes": 48968,
+      "sha256": "10cc69bb474599eaf1470553deefb1bd3acc431122a569ec177f0c8c76333b78"
     },
     {
       "path": "src/ai_banking/web/insights.js",
@@ -299,34 +299,14 @@
       "sha256": "6c25fe21185a6f8acf55b3213ea42d37add275521a22993fda6d67a63f477b81"
     },
     {
+      "path": "src/ai_banking/web/scenarios.js",
+      "bytes": 6273,
+      "sha256": "5127a34d328458e33e19015fa33da3115d68ccf8de1cb72f844d480219f5971d"
+    },
+    {
       "path": "src/ai_banking/web/transfers.js",
       "bytes": 12738,
       "sha256": "cd98baa27829e020452293cf1243983e4fabe770e4b647f6fac5887775cde00f"
-    },
-    {
-      "path": "src/ai_banking.egg-info/dependency_links.txt",
-      "bytes": 1,
-      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
-    },
-    {
-      "path": "src/ai_banking.egg-info/PKG-INFO",
-      "bytes": 615,
-      "sha256": "0a9afd65b65db398eefdcbcb3dd5a0e7d85672310dbf356bb71710612ee9f199"
-    },
-    {
-      "path": "src/ai_banking.egg-info/requires.txt",
-      "bytes": 228,
-      "sha256": "7cb4f4d8dcf463c2a1b34f2ab12e7cc183202d717ed39c284f9edc1a6ce65445"
-    },
-    {
-      "path": "src/ai_banking.egg-info/SOURCES.txt",
-      "bytes": 938,
-      "sha256": "b5f4df73a516ad61b85ac3bebd77905c5cf63e6f1f2c5a7bf5b5f2fd514e19ce"
-    },
-    {
-      "path": "src/ai_banking.egg-info/top_level.txt",
-      "bytes": 11,
-      "sha256": "1b773dad77140e2d7dca91f035e1b079596b9c79a2a5b5caaf77409b8d68417b"
     },
     {
       "path": "tests/.gitkeep",
@@ -350,8 +330,8 @@
     },
     {
       "path": "tests/test_application.py",
-      "bytes": 24069,
-      "sha256": "bb8befd5a37a4996a2e2a74f54d0bf0e78f670462f5c2bc958d481cd3295e9e5"
+      "bytes": 24476,
+      "sha256": "4df3492d3fd93d4a8d4c69442f2e88307f07880f239b05ad53a4f9ccca4aeee4"
     },
     {
       "path": "tests/test_banking.py",
@@ -362,6 +342,11 @@
       "path": "tests/test_banking_edges.py",
       "bytes": 9636,
       "sha256": "2f988ac0ca8351229c8d27924c71e755f849e94cb93a7a0443af7dff003831a8"
+    },
+    {
+      "path": "tests/test_cards.py",
+      "bytes": 4290,
+      "sha256": "422660b0c0831c2bc71e945c49d1400b9acc1b336905d72cf0a4628d56b4c943"
     },
     {
       "path": "tests/test_catalog.py",
@@ -389,9 +374,14 @@
       "sha256": "aad023d2a8d2a8694e8d1238145474e32188b0a0c62cb42febe098074a44675e"
     },
     {
+      "path": "tests/test_scenarios.py",
+      "bytes": 4963,
+      "sha256": "0d507bc19d4481c887d88ef524a1c53a38eb2f99cbeb35a182d5e112467a2e5a"
+    },
+    {
       "path": "tests/test_tracing.py",
-      "bytes": 4017,
-      "sha256": "b51118270521acda528ccb1dfab60e41d4d0456f813c5c4913ce8f7d7f4d88e3"
+      "bytes": 4137,
+      "sha256": "ba6a8107f35a6bf3e51483c515437a6b8e1a3155dba6632f9e9ba4670787bf6b"
     },
     {
       "path": "tests/test_transfer_workflows.py",
