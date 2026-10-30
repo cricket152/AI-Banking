@@ -105,6 +105,16 @@ python -m pip check
 
 如果系统临时目录不可写，可将 `TEMP` 和 `TMP` 指向本机可写的临时目录再执行；不要降低数据库或认证校验。Windows 受限沙箱还可能阻断 asyncio 所需的本机 socket，此时应在有本机网络权限的终端测试。
 
+### 前端浏览器冒烟测试
+
+```powershell
+python -m pytest -q tests/frontend
+```
+
+测试使用现有 pytest、Uvicorn 和本机 Chromium 系浏览器，不新增依赖。它会启动隔离的本地 FastAPI 实例、临时 SQLite 数据库和合成测试用户，再由无界面 Edge、Chrome 或 Chromium 执行“登录 → 我的账户”导航，并核对账户列表。不会读取 `.env`、调用模型或连接外部服务。浏览器会使用临时用户目录；测试数据随 pytest 临时目录清理。
+
+测试会自动查找浏览器；也可通过 `AI_BANKING_BROWSER` 指定浏览器可执行文件。找不到浏览器时用例会显示明确的 pytest `SKIPPED` 原因，不会将未执行报告为通过。当前仓库没有 Playwright 依赖，因此入口使用 Chromium 的 headless `--dump-dom` 与浏览器内交互脚本；若缺少浏览器，可在已有 Edge、Chrome 或 Chromium 的终端运行该命令。
+
 手工检查：创建两位用户，分别登录核对隔离；查看账户和筛选流水；问余额与最近支出；刷新确认对话保留；新建对话；退出后确认无法访问账户 API；在窄屏重复上述交互。真实模型接入后额外确认工具调用、供应商错误、超时和费用预算。
 
 ## 6. 只读接口速查

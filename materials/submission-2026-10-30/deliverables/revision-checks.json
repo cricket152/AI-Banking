@@ -21,9 +21,9 @@
   },
   "source_test_files_unchanged": 50,
   "new_business_code_changes": false,
-  "unit_tests": "current worktree: 232 passed; previous archive snapshot: 222 passed in 40.14s",
+  "unit_tests": "historical v1.1 record: current worktree 232 passed; previous archive snapshot: 222 passed in 40.14s; current revalidation: Python 3.14.6 worktree 235 passed, Python 3.13 clean-environment focused tests 39 passed",
   "markdown_links": "pass",
   "automated_result_changes": false,
   "independent_model_statistics_changes": false,
-  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability, 232 passed"
+  "clean_install": "historical v1.1 record: fresh venv Python 3.14.6, dev+observability, 232 passed; current clean-environment revalidation: Python 3.13, pip check passed, focused tests 39 passed; Python 3.12 unavailable"
 }

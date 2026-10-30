@@ -1,18 +1,18 @@
-# 设计人员快速选图
+# 答辩幻灯片选图表
 
-| 内容 | 推荐资产 |
-| --- | --- |
-| 首页/产品全景 | ../images/02-overview.png |
-| Agent架构与安全关卡 | ../diagrams/agent-runtime.svg / PNG（v1.1首选）；系统模块概览另见system-architecture.svg |
-| 问题类型与12个工具 | ../diagrams/agent-tool-map.svg / PNG |
-| 上下文压缩触发 | ../diagrams/context-routing.svg / PNG；每轮检查，默认历史超过12轮摘录，并非每隔12轮定时 |
-| 账单功能 | ../images/03-billing-analysis.png、04-anomaly-evidence.png |
-| 订阅证据 | ../images/05-subscription-evidence.png |
-| 同名收款人 | ../images/06-payees.png |
-| 方案与资金影响 | ../images/07-workflow-preview.png |
-| 尚未执行 / 待确认 / 完成 | ../images/08-plan-saved.png、09-plan-pending.png、12-workflow-complete.png |
-| 逐笔确认边界 | ../images/10-cancel-confirmation.png、11-transfer-confirmation.png |
-| 明确预授权范围 | ../images/14-authorization-scope.png |
-| 移动视口 | ../images/13-workflow-mobile.png |
+| 页 | 内容 | 推荐资产 |
+| --- | --- | --- |
+| 1 | 产品全景 | ../images/02-overview.png |
+| 2 | 问题与风险 | 使用可编辑文字与流程，不放未经验证的市场统计 |
+| 3 | 能力与权限边界 | ../diagrams/agent-tool-map.png |
+| 4 | Agent链路和系统结构 | ../diagrams/agent-runtime.png；../diagrams/system-architecture.png |
+| 5 | 账单异常依据 | ../images/04-anomaly-evidence.png |
+| 6 | 订阅证据与固定工作流 | ../images/05-subscription-evidence.png、09-plan-pending.png、12-workflow-complete.png |
+| 7 | 日期场景计划 | PPT内可编辑流程图；当前images目录无对应日期计划截图 |
+| 8 | 授权与独立确认 | ../images/14-authorization-scope.png、11-transfer-confirmation.png |
+| 9 | 验证状态 | 可编辑数字与边界说明，不制作模型成功率图表 |
+| 10 | 结论与待办 | 不需要截图 |
 
-请保留脚本化演示、模拟环境和状态标签，所选图应配对应说明。架构图核心来源固定在2b63eba，新增联系人/联动功能来自当前工作树，不能把远程仓库旧版本当成本包代码。
+现有图中07-12展示的是固定“取消所选订阅后转账”工作流，不能标成生日/纪念日日期计划。图13只是390×844浏览器视口，不代表真实手机设备验收。架构图与工具图保留脚本化演示、模拟环境与状态标签，不裁掉待确认/成功状态。
+
+上下文压缩图另见 ../diagrams/context-routing.svg / PNG；每轮按预算检查，默认近期12轮并不表示每隔12轮定时压缩。

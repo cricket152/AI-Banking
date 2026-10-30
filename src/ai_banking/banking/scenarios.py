@@ -115,13 +115,14 @@ def create_scenario(bank, context, values):
             raise BankError("RESOURCE_NOT_FOUND", 404)
         if payee["account_id"] == source["id"]:
             raise BankError("INVALID_TRANSFER", 422)
-        planned = sum(
-            plan["budget_minor"]
-            for plan in _saved(bank, context, db)
-            if plan["status"] == "active" and plan["source_id"] == source["id"]
-        )
-        if planned + amount > source["balance_minor"]:
-            raise BankError("SCENARIO_BUDGET_EXCEEDED", 409)
+        # A scenario budget is an affordability check at plan creation time;
+        # it does not reserve or preallocate funds for a future order.
+        try:
+            bank._available(db, context.user_id, source["id"], amount)
+        except BankError as error:
+            if error.code == "INSUFFICIENT_BALANCE":
+                raise BankError("SCENARIO_BUDGET_EXCEEDED", 409) from error
+            raise
         scenario_id = uuid4().hex
         detail = {
             "scenario_id": scenario_id,

@@ -4,9 +4,10 @@
   "rendered_with": "Poppler 90 dpi (v1.1 review)",
   "visual_review": "17 pages inspected; no overlap, missing glyphs or cut tables; figures 3/4 replaced with cropped dialogs",
   "test_nodes": 232,
+  "current_worktree_test_nodes": 235,
   "key_case_functions": 30,
   "manual_cases": 10,
-  "archive_retest": "source archive rebuilt from eb3a0ab; current worktree and clean venv: 232 passed",
+  "archive_retest": "historical source archive rebuilt from 9febd92; archive-era retest: 232 passed; current worktree revalidation: Python 3.14.6, 235 passed; Python 3.13 clean-environment focused tests: 39 passed",
   "pdf_checks": {
     "technical-document.pdf": {
       "pages": 12,
@@ -28,7 +29,7 @@
     "crc": "pass",
     "manifest": "pass"
   },
-  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability extras, 232 passed",
+  "clean_install": "historical v1.1 record: fresh venv Python 3.14.6, dev+observability extras, 232 passed; current clean-environment revalidation: Python 3.13, pip check passed, focused tests 39 passed; Python 3.12 unavailable",
   "revision": "v1.1",
   "manual_review": {
     "cases": 10,

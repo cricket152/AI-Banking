@@ -2,7 +2,7 @@
 
 ## 1. 适用环境
 
-Python 3.12+；现有本机测试Windows / Python 3.13.12。最低版本3.12及其他操作系统未做本轮实际安装验证。单进程SQLite、本机回环HTTP；无需Node或前端编译。不能把本机HTTP与短密码测试策略用于公网。
+最低要求 Python 3.12+。本轮完整回归在 Windows / Python 3.14.6 通过；另在全新 venv（Python 3.14.6，dev+observability）复测通过。最低版本3.12及其他操作系统未实测；全新venv验证不等于全新机器或全新依赖源安装验收。单进程SQLite、本机回环HTTP；无需Node或前端编译。不能把本机HTTP与短密码测试策略用于公网。
 
 源码来自配套source-review.zip中的AI-Banking目录；不要用git clone远程main替代冻结版本。先核对archive-info.json和source-manifest.json，再在新目录解压。压缩包不含.env、运行数据库或实际凭据。
 
@@ -71,4 +71,4 @@ Ctrl+C停止前台服务；确认所属进程后再操作后台服务。备份�
 
 ## 8. 验证与交付状态
 
-执行test-cases.md命令并记录日志。已有本机测试和截图证据，但尚未完成干净机器/全新依赖环境安装验收；不宣称Docker、云端或生产部署已完成。正式交付需冻结源码、复测并更新哈希。
+执行test-cases.md命令并记录日志。当前工作树在Python 3.14.6通过235项自动化（含前端浏览器冒烟1项）；另以新建Python 3.13 venv按`requirements-dev.lock`安装`.[dev]`，`pip check`通过并完成39项核心/前端定向测试。最低Python 3.12、其他OS、全新机器和真实模型均未验证；不宣称Docker、云端或生产部署已完成。正式交付需冻结源码、复测并更新哈希。

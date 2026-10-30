@@ -38,7 +38,7 @@ def create(client, source, payee, **changes):
     return response.json()["scenario"]
 
 
-def test_create_and_list_scenario_plan_without_moving_funds(shared_env):
+def test_create_and_list_scenario_plan_without_moving_or_reserving_funds(shared_env):
     app, client, _, _ = shared_env
     ctx, source, payee = setup(app, client)
     with app.state.store.transaction() as db:
@@ -49,21 +49,82 @@ def test_create_and_list_scenario_plan_without_moving_funds(shared_env):
     assert scenario["order_due"] is True
     assert scenario["budget_minor"] == 100000
     with app.state.store.transaction() as db:
-        try:
-            app.state.bank._available(
-                db,
-                ctx.user_id,
-                source["id"],
-                source["balance_minor"] - 100000 + 1,
-            )
-        except Exception as error:
-            assert getattr(error, "code", None) == "INSUFFICIENT_BALANCE"
-        else:
-            raise AssertionError("预算预占未生效")
+        # A saved plan is not a balance reservation; only real operation
+        # reservations and the requested amount affect available funds.
+        app.state.bank._available(
+            db,
+            ctx.user_id,
+            source["id"],
+            source["balance_minor"] - 100000 + 1,
+        )
     listing = client.get("/api/bank/scenarios").json()["scenarios"]
     assert any(item["scenario_id"] == scenario["scenario_id"] for item in listing)
     with app.state.store.transaction() as db:
         assert db.execute("SELECT COUNT(*) FROM bank_ledger").fetchone()[0] == ledger
+
+
+def test_multiple_scenario_budgets_are_validated_independently(shared_env):
+    app, client, _, _ = shared_env
+    _, source, payee = setup(app, client)
+    budget = source["balance_minor"] * 2 // 3
+    first = create(client, source, payee, budget_minor=budget, title="第一笔预算")
+    second = create(client, source, payee, budget_minor=budget, title="第二笔预算")
+    assert first["status"] == second["status"] == "active"
+    assert (
+        len(
+            [
+                item
+                for item in client.get("/api/bank/scenarios").json()["scenarios"]
+                if item["status"] == "active"
+            ]
+        )
+        == 2
+    )
+
+
+def test_order_execution_rechecks_current_balance(shared_env):
+    app, client, _, _ = shared_env
+    _, source, payee = setup(app, client)
+    budget = source["balance_minor"] * 2 // 3
+    first = create(client, source, payee, budget_minor=budget, title="先执行")
+    second = create(client, source, payee, budget_minor=budget, title="后执行")
+
+    first_order = post(client, f"/api/bank/scenarios/{first['scenario_id']}/order", {})
+    first_operation = first_order.json()["operation"]
+    first_challenge = post(
+        client, f"/api/bank/operations/{first_operation['id']}/challenge", {}
+    ).json()
+    approved = post(
+        client,
+        f"/api/bank/operations/{first_operation['id']}/decision",
+        {
+            "decision": "approve",
+            "challenge": first_challenge["challenge"],
+            "parameters_digest": first_challenge["summary"]["parameters_digest"],
+        },
+    )
+    assert approved.status_code == 200 and approved.json()["state"] == "succeeded"
+
+    second_order = post(client, f"/api/bank/scenarios/{second['scenario_id']}/order", {})
+    second_operation = second_order.json()["operation"]
+    second_challenge = post(
+        client, f"/api/bank/operations/{second_operation['id']}/challenge", {}
+    ).json()
+    failed = post(
+        client,
+        f"/api/bank/operations/{second_operation['id']}/decision",
+        {
+            "decision": "approve",
+            "challenge": second_challenge["challenge"],
+            "parameters_digest": second_challenge["summary"]["parameters_digest"],
+        },
+    )
+    assert failed.status_code == 409
+    assert failed.json()["code"] == "INSUFFICIENT_BALANCE"
+    persisted = client.get(f"/api/bank/operations/{second_operation['id']}")
+    assert persisted.status_code == 200
+    assert persisted.json()["state"] == "failed"
+    assert persisted.json()["error_code"] == "INSUFFICIENT_BALANCE"
 
 
 def test_order_scenario_creates_single_confirmed_transfer(shared_env):

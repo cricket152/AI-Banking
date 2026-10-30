@@ -55,7 +55,8 @@ def balances(env):
 
 
 def test_tools_preserve_query_prefix_and_expose_no_approval_or_execution():
-    assert [tool["name"] for tool in TOOLS] == [
+    names = [tool["name"] for tool in TOOLS]
+    assert names == [
         "list_accounts",
         "get_transactions",
         "list_payees",
@@ -69,6 +70,15 @@ def test_tools_preserve_query_prefix_and_expose_no_approval_or_execution():
         "get_billing_entries",
         "find_payees",
     ]
+    assert not {
+        "prepare_scenario_order",
+        "prepare_wealth_order",
+        "create_scenario",
+        "cancel_scenario",
+        "purchase_wealth",
+        "redeem_wealth",
+        "apply_card",
+    } & set(names)
 
 
 def test_prepare_only_and_independent_approval_are_required(intent_env):
