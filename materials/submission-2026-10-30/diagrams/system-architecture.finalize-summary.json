@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "B:\\Code\\Dev\\AI Banking\\materials\\submission-2026-10-30\\diagrams\\architecture.archify.json",
+    "sha256": "1168af838ce0d84a27c7185901898610d3d068e7dd4c5c42c74486e2ec1f75c5",
+    "bytes": 4074
+  },
+  "artifact": {
+    "path": "B:\\Code\\Dev\\AI Banking\\materials\\submission-2026-10-30\\diagrams\\system-architecture.html",
+    "sha256": "7d18d6c1d987d17696098c7540700399cdd68a7baad411321db04a9e4d011fc9",
+    "bytes": 839576
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "B:\\Code\\Dev\\AI Banking\\materials\\submission-2026-10-30\\diagrams\\system-architecture.finalize.json",
+    "summaryReceipt": "B:\\Code\\Dev\\AI Banking\\materials\\submission-2026-10-30\\diagrams\\system-architecture.finalize-summary.json",
+    "browserCheckReceipt": "B:\\Code\\Dev\\AI Banking\\materials\\submission-2026-10-30\\diagrams\\system-architecture.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-30T01:57:35.526Z",
+    "source": "network",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 3805,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  },
+  "layoutReviewRecommendation": {
+    "action": "inspect-leading-space",
+    "evidence": {
+      "measured": true,
+      "emptyTopPx": 240,
+      "emptyTopRatio": 0.388,
+      "occupiedTop": 240,
+      "viewBoxTop": 0,
+      "canvasHeight": 618,
+      "typicalNodeHeight": 80,
+      "reviewSuggested": true
+    },
+    "reason": "Measured content, including routes and labels, leaves a large empty area above the diagram. This is a composition suggestion, not a failed gate.",
+    "repair": "Check whether that leading space is intentional. If not, reposition the connected scene nearer the canvas origin while retaining room for its actual boundaries, labels and return routes. Preserve all meaning and user-fixed geometry, then rerun finalize. No screenshot is required."
+  }
+}

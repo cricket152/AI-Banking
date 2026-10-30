@@ -87,6 +87,10 @@
 | --- | --- |
 | `GET /payees` | 本人登记收款人，不返回对方余额 |
 | `POST /payees` | `name`、`account_id`、`password` |
+| `POST /payees/demo` | 密码再认证后显式载入本人独立虚构联系人；幂等，不扣款 |
+| `POST /payees/{id}/note` | `note`、`password`；只改本人的备注，不改账户绑定 |
+| `POST /plans/preview` | 账户、收款人、金额及 1–5 项登记订阅；只生成可核对方案与影响 |
+| `POST /plans` | 上述字段及 `request_id`、`evidence_digest`、`acknowledged=true`；保存新应用对话与计划，不授权或执行 |
 | `POST /tasks` | UUID `request_id`，返回稳定任务 ID |
 | `GET /tasks/{id}` | 检查点、步骤与原操作编号 |
 | `GET /grants` | 策略、累计支出、预占与剩余额度 |
@@ -103,10 +107,16 @@
 | `GET /events?after=0&limit=50` | 本人事件，`next_after` 用于继续查询，最多 100 条 |
 | `GET /reports?start=2026-01-01&end=2027-01-01` | 闭开日期区间账单，示例日期不代表比赛赛程 |
 | `GET /subscriptions` | 登记订阅、状态与查询时计算的续费提醒 |
+| `GET /reports/entries?start=...&end=...&offset=0&limit=20` | 本人区间流水依据，支持分类与流水 ID 筛选，最多 50 条 / 页 |
+| `POST /subscriptions/candidates/{id}/confirm` | `evidence_digest`、`acknowledged=true`；核验周期证据后显式登记，不扣款或授权 |
+
+账单新增前一等长区间对比、分类增减与历史中位数异常线索；订阅查询新增带流水证据的疑似候选。规则、日期口径和确认流程见 [账单洞察](billing-insights.md)。
 
 主要错误：401 会话 / 再认证失败；403 CSRF、确认凭证或策略范围不符；404 不存在或越权；409 重复请求参数冲突、额度 / 余额不足、状态不允许；422 输入不合法；503 数据库需升级或提交后回执暂不可用。后者应先查原操作，不换编号重试。
 
 ## 验证与剩余工作
+
+联系人元数据与固定跨场景计划复用原事件表。转账确认摘要追加后端生成的收款人名称、备注、银行 / 尾号和余额预览；不公开对方余额。原 `Bank.prepare` 同时约束计划内的顺序、对象、金额与幂等编号。规则和边界见 [收款人与转账方案](transfer-workflows.md)。
 
 相关测试位于 `tests/test_banking.py`、`tests/test_banking_edges.py`，覆盖并发、回滚、响应丢失、重启、确认、预算、隔离、日期和升级。执行命令见 [本地开发](local-development.md)，实际结果见 [项目状态](../PROJECT_STATUS.md)。
 

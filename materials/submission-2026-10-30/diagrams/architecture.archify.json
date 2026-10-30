@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "AI-Banking 核心控制架构",
+    "locale": "zh-CN",
+    "output": "materials/submission-2026-10-30/diagrams/system-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/cricket152/AI-Banking.git",
+      "revision": "2b63eba2539c787dc67b22f19a02ac92ba9c7fb9"
+    }
+  },
+  "components": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "原生 Web",
+      "sublabel": "查询 / 确认 / 授权",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        180,
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/ai_banking/web/banking.js"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "security",
+      "label": "FastAPI 身份入口",
+      "sublabel": "会话 / CSRF / 归属",
+      "pos": [
+        340,
+        40
+      ],
+      "size": [
+        180,
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/ai_banking/app.py"
+        }
+      ]
+    },
+    {
+      "id": "bank",
+      "type": "backend",
+      "label": "应用控制与银行执行",
+      "sublabel": "人工批准或范围内预授权",
+      "pos": [
+        700,
+        40
+      ],
+      "size": [
+        180,
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/ai_banking/banking/service.py"
+        }
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "SQLite",
+      "sublabel": "账本 / 预算 / 检查点",
+      "pos": [
+        1060,
+        40
+      ],
+      "size": [
+        180,
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/ai_banking/store.py"
+        }
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "单主 Agent",
+      "sublabel": "查询或提出受控意图",
+      "pos": [
+        340,
+        270
+      ],
+      "size": [
+        180,
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/ai_banking/agent.py"
+        }
+      ]
+    },
+    {
+      "id": "model",
+      "type": "external",
+      "label": "模型供应商",
+      "sublabel": "仅模型模式通过 HTTPS",
+      "pos": [
+        700,
+        270
+      ],
+      "size": [
+        180,
+        80
+      ],
+      "sources": [
+        {
+          "path": "src/ai_banking/agent.py"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-api",
+      "from": "ui",
+      "to": "api",
+      "label": "同源请求"
+    },
+    {
+      "id": "api-bank",
+      "from": "api",
+      "to": "bank",
+      "label": "业务权限复核",
+      "variant": "security"
+    },
+    {
+      "id": "bank-db",
+      "from": "bank",
+      "to": "db",
+      "label": "事务记账"
+    },
+    {
+      "id": "api-agent",
+      "from": "api",
+      "to": "agent",
+      "label": "对话任务"
+    },
+    {
+      "id": "agent-model",
+      "from": "agent",
+      "to": "model",
+      "label": "HTTPS 调用"
+    },
+    {
+      "id": "agent-bank",
+      "from": "agent",
+      "to": "bank",
+      "label": "受控工具意图"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "权限边界",
+      "items": [
+        "模型没有批准、创建授权或直接执行工具",
+        "执行前重新校验会话、对象、余额、范围与累计额度"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "资金事实",
+      "items": [
+        "整数分与双边账本；幂等和未知状态按原编号核对",
+        "单机单进程；图中模块不是独立部署的微服务"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "版本说明",
+      "items": [
+        "源码证据固定到已合并基线 2b63eba",
+        "联系人、账单增强与固定联动为当前未提交增量，见快照清单"
+      ]
+    }
+  ]
+}

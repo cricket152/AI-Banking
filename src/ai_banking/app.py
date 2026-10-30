@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
-from uuid import UUID, uuid4
+from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 from fastapi import Depends, FastAPI, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
@@ -22,6 +22,7 @@ from ai_banking.banking.api import Identifier
 from ai_banking.banking.api import router as bank_router
 from ai_banking.banking.schema import ready
 from ai_banking.banking.service import Bank, BankError
+from ai_banking.banking.workflows import conversation_plan
 from ai_banking.config import Settings
 from ai_banking.store import Store
 from ai_banking.tracing import CONTEXT, emit, trace_scope
@@ -320,14 +321,28 @@ def create_app(settings: Settings | None = None, clock=time.time):
         conversation(context.user_id, conversation_id)
         with store.transaction() as db:
             rows = db.execute(
-                "SELECT question, answer, traces, status FROM chat_turns WHERE conversation_id = ? "
+                "SELECT request_id, question, answer, traces, status FROM chat_turns "
+                "WHERE conversation_id = ? "
                 "ORDER BY id DESC LIMIT 50",
                 (conversation_id,),
             ).fetchall()
+        checkpoint = agent.operation_checkpoint(context, conversation_id)
+        notices = {
+            uuid5(NAMESPACE_URL, "ai-banking:continue-operation:" + step["id"]).hex
+            for step in (checkpoint or {}).get("steps", [])
+        }
+        turns = []
+        for row in reversed(rows):
+            turn = dict(row)
+            turn["application_notice"] = turn.pop("request_id") in notices
+            turns.append(turn)
         return {
-            "turns": [dict(row) for row in reversed(rows)],
-            "operation_task": agent.operation_checkpoint(context, conversation_id),
+            "turns": turns,
+            "operation_task": checkpoint,
             "execution_policy": agent.operations.policy(context, conversation_id),
+            "workflow_plan": conversation_plan(bank, context, conversation_id)
+            if bank.available()
+            else None,
         }
 
     @app.get("/api/conversations/{conversation_id}/policy")

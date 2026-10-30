@@ -1,0 +1,10 @@
+{
+  "file": "source-review.zip",
+  "bytes": 268637,
+  "sha256": "06133e19a9bf2aa16083b7ecb5dcb21d17013f4f73e3552ac46ac33ad58fa3cf",
+  "file_count": 79,
+  "contains_uncommitted_work": true,
+  "archive_integrity": "pass",
+  "manifest_checksums": "pass",
+  "clean_install_validation": "not_run"
+}

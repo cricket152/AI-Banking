@@ -66,6 +66,8 @@ def test_tools_preserve_query_prefix_and_expose_no_approval_or_execution():
         "get_operation",
         "list_cards",
         "list_wealth_products",
+        "get_billing_entries",
+        "find_payees",
     ]
 
 

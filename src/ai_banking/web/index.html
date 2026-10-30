@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="/static/app.css" />
     <script src="/static/app.js" defer></script>
     <script src="/static/banking.js" defer></script>
+    <script src="/static/insights.js" defer></script>
+    <script src="/static/transfers.js" defer></script>
   </head>
   <body>
     <a class="skip" href="#main">跳到主要内容</a>
@@ -168,15 +170,26 @@
           <button class="nav-item" data-page="activity">
             <span class="nav-icon" aria-hidden="true">
               <svg class="icon icon-default" viewBox="0 0 24 24">
-                <path d="M6 3.5h12A1.5 1.5 0 0 1 19.5 5v16l-3-2-3 2-3-2-3 2V5A1.5 1.5 0 0 1 6 3.5z" />
+                <path
+                  d="M6 3.5h12A1.5 1.5 0 0 1 19.5 5v16l-3-2-3 2-3-2-3 2V5A1.5 1.5 0 0 1 6 3.5z"
+                />
                 <path d="M8.5 8.5h7M8.5 12h4" />
               </svg>
               <svg class="icon icon-active icon-filled" viewBox="0 0 24 24">
-                <path d="M6 3.5h12A1.5 1.5 0 0 1 19.5 5v16l-3-2-3 2-3-2-3 2V5A1.5 1.5 0 0 1 6 3.5z" />
+                <path
+                  d="M6 3.5h12A1.5 1.5 0 0 1 19.5 5v16l-3-2-3 2-3-2-3 2V5A1.5 1.5 0 0 1 6 3.5z"
+                />
                 <path class="icon-cut" d="M8.5 8.5h7M8.5 12h4" />
               </svg>
             </span>
             收支明细
+          </button>
+          <button class="nav-item" data-page="insights">
+            <span class="nav-icon" aria-hidden="true"
+              ><svg class="icon" viewBox="0 0 24 24">
+                <path d="M4 20h16M6 16V9M12 16V4M18 16v-5" /></svg
+            ></span>
+            账单洞察
           </button>
           <button class="nav-item" data-page="assistant">
             <span class="nav-icon" aria-hidden="true">
@@ -415,6 +428,68 @@
                 </p>
               </section>
 
+              <section
+                id="insights-section"
+                class="section"
+                hidden
+                aria-labelledby="insights-title"
+              >
+                <div class="section-heading">
+                  <div>
+                    <h2 id="insights-title">看清支出的变化</h2>
+                    <p>完整区间统计 · 每一项都可回查流水</p>
+                  </div>
+                </div>
+                <form id="insights-form" class="insights-filters">
+                  <label
+                    >开始日期<input id="insights-start" type="date" required
+                  /></label>
+                  <label
+                    >结束日期（含当天）<input
+                      id="insights-end"
+                      type="date"
+                      required
+                  /></label>
+                  <button
+                    class="button primary"
+                    id="insights-submit"
+                    type="submit"
+                  >
+                    分析账单
+                  </button>
+                </form>
+                <div class="insights-presets" aria-label="快捷日期">
+                  <button
+                    class="button secondary"
+                    type="button"
+                    data-report-preset="month"
+                  >
+                    本月至今
+                  </button>
+                  <button
+                    class="button secondary"
+                    type="button"
+                    data-report-preset="last-month"
+                  >
+                    上月
+                  </button>
+                  <button
+                    class="button secondary"
+                    type="button"
+                    data-report-preset="year"
+                  >
+                    今年至今
+                  </button>
+                </div>
+                <p
+                  id="insights-status"
+                  class="muted"
+                  role="status"
+                  aria-live="polite"
+                ></p>
+                <div id="insights-result"></div>
+              </section>
+
               <p class="data-footnote">
                 <span class="live-dot"></span> 数据来自本地 SQLite
                 <span id="snapshot-time">—</span>
@@ -431,6 +506,43 @@
                 role="status"
                 aria-live="polite"
               ></p>
+              <section class="bank-card" aria-labelledby="contacts-title">
+                <div class="section-heading">
+                  <h2 id="contacts-title">收款人</h2>
+                  <span class="tag">模拟联系人</span>
+                </div>
+                <label for="contact-search">按姓名、备注或账户尾号查找</label>
+                <input
+                  id="contact-search"
+                  class="contact-search"
+                  type="search"
+                  maxlength="64"
+                  placeholder="例如：张明、房东、5938"
+                />
+                <div
+                  id="contacts-list"
+                  class="bank-list"
+                  aria-live="polite"
+                ></div>
+                <details class="contact-demo-settings">
+                  <summary>载入虚构联系人</summary>
+                  <p class="muted">
+                    添加同事张明、房东张明和朋友林晓，均有独立模拟收款账户。不会添加真实好友、扣款或授予权限；重复载入不重复创建。
+                  </p>
+                  <form id="demo-contacts-form" class="bank-form">
+                    <label for="demo-contacts-password">重新验证登录密码</label>
+                    <input
+                      id="demo-contacts-password"
+                      type="password"
+                      autocomplete="current-password"
+                      required
+                    />
+                    <button class="button secondary bank-action" type="submit">
+                      验证并载入 3 位模拟联系人
+                    </button>
+                  </form>
+                </details>
+              </section>
               <section class="bank-card" aria-labelledby="transfer-title">
                 <div class="section-heading">
                   <h2 id="transfer-title">转账</h2>
@@ -474,10 +586,64 @@
                 </div>
                 <p class="muted">取消需要明确确认；取消不会退款。</p>
                 <div id="subscriptions-list" class="bank-list"></div>
+                <h3 class="insights-subtitle">疑似订阅</h3>
+                <p class="muted">
+                  根据周期支出发现线索，展开流水核对后再决定是否登记。登记不会扣款。
+                </p>
+                <div id="subscription-candidates" class="bank-list"></div>
               </section>
+              <details class="bank-card" id="workflow-builder">
+                <summary>整理订阅，再安排转账</summary>
+                <p class="muted">
+                  先选择你决定取消的订阅和转账目标，核对影响后交给助手逐步处理。取消减少未来支出，不产生当前到账。
+                </p>
+                <form id="workflow-form" class="bank-form">
+                  <label for="workflow-source">付款 / 订阅扣费账户</label
+                  ><select id="workflow-source" required>
+                    <option value="">请选择账户</option>
+                  </select>
+                  <fieldset>
+                    <legend>选择需要取消的已登记订阅（最多 5 项）</legend>
+                    <div id="workflow-subscriptions"></div>
+                  </fieldset>
+                  <label for="workflow-payee">转账给</label
+                  ><select id="workflow-payee" required>
+                    <option value="">请选择收款人</option>
+                  </select>
+                  <label for="workflow-amount"
+                    >转账金额（CNY 元，来自当前余额）</label
+                  ><input
+                    id="workflow-amount"
+                    inputmode="decimal"
+                    required
+                    placeholder="例如 100.00"
+                  />
+                  <button type="submit" class="button secondary bank-action">
+                    查看方案与资金影响
+                  </button>
+                </form>
+                <div id="workflow-preview" aria-live="polite"></div>
+                <label class="check-row"
+                  ><input
+                    id="workflow-acknowledged"
+                    type="checkbox"
+                    disabled
+                  />我已核对方案；每笔操作仍按所选执行方式处理</label
+                >
+                <button
+                  id="workflow-create"
+                  class="button primary"
+                  type="button"
+                  disabled
+                >
+                  创建方案并前往助手
+                </button>
+              </details>
               <details class="bank-card" id="grant-settings">
                 <summary>预授权管理</summary>
-                <p class="muted">范围与额度须明确填写；创建后在授权卡片或助手策略面板启用。</p>
+                <p class="muted">
+                  范围与额度须明确填写；创建后在授权卡片或助手策略面板启用。
+                </p>
                 <form id="grant-form" class="bank-form">
                   <label for="grant-source">付款账户</label>
                   <select id="grant-source" required>
@@ -512,9 +678,9 @@
                         class="multi-select"
                         id="grant-subscriptions-select"
                       >
-                        <summary id="grant-subscriptions-summary"
-                          >未选择</summary
-                        >
+                        <summary id="grant-subscriptions-summary">
+                          未选择
+                        </summary>
                         <div
                           id="grant-subscriptions"
                           class="multi-select-menu scope-options"
@@ -690,36 +856,36 @@
                   </svg>
                 </summary>
                 <form id="agent-policy-form" class="agent-policy-form">
-                <label class="sr-only" for="agent-policy-mode"
-                  >当前对话执行方式</label
-                >
-                <select id="agent-policy-mode">
-                  <option value="HUMAN_APPROVAL">每笔人工确认</option>
-                  <option value="PREAUTHORIZED">使用指定预授权</option>
-                </select>
-                <label class="sr-only" for="agent-policy-grant"
-                  >指定预授权</label
-                >
-                <select id="agent-policy-grant" disabled>
-                  <option value="">请选择有效预授权</option>
-                </select>
-                <button
-                  id="agent-policy-create-grant"
-                  class="button secondary"
-                  type="button"
-                  hidden
-                >
-                  去业务办理创建预授权
-                </button>
-                <button
-                  id="agent-policy-view"
-                  class="text-button"
-                  type="button"
-                  hidden
-                >
-                  查看授权详情
-                </button>
-                <p id="agent-policy-status" role="status"></p>
+                  <label class="sr-only" for="agent-policy-mode"
+                    >当前对话执行方式</label
+                  >
+                  <select id="agent-policy-mode">
+                    <option value="HUMAN_APPROVAL">每笔人工确认</option>
+                    <option value="PREAUTHORIZED">使用指定预授权</option>
+                  </select>
+                  <label class="sr-only" for="agent-policy-grant"
+                    >指定预授权</label
+                  >
+                  <select id="agent-policy-grant" disabled>
+                    <option value="">请选择有效预授权</option>
+                  </select>
+                  <button
+                    id="agent-policy-create-grant"
+                    class="button secondary"
+                    type="button"
+                    hidden
+                  >
+                    去业务办理创建预授权
+                  </button>
+                  <button
+                    id="agent-policy-view"
+                    class="text-button"
+                    type="button"
+                    hidden
+                  >
+                    查看授权详情
+                  </button>
+                  <p id="agent-policy-status" role="status"></p>
                 </form>
               </details>
               <div
@@ -800,6 +966,69 @@
       </dl>
       <p class="muted">详细步骤见 docs/local-development.md。</p>
       <button id="settings-done" class="button primary">知道了</button>
+    </dialog>
+    <dialog id="payee-note-dialog" aria-labelledby="payee-note-title">
+      <div class="dialog-heading">
+        <h2 id="payee-note-title">编辑收款人备注</h2>
+        <button
+          id="payee-note-close"
+          type="button"
+          class="icon-button"
+          aria-label="关闭备注编辑"
+          autofocus
+        >
+          ×
+        </button>
+      </div>
+      <p id="payee-note-identity" class="muted"></p>
+      <form id="payee-note-form" class="bank-form">
+        <label for="payee-note">备注（只用于识别，不更换收款账户）</label
+        ><input id="payee-note" maxlength="64" />
+        <label for="payee-note-password">重新验证登录密码</label
+        ><input
+          id="payee-note-password"
+          type="password"
+          autocomplete="current-password"
+          required
+        />
+        <p id="payee-note-error" class="error" role="alert"></p>
+        <button type="submit" class="button primary bank-action">
+          验证并保存备注
+        </button>
+      </form>
+    </dialog>
+    <dialog
+      id="subscription-dialog"
+      aria-labelledby="subscription-dialog-title"
+    >
+      <div class="dialog-heading">
+        <h2 id="subscription-dialog-title">确认登记订阅</h2>
+        <button
+          id="subscription-dialog-close"
+          type="button"
+          class="icon-button"
+          aria-label="关闭登记确认"
+          autofocus
+        >
+          ×
+        </button>
+      </div>
+      <div id="subscription-dialog-content"></div>
+      <label class="check-row"
+        ><input
+          id="subscription-acknowledged"
+          type="checkbox"
+        />我已核对流水，确认这是需要管理的订阅</label
+      >
+      <p id="subscription-dialog-error" class="error" role="alert"></p>
+      <button
+        id="subscription-confirm"
+        class="button primary"
+        type="button"
+        disabled
+      >
+        确认登记，不扣款
+      </button>
     </dialog>
     <dialog
       id="operation-dialog"

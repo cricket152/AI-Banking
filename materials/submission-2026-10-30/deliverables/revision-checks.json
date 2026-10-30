@@ -1,0 +1,28 @@
+{
+  "revision": "v1.1",
+  "pdfs": {
+    "technical-document.pdf": {
+      "pages": 10,
+      "sha256": "a1690cc30a392dad52940815e3d6caf1fa6c28d7ba5a03ddd92bc5f03a6b2d5c",
+      "text": "pass"
+    },
+    "security-self-assessment.pdf": {
+      "pages": 7,
+      "sha256": "e780efb184613209b603e86080df1aa84c259e59c268e0692c00174d91a0a3c5",
+      "text": "pass"
+    }
+  },
+  "visual_review": "pass; 17 rendered pages inspected",
+  "manual_review": {
+    "cases": 10,
+    "result": "已人工审核（通过）",
+    "basis": "项目负责人确认",
+    "date": "2026-10-30"
+  },
+  "source_test_files_unchanged": 50,
+  "new_business_code_changes": false,
+  "unit_tests": "previous source archive run: 222 passed in 40.14s; no additional test run for this documentation change",
+  "markdown_links": "pass",
+  "automated_result_changes": false,
+  "independent_model_statistics_changes": false
+}

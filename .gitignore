@@ -38,6 +38,12 @@ htmlcov/
 coverage.xml
 *.log
 
+# 浏览器会话、临时验收输出；参赛交付文件统一保存在 materials/。
+.playwright-cli/
+output/
+# 早期素材总包仅保留本地；提交当前文档交付包与其源文件。
+materials/ai-banking-materials-2026-10-30.zip*
+
 # 编辑器、IDE 与操作系统临时文件
 .idea/
 .vscode/

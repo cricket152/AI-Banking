@@ -1,0 +1,212 @@
+[
+  {
+    "id": "AUTH-01",
+    "test_file": "test_application.py",
+    "function": "test_password_storage_normalization_and_atomic_seed",
+    "action": "创建用户并读取存储与初始流水",
+    "expected": "无明文密码；归一化用户名和初始化事务成立"
+  },
+  {
+    "id": "AUTH-02",
+    "test_file": "test_application.py",
+    "function": "test_login_rotates_session_and_no_raw_cookie_in_database",
+    "action": "登录并检查旧会话和数据库",
+    "expected": "令牌轮换；数据库不存原始Cookie"
+  },
+  {
+    "id": "AUTH-03",
+    "test_file": "test_application.py",
+    "function": "test_csrf_origin_host_and_content_type_boundaries",
+    "action": "缺失/伪造CSRF与Origin/Host、错误类型",
+    "expected": "请求拒绝，不削弱校验"
+  },
+  {
+    "id": "AUTH-04",
+    "test_file": "test_application.py",
+    "function": "test_owner_isolation_for_accounts_transactions_and_chats",
+    "action": "另一用户访问账户、流水与对话",
+    "expected": "不泄露跨用户数据"
+  },
+  {
+    "id": "AUTH-05",
+    "test_file": "test_application.py",
+    "function": "test_reset_and_disable_revoke_all_sessions",
+    "action": "重置密码或停用账号",
+    "expected": "旧会话失效"
+  },
+  {
+    "id": "FUND-01",
+    "test_file": "test_banking.py",
+    "function": "test_manual_transfer_requires_real_bound_challenge_and_balances_ledger",
+    "action": "准备、挑战、批准与查询账本",
+    "expected": "独立确认后转账；双边平衡"
+  },
+  {
+    "id": "FUND-02",
+    "test_file": "test_banking.py",
+    "function": "test_task_step_idempotency_and_parameter_binding",
+    "action": "重复步骤、改变原参数",
+    "expected": "相同请求复用；参数冲突拒绝"
+  },
+  {
+    "id": "FUND-03",
+    "test_file": "test_banking.py",
+    "function": "test_concurrent_balance_contention_never_overdraws",
+    "action": "并发争用有限余额",
+    "expected": "不能透支"
+  },
+  {
+    "id": "FUND-04",
+    "test_file": "test_banking.py",
+    "function": "test_concurrent_budget_reservations_cannot_exceed_limit",
+    "action": "并发预授权预占",
+    "expected": "累计不超限"
+  },
+  {
+    "id": "FUND-05",
+    "test_file": "test_banking.py",
+    "function": "test_fault_rollback_unknown_result_preserves_reservation_until_reconciled",
+    "action": "在不同故障点中断执行",
+    "expected": "回滚或保留未知预占；无盲重发"
+  },
+  {
+    "id": "FUND-06",
+    "test_file": "test_banking.py",
+    "function": "test_lost_response_after_commit_queries_original_operation_and_does_not_pay_twice",
+    "action": "提交后丢失响应并核对原操作",
+    "expected": "原操作成功；不重复扣款"
+  },
+  {
+    "id": "FUND-07",
+    "test_file": "test_banking_edges.py",
+    "function": "test_policy_budget_survives_logout_and_restart",
+    "action": "退出与重启后读取授权",
+    "expected": "预算不重置"
+  },
+  {
+    "id": "FUND-08",
+    "test_file": "test_banking_edges.py",
+    "function": "test_approval_challenge_bound_to_session_and_exact_summary",
+    "action": "换会话或修改确认摘要",
+    "expected": "挑战拒绝"
+  },
+  {
+    "id": "BILL-01",
+    "test_file": "test_insights.py",
+    "function": "test_report_comparison_refunds_transfers_and_evidence",
+    "action": "两期、退款、转账和证据查询",
+    "expected": "区间统计与分类依据一致"
+  },
+  {
+    "id": "BILL-02",
+    "test_file": "test_insights.py",
+    "function": "test_evidence_pages_are_complete_scoped_and_validate_dates",
+    "action": "分页读区间流水、非法日期和越权",
+    "expected": "完整且按归属，非法输入拒绝"
+  },
+  {
+    "id": "SUB-01",
+    "test_file": "test_insights.py",
+    "function": "test_candidates_explain_evidence_without_writing",
+    "action": "查询周期候选并对比数据库",
+    "expected": "附证据、无写入"
+  },
+  {
+    "id": "SUB-02",
+    "test_file": "test_insights.py",
+    "function": "test_confirm_is_explicit_idempotent_and_does_not_grant_or_move_funds",
+    "action": "显式登记并重复提交",
+    "expected": "仅一次登记，不扣款、不授权"
+  },
+  {
+    "id": "SUB-03",
+    "test_file": "test_insights.py",
+    "function": "test_candidate_confirmation_rejects_foreign_and_changed_evidence",
+    "action": "跨用户或变更证据后确认",
+    "expected": "拒绝，不用旧预览写入"
+  },
+  {
+    "id": "SUB-04",
+    "test_file": "test_insights.py",
+    "function": "test_concurrent_confirm_only_registers_once",
+    "action": "并发登记候选",
+    "expected": "只产生一次登记"
+  },
+  {
+    "id": "PAYEE-01",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_payee_search_ambiguity_notes_and_user_isolation",
+    "action": "同名、备注、尾号和跨用户查询",
+    "expected": "歧义需澄清；不跨用户"
+  },
+  {
+    "id": "PAYEE-02",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_demo_contacts_are_explicit_private_idempotent_and_cannot_login",
+    "action": "载入、重复载入、尝试登录联系人",
+    "expected": "显式私有且幂等；联系人不能登录"
+  },
+  {
+    "id": "PAYEE-03",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_loading_contacts_does_not_expand_existing_grant",
+    "action": "先授权后载入新联系人",
+    "expected": "旧授权不扩容"
+  },
+  {
+    "id": "PLAN-01",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_plan_preview_and_creation_do_not_move_funds_or_authorize",
+    "action": "预览并创建方案",
+    "expected": "资金与授权不变"
+  },
+  {
+    "id": "PLAN-02",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_plan_creation_revalidates_balance_notes_and_subscription_evidence",
+    "action": "修改余额、备注或订阅后创建",
+    "expected": "原预览失效"
+  },
+  {
+    "id": "PLAN-03",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_plan_blocks_out_of_order_changed_amount_and_new_id_replay",
+    "action": "跳步、改金额、换编号重放",
+    "expected": "拒绝绕过固定方案"
+  },
+  {
+    "id": "PLAN-04",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_unsuccessful_plan_step_stops_following_payment",
+    "action": "前一步失败、拒绝、过期等",
+    "expected": "后一步不付款"
+  },
+  {
+    "id": "PLAN-05",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_preauthorized_plan_still_rechecks_scope_and_only_executes_selected_steps",
+    "action": "选择预授权执行固定方案",
+    "expected": "仍复核范围，仅执行所选步骤"
+  },
+  {
+    "id": "PLAN-06",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_model_plan_continues_after_each_independent_approval",
+    "action": "两种协议的模拟HTTP，逐笔批准",
+    "expected": "正确续办；不是实际供应商能力证明"
+  },
+  {
+    "id": "PLAN-07",
+    "test_file": "test_transfer_workflows.py",
+    "function": "test_plan_does_not_use_future_savings_as_current_money",
+    "action": "余额不足但未来有节省",
+    "expected": "不能用未来节省充当当前现金"
+  },
+  {
+    "id": "CTX-01",
+    "test_file": "test_context.py",
+    "function": "test_budget_failure_pauses_new_writes_until_policy_reselected",
+    "action": "超预算后提出新写意图",
+    "expected": "暂停新增写操作，明确重选策略后处理"
+  }
+]

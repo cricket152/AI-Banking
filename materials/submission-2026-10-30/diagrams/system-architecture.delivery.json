@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "7a4ace5c-d23c-49c8-8d3c-9071e4b2bae4",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "B:\\Code\\Dev\\AI Banking\\materials\\submission-2026-10-30\\diagrams\\architecture.archify.json",
+  "output": "B:\\Code\\Dev\\AI Banking\\materials\\submission-2026-10-30\\diagrams\\system-architecture.html",
+  "specification": {
+    "sha256": "9ef49878c731fbf49c9d5f4f686c6fc88f9b99201d9aafd3d34964d50f8f1b46",
+    "bytes": 4068
+  },
+  "artifact": {
+    "sha256": "864bf766525afd3f91bf0176127b5ffc67d5743445afc85d7b5cffd45de50c06",
+    "bytes": 839522
+  }
+}

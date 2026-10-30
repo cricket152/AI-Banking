@@ -34,6 +34,33 @@ class PayeeBody(StrictBody):
     password: Password
 
 
+class DemoPayeesBody(StrictBody):
+    password: Password
+
+
+class PayeeNoteBody(DemoPayeesBody):
+    note: str = Field(max_length=64)
+
+
+class WorkflowPreviewBody(StrictBody):
+    source_id: Identifier
+    payee_id: Identifier
+    amount_minor: Amount
+    subscription_ids: list[Identifier] = Field(min_length=1, max_length=5)
+
+
+class WorkflowBody(WorkflowPreviewBody, TaskBody):
+    evidence_digest: str = Field(pattern=r"^[a-f0-9]{64}$")
+    acknowledged: bool
+
+    @field_validator("acknowledged")
+    @classmethod
+    def explicit_plan_selection(cls, value):
+        if not value:
+            raise ValueError("必须核对方案")
+        return value
+
+
 class GrantBody(TaskBody):
     source_id: Identifier
     currency: Literal["CNY"]
@@ -74,6 +101,18 @@ class DecisionBody(StrictBody):
     parameters_digest: str = Field(pattern=r"^[a-f0-9]{64}$")
 
 
+class SubscriptionRegistrationBody(StrictBody):
+    evidence_digest: str = Field(pattern=r"^[a-f0-9]{64}$")
+    acknowledged: Literal[True]
+
+    @field_validator("acknowledged", mode="before")
+    @classmethod
+    def explicit_acknowledgement(cls, value):
+        if value is not True:
+            raise ValueError("必须明确核对并确认登记")
+        return value
+
+
 def router(bank, auth, identity, mutation):
     routes = APIRouter(prefix="/api/bank")
     reports = Reports(bank)
@@ -90,9 +129,35 @@ def router(bank, auth, identity, mutation):
         reauth(request, context, body.password)
         return bank.add_payee(context, body.name, body.account_id)
 
+    @routes.post("/payees/demo", dependencies=[Depends(mutation)])
+    def demo_payees(body: DemoPayeesBody, request: Request, context=Depends(identity)):
+        from ai_banking.banking.contacts import load_demo_contacts
+
+        reauth(request, context, body.password)
+        return load_demo_contacts(bank, context)
+
+    @routes.post("/payees/{payee_id}/note", dependencies=[Depends(mutation)])
+    def payee_note(payee_id: str, body: PayeeNoteBody, request: Request, context=Depends(identity)):
+        from ai_banking.banking.contacts import set_note
+
+        reauth(request, context, body.password)
+        return set_note(bank, context, payee_id, body.note)
+
     @routes.post("/tasks", dependencies=[Depends(mutation)])
     def create_task(body: TaskBody, context=Depends(identity)):
         return bank.task(context, body.request_id)
+
+    @routes.post("/plans/preview", dependencies=[Depends(mutation)])
+    def plan_preview(body: WorkflowPreviewBody, context=Depends(identity)):
+        from ai_banking.banking.workflows import preview_plan
+
+        return preview_plan(bank, context, body.model_dump())
+
+    @routes.post("/plans", dependencies=[Depends(mutation)])
+    def select_plan(body: WorkflowBody, context=Depends(identity)):
+        from ai_banking.banking.workflows import create_plan
+
+        return create_plan(bank, context, body.model_dump())
 
     @routes.get("/tasks/{task_id}")
     def task(task_id: str, context=Depends(identity)):
@@ -163,5 +228,25 @@ def router(bank, auth, identity, mutation):
     @routes.get("/subscriptions")
     def subscriptions(context=Depends(identity)):
         return reports.subscriptions(context)
+
+    @routes.get("/reports/entries")
+    def report_entries(
+        start: date,
+        end: date,
+        category: str | None = Query(None, max_length=128),
+        entry_id: str | None = Query(None, max_length=64),
+        offset: int = Query(0, ge=0),
+        limit: int = Query(20, ge=1, le=50),
+        context=Depends(identity),
+    ):
+        return reports.entries(context, start, end, category, entry_id, offset, limit)
+
+    @routes.post(
+        "/subscriptions/candidates/{candidate_id}/confirm", dependencies=[Depends(mutation)]
+    )
+    def confirm_subscription(
+        candidate_id: str, body: SubscriptionRegistrationBody, context=Depends(identity)
+    ):
+        return reports.confirm_candidate(context, candidate_id, body.evidence_digest)
 
     return routes
