@@ -317,6 +317,29 @@ class Bank:
             raise BankError("GRANT_EXHAUSTED")
         return grant
 
+    def _scenario_reserved(self, db, owner, source_id):
+        plans = {}
+        for row in db.execute(
+            "SELECT event,detail FROM bank_events WHERE owner_id=? AND event IN "
+            "('scenario_plan_created','scenario_ordered','scenario_cancelled') ORDER BY seq",
+            (owner,),
+        ):
+            detail = json.loads(row["detail"])
+            scenario_id = detail["scenario_id"]
+            if row["event"] == "scenario_plan_created":
+                plans[scenario_id] = {
+                    "source_id": detail["source_id"],
+                    "budget_minor": detail["budget_minor"],
+                    "active": True,
+                }
+            elif scenario_id in plans:
+                plans[scenario_id]["active"] = False
+        return sum(
+            plan["budget_minor"]
+            for plan in plans.values()
+            if plan["active"] and plan["source_id"] == source_id
+        )
+
     def _available(self, db, owner, source_id, amount, minimum=0, excluded=None):
         account = self._account(db, owner, source_id)
         if db.execute(
@@ -329,7 +352,8 @@ class Bank:
             "WHERE source_id=? AND (? IS NULL OR id!=?)",
             (source_id, excluded, excluded),
         ).fetchone()[0]
-        if account["balance_minor"] - reserved - amount < minimum:
+        scenario_reserved = self._scenario_reserved(db, owner, source_id)
+        if account["balance_minor"] - reserved - scenario_reserved - amount < minimum:
             raise BankError("INSUFFICIENT_BALANCE")
 
     def prepare(self, context, values, kind="transfer", *, exclusive_task=False):

@@ -48,6 +48,18 @@ def test_create_and_list_scenario_plan_without_moving_funds(shared_env):
     assert scenario["days_until"] == 1
     assert scenario["order_due"] is True
     assert scenario["budget_minor"] == 100000
+    with app.state.store.transaction() as db:
+        try:
+            app.state.bank._available(
+                db,
+                ctx.user_id,
+                source["id"],
+                source["balance_minor"] - 100000 + 1,
+            )
+        except Exception as error:
+            assert getattr(error, "code", None) == "INSUFFICIENT_BALANCE"
+        else:
+            raise AssertionError("预算预占未生效")
     listing = client.get("/api/bank/scenarios").json()["scenarios"]
     assert any(item["scenario_id"] == scenario["scenario_id"] for item in listing)
     with app.state.store.transaction() as db:
