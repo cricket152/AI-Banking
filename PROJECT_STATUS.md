@@ -21,7 +21,7 @@
 
 ## 已完成
 
-- 当前冻结提交：`9389868`（`feat(scenarios): finalize budget semantics and validation materials`）已提交并推送到 `origin/feat/cards-scenarios`；标签 `freeze-2026-10-31-v1.6` 已推送，远程分支与标签均核对到同一提交。当前 `.venv` 全量 `pytest -q` 为 `235 passed`，Ruff check、Ruff format（43 files）、`pip check` 和前端 Edge headless 冒烟均通过。完整测试需在 Windows 上进程内清理异常的 `NO_PROXY` 值（其中 `[::1]` 会被 HTTPX 误解析），这是本机环境问题；代码不依赖该环境修正。
+- 当前冻结提交：功能与材料提交 `9389868`（`feat(scenarios): finalize budget semantics and validation materials`）已推送到 `origin/feat/cards-scenarios`，标签 `freeze-2026-10-31-v1.6` 指向该提交；随后状态文档提交 `01aa9e2`（`docs: record frozen remote validation state`）已推送，标签 `freeze-2026-10-31-v1.6.1` 指向分支尖端。当前 `.venv` 全量 `pytest -q` 为 `235 passed`，Ruff check、Ruff format（43 files）、`pip check` 和前端 Edge headless 冒烟均通过。完整测试需在 Windows 上进程内清理异常的 `NO_PROXY` 值（其中 `[::1]` 会被 HTTPX 误解析），这是本机环境问题；代码不依赖该环境修正。
 - 安全加固与材料指标（2026-10-31 本机）：终端日志正文改为默认关闭，显式开启才输出脱敏内容；响应新增 Permissions-Policy、COOP/CORP 等安全头并由测试覆盖；当前 `.venv`（Python 3.14.6）全量 235 项通过；新建 Python 3.13 环境按锁文件安装后 `pip check` 通过并完成 39 项核心/前端定向测试。Python 3.12 本机不可用，未宣称已验证。
 - 卡片管理与跨场景 MVP（2026-10-30 本机）：新增 `banking/cards.py`（账户派生卡 + 申请/调额/冻结/挂失，事件持久化，全部写操作密码再认证）与 `banking/scenarios.py`（纪念日/生日计划、日期/预算/收款人）；前端新增卡片管理与跨场景计划区块；Agent 只保留动态 `list_cards` 查询，卡片写操作不暴露给模型；`bank_state` 注入 `scenario_plans` 供准确解释。场景计划只保存日期与预算，创建时校验当时可用余额但不累计预占，达到日期后仍须用户手动按钮生成待确认操作；新增 `tests/test_cards.py`、`tests/test_scenarios.py`。
 - 理财模拟（2026-10-30 本机）：新增 `banking/wealth.py`、理财 API 与前端申购/赎回；操作复用人工确认链路，持仓与账户余额由事件/entries 校验；新增 `tests/test_wealth.py`。代码提交 `de66781`。
