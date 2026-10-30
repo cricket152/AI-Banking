@@ -59,7 +59,7 @@ MODEL_API_KEY=填写你自己的密钥
 
 模型模式会将提问、最近完整对话回合以及查询到的当前用户模拟财务数据发送到配置的 HTTPS 供应商。密码、认证 Cookie、CSRF、内部会话 ID 不进入消息和工具参数。应用传入 `store=false`，供应商的数据保留行为仍需按其规则核实。
 
-固定顺序直接暴露十个工具：前五个为 `list_accounts`、`get_transactions`、`list_payees`、`list_subscriptions`、`get_billing_summary`，追加 `prepare_transfer`、`prepare_subscription_cancellation`、`get_operation`，以及只读的 `list_cards`、`list_wealth_products`。意图工具需要银行表就绪和有效对话。身份、任务、步骤和执行策略由服务端绑定，模型不能指定授权或批准。相同业务参数复用原操作，已有步骤全部成功后才能准备下一步；待确认时改参数返回冲突。只有用户在界面显式选择的预授权，才允许应用复核并执行。每次调用重新验证会话，拒绝额外参数和未知工具；工具结果用转义 XML 标记，不能授予权限。页面操作状态以数据库为准。
+固定顺序直接暴露十二个工具：前五个为 `list_accounts`、`get_transactions`、`list_payees`、`list_subscriptions`、`get_billing_summary`，追加 `prepare_transfer`、`prepare_subscription_cancellation`、`get_operation`，以及只读的 `list_cards`、`list_wealth_products`、`get_billing_entries`、`find_payees`。意图工具需要银行表就绪和有效对话。身份、任务、步骤和执行策略由服务端绑定，模型不能指定授权或批准。相同业务参数复用原操作，已有步骤全部成功后才能准备下一步；待确认时改参数返回冲突。只有用户在界面显式选择的预授权，才允许应用复核并执行。每次调用重新验证会话，拒绝额外参数和未知工具；工具结果用转义 XML 标记，不能授予权限。页面操作状态以数据库为准。账单与订阅步骤见 [账单洞察](billing-insights.md)，联系人载入和固定跨场景方案见 [收款人与转账方案](transfer-workflows.md)。
 
 系统提示和工具定义固定为稳定前缀，动态状态作为后续消息追加。上下文按 `MODEL_CONTEXT_TOKENS`（默认 32000，保守估算）装配：最近 `MODEL_CONTEXT_RECENT_TURNS`（默认 12）个完整成功回合保留原文，更早回合压成确定性摘录，`bank_state` 与最新问题固定在末尾；单次工具结果超过 `MODEL_TOOL_OUTPUT_CHARS`（默认 6000 字符）会截断并提示缩小范围。每轮最多 8 次模型请求、每次最多 4 个工具调用、整轮 90 秒，默认输出上限 1500 tokens。`MODEL_MAX_OUTPUT_TOKENS` 可在 256–16384 间显式设置，供应商可能另有限制；思考模型的输出预算也可能用于推理，需结合轨迹中的 usage / incomplete 调整。token 为本地启发式估算，不是供应商 tokenizer 或上下文窗口保证；预算不足返回 `CONTEXT_BUDGET_EXCEEDED`，不重放资金操作，目标缺失先澄清。
 

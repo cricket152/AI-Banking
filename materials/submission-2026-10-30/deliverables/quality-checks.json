@@ -1,0 +1,40 @@
+{
+  "technical_pages": 10,
+  "security_pages": 7,
+  "rendered_with": "Poppler 90 dpi (v1.1 review)",
+  "visual_review": "17 pages inspected; no overlap, missing glyphs or cut tables",
+  "test_nodes": 222,
+  "key_case_functions": 30,
+  "manual_cases": 10,
+  "archive_retest": "222 passed in 40.14s; existing local dependencies",
+  "pdf_checks": {
+    "technical-document.pdf": {
+      "pages": 10,
+      "encrypted": false,
+      "text_extraction": "pass",
+      "size_limit": "pass"
+    },
+    "security-self-assessment.pdf": {
+      "pages": 7,
+      "encrypted": false,
+      "text_extraction": "pass",
+      "size_limit": "pass"
+    }
+  },
+  "source_package": {
+    "bytes": 3413564,
+    "sha256": "5e444140e9274405f53b341ee1b6d22771727f2b7ac3ab3d1795147729df1400",
+    "entries": 119,
+    "crc": "pass",
+    "manifest": "pass"
+  },
+  "clean_install": "not_run",
+  "revision": "v1.1",
+  "manual_review": {
+    "cases": 10,
+    "result": "已人工审核（通过）",
+    "basis": "项目负责人确认",
+    "date": "2026-10-30"
+  },
+  "independent_model_statistics": "not_run"
+}

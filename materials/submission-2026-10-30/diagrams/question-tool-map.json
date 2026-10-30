@@ -1,0 +1,32 @@
+[
+  [
+    "账户与流水",
+    "“余额多少？”“最近花了什么？”",
+    "list_accounts\nget_transactions"
+  ],
+  [
+    "账单分析与依据",
+    "“这个月钱花在哪？”“这笔异常依据呢？”",
+    "get_billing_summary\nget_billing_entries"
+  ],
+  [
+    "收款对象与歧义",
+    "“找张明”“转给房东，尾号5938”",
+    "list_payees\nfind_payees"
+  ],
+  [
+    "订阅与取消",
+    "“有哪些订阅？”“取消云盘会员”",
+    "list_subscriptions\nprepare_subscription_cancellation"
+  ],
+  [
+    "转账与结果",
+    "“给选定对象转1元”“刚才完成了吗？”",
+    "prepare_transfer\nget_operation"
+  ],
+  [
+    "理财与卡片查询",
+    "“有什么模拟产品？”“我的卡信息？”",
+    "list_wealth_products\nlist_cards"
+  ]
+]

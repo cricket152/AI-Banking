@@ -1,0 +1,19 @@
+{
+  "confirmed_date": "2026-10-30",
+  "source": "项目负责人在本次会话明确确认已做测试，并要求将列示状态改为已人工审核",
+  "scope": [
+    "MAN-01",
+    "MAN-02",
+    "MAN-03",
+    "MAN-04",
+    "MAN-05",
+    "MAN-06",
+    "MAN-07",
+    "MAN-08",
+    "MAN-09",
+    "MAN-10"
+  ],
+  "status": "已人工审核（通过）",
+  "raw_per_case_logs_attached": false,
+  "independent_statistical_evaluation_claimed": false
+}

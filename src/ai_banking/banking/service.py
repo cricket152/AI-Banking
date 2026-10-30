@@ -102,16 +102,9 @@ class Bank:
                 self._event(db, row["owner_id"], "outcome_unknown", row["id"], code="INTERRUPTED")
 
     def payees(self, context):
-        with self.store.transaction() as db:
-            self._guard(db, context)
-            return [
-                dict(row)
-                for row in db.execute(
-                    "SELECT p.id,p.name,p.account_id,a.suffix,a.currency FROM bank_payees p "
-                    "JOIN accounts a ON a.id=p.account_id WHERE p.owner_id=? ORDER BY p.name,p.id",
-                    (context.user_id,),
-                )
-            ]
+        from ai_banking.banking.contacts import list_payees
+
+        return list_payees(self, context)
 
     def add_payee(self, context, name, account_id):
         with self.store.transaction() as db:
@@ -347,6 +340,9 @@ class Bank:
         with self.store.transaction() as db:
             self._guard(db, context)
             self._expire(db, context.user_id)
+            from ai_banking.banking.workflows import validate_plan
+
+            validate_plan(db, context.user_id, values, kind)
             if not db.execute(
                 "SELECT 1 FROM bank_tasks WHERE id=? AND owner_id=?",
                 (values["task_id"], context.user_id),
@@ -492,7 +488,18 @@ class Bank:
                 "expires_at=excluded.expires_at",
                 (operation_id, context.session_id, digest(token), op["expires_at"]),
             )
-            return {"challenge": token, "summary": self._public(op)}
+            summary = self._public(op)
+            source = self._account(db, context.user_id, op["source_id"])
+            summary["source_display"] = {"name": source["name"], "suffix": source["suffix"]}
+            if op["kind"] == "transfer":
+                from ai_banking.banking.contacts import list_payees
+
+                summary["recipient"] = next(
+                    p for p in list_payees(self, context, db) if p["id"] == op["payee_id"]
+                )
+                summary["balance_before_minor"] = source["balance_minor"]
+                summary["balance_after_minor"] = source["balance_minor"] - op["amount_minor"]
+            return {"challenge": token, "summary": summary}
 
     def decide(self, context, operation_id, decision, token, parameters_digest):
         if decision not in {"approve", "reject"}:

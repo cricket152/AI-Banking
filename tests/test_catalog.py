@@ -32,7 +32,8 @@ def call(env, name, arguments=None):
 
 def test_read_only_tools_are_appended_in_fixed_order():
     names = [tool["name"] for tool in TOOLS]
-    assert names[-2:] == ["list_cards", "list_wealth_products"]
+    assert names[8:10] == ["list_cards", "list_wealth_products"]
+    assert names[10:] == ["get_billing_entries", "find_payees"]
     assert not any("wealth" in name and name.startswith("prepare") for name in names)
     assert not any(name in {"approve", "execute", "create_grant"} for name in names)
 

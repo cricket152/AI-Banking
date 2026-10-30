@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="495.27559055118115" height="310" preserveAspectRatio="xMinYMin meet" viewBox="0 0 495 310" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="495.27559055118115" height="310"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-310)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="260" width="495" height="44" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(88%,94%,91%); fill-rule: evenodd;"/>
+			<text x="186.79931640625" y="288" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,576) scale(1,-1)">单主 Agent 按问题组合工具</text>
+			<text x="169.60000000000002" y="273" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,546) scale(1,-1)">工具结果返回后，可继续查询、澄清或回答</text>
+			<polyline points="247.5 260, 247.5 44" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="247.5 44, 245.5 48, 249.5 48" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="178" width="235" height="76" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(90%,94%,95%); fill-rule: evenodd;"/>
+			<text x="92.5" y="238" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,476) scale(1,-1)">账户与流水</text>
+			<text x="62.46230468750001" y="223" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,446) scale(1,-1)">“余额多少？”“最近花了什么？”</text>
+			<text x="95.39643554687501" y="211" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,422) scale(1,-1)">list_accounts</text>
+			<text x="88.96416015625" y="199" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,398) scale(1,-1)">get_transactions</text>
+			<polyline points="247.5 216, 235 216" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="235 216, 239 218, 239 214" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="260" y="178" width="235" height="76" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(90%,94%,95%); fill-rule: evenodd;"/>
+			<text x="342.5" y="238" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,476) scale(1,-1)">账单分析与依据</text>
+			<text x="306.0623046875" y="223" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,446) scale(1,-1)">“这个月钱花在哪？”“这笔异常依据呢？”</text>
+			<text x="341.51689453125" y="211" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,422) scale(1,-1)">get_billing_summary</text>
+			<text x="345.959228515625" y="199" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,398) scale(1,-1)">get_billing_entries</text>
+			<polyline points="247.5 216, 260 216" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="260 216, 256 218, 256 214" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="92" width="235" height="76" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(90%,94%,95%); fill-rule: evenodd;"/>
+			<text x="82.5" y="152" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,304) scale(1,-1)">收款对象与歧义</text>
+			<text x="62.02187500000001" y="137" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,274) scale(1,-1)">“找张明”“转给房东，尾号5938”</text>
+			<text x="98.791748046875" y="125" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,250) scale(1,-1)">list_payees</text>
+			<text x="96.85986328125" y="113" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,226) scale(1,-1)">find_payees</text>
+			<polyline points="247.5 130, 235 130" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="235 130, 239 132, 239 128" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="260" y="92" width="235" height="76" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(95%,92%,87%); fill-rule: evenodd;"/>
+			<text x="352.5" y="152" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,304) scale(1,-1)">订阅与取消</text>
+			<text x="322.4623046875" y="137" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,274) scale(1,-1)">“有哪些订阅？”“取消云盘会员”</text>
+			<text x="348.047265625" y="125" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,250) scale(1,-1)">list_subscriptions</text>
+			<text x="318.22216796875" y="113" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,226) scale(1,-1)">prepare_subscription_cancellation</text>
+			<polyline points="247.5 130, 260 130" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="260 130, 256 132, 256 128" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="6" width="235" height="76" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(95%,92%,87%); fill-rule: evenodd;"/>
+			<text x="92.5" y="66" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,132) scale(1,-1)">转账与结果</text>
+			<text x="52.10219726562501" y="51" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,102) scale(1,-1)">“给选定对象转1元”“刚才完成了吗？”</text>
+			<text x="88.67788085937501" y="39" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,78) scale(1,-1)">prepare_transfer</text>
+			<text x="92.9560546875" y="27" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,54) scale(1,-1)">get_operation</text>
+			<polyline points="247.5 44, 235 44" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="235 44, 239 46, 239 42" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="260" y="6" width="235" height="76" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(90%,94%,95%); fill-rule: evenodd;"/>
+			<text x="342.5" y="66" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,132) scale(1,-1)">理财与卡片查询</text>
+			<text x="314.2623046875" y="51" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,102) scale(1,-1)">“有什么模拟产品？”“我的卡信息？”</text>
+			<text x="342.259619140625" y="39" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,78) scale(1,-1)">list_wealth_products</text>
+			<text x="361.6765625" y="27" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,54) scale(1,-1)">list_cards</text>
+			<polyline points="247.5 44, 260 44" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="260 44, 256 46, 256 42" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+		</g>
+	</g>
+</svg>

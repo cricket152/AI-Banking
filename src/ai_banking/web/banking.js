@@ -94,7 +94,8 @@ function buildGrantValues() {
   normalizeGrantAmounts();
   const limitMinor = bankAmount("#grant-limit", true);
   const singleMinor = bankAmount("#grant-single", true);
-  const minimumMinor = bankAmount("#grant-minimum", true);  if (allowed.includes("transfer") && (limitMinor <= 0 || singleMinor <= 0))
+  const minimumMinor = bankAmount("#grant-minimum", true);
+  if (allowed.includes("transfer") && (limitMinor <= 0 || singleMinor <= 0))
     throw new Error("允许转账时，累计与单笔上限必须大于 0。");
   if (singleMinor > limitMinor)
     throw new Error("单笔上限不能超过累计支出上限。");
@@ -192,6 +193,8 @@ async function runBank(action) {
 function resetBanking() {
   state.payees = [];
   state.subscriptions = [];
+  resetInsights();
+  resetTransfers();
   state.operations = [];
   state.grants = [];
   state.operationTask = null;
@@ -220,7 +223,7 @@ function bankAccountLabel(id) {
 }
 
 function payeeLabel(payee) {
-  return `${payee.name} · 模拟银行 · 尾号 ${payee.suffix}`;
+  return `${payee.name}${payee.note ? `（${payee.note}）` : ""} · 模拟银行 · 尾号 ${payee.suffix}`;
 }
 
 function shanghaiTime(seconds) {
@@ -349,7 +352,9 @@ function fillGrantFormFromGrant(grant) {
   $("#grant-minimum").value = (grant.minimum_minor / 100).toFixed(2);
   setExpirySegments(grant.expires_at);
   grantError("");
-  grantInfo("已载入当前授权信息；如需新建，请修改范围与额度并重新输入登录密码。");
+  grantInfo(
+    "已载入当前授权信息；如需新建，请修改范围与额度并重新输入登录密码。",
+  );
 }
 
 function normalizeAmount(id) {
@@ -617,6 +622,7 @@ function renderOperation(op, compact = false) {
 }
 
 function renderAgentOperations() {
+  renderWorkflowPlan();
   $("#chat-log")
     .querySelectorAll(".agent-operation-list")
     .forEach((n) => n.remove());
@@ -641,7 +647,7 @@ function renderAgentOperations() {
       "h3",
       "",
       steps.length
-        ? `${progressTitle} · 已完成 ${steps.filter((s) => s.state === "succeeded").length}/${steps.length} 步`
+        ? `${progressTitle} · 已完成 ${steps.filter((s) => s.state === "succeeded").length}/${state.workflowPlan?.steps.length || steps.length} 步`
         : progressTitle,
     ),
   );
@@ -675,6 +681,8 @@ function renderBanking() {
   $("#bank-unavailable").hidden = !!state.health?.bank_ready;
   renderBankOptions();
   renderPolicy();
+  renderContacts();
+  renderWorkflowOptions();
   $("#subscriptions-list").replaceChildren();
   for (const s of state.subscriptions) {
     const row = element("article", "operation-card");
@@ -690,7 +698,7 @@ function renderBanking() {
       element(
         "p",
         "field-help",
-        `下次登记扣费：${new Date(s.next_charge_at).toLocaleDateString("zh-CN")}${s.renewal_due_soon ? " · 近期将续费" : ""}`,
+        `${s.source === "inferred_confirmed" ? "流水推断后经你确认 · 预计下次日期" : "下次登记扣费"}：${new Date(s.next_charge_at).toLocaleDateString("zh-CN", { timeZone: "Asia/Shanghai" })}${s.renewal_due_soon ? " · 近期提醒" : ""}`,
       ),
     );
     if (s.status === "active")
@@ -699,6 +707,7 @@ function renderBanking() {
   }
   if (!state.subscriptions.length)
     $("#subscriptions-list").append(element("p", "muted", "暂无登记订阅。"));
+  renderSubscriptionCandidates();
   $("#operations-list").replaceChildren(
     ...state.operations.slice(0, 50).map((o) => renderOperation(o)),
   );
@@ -801,11 +810,13 @@ async function loadBankData() {
   if (state.user !== user || revision !== state.workflowRevision) return;
   state.payees = payees.payees;
   state.subscriptions = subscriptions.subscriptions;
+  state.subscriptionCandidates = subscriptions.inferred_candidates;
   state.operations = operations.operations;
   state.grants = grants.grants;
   if (conversation === state.conversation && history) {
     state.operationTask = history.operation_task;
     state.executionPolicy = history.execution_policy;
+    state.workflowPlan = history.workflow_plan;
     if (state.operationTask) {
       const taskOperations = await api(
         `/api/bank/operations?task_id=${state.operationTask.id}&limit=100`,
@@ -886,11 +897,29 @@ async function openOperation(id) {
   $("#operation-summary").replaceChildren();
   $("#operation-dialog-title").textContent =
     op.kind === "transfer" ? "核对转账" : "核对订阅取消";
-  appendSummary("付款 / 扣费账户", bankAccountLabel(op.source_id));
-  appendSummary("账户 ID", op.source_id);
+  appendSummary(
+    "付款 / 扣费账户",
+    op.source_display
+      ? `${op.source_display.name} · 尾号 ${op.source_display.suffix}`
+      : bankAccountLabel(op.source_id),
+  );
   if (op.kind === "transfer") {
-    appendSummary("收款账户", bankAccountLabel(op.target_id));
+    appendSummary(
+      "收款账户",
+      op.recipient
+        ? `${op.recipient.name} · ${op.recipient.bank_name} · 尾号 ${op.recipient.suffix}`
+        : bankAccountLabel(op.target_id),
+    );
+    if (op.recipient?.note)
+      appendSummary("你设置的收款人备注", op.recipient.note);
     appendSummary("转账金额（CNY）", bankMoney(op.amount_minor));
+    if (op.balance_before_minor !== undefined) {
+      appendSummary(
+        "当前余额预览（未预留）",
+        currency(op.balance_before_minor),
+      );
+      appendSummary("转账后预计余额", currency(op.balance_after_minor));
+    }
   } else {
     appendSummary(
       "订阅",
@@ -1182,4 +1211,4 @@ function initializeBanking() {
 }
 
 initializeBanking();
-boot();
+document.addEventListener("DOMContentLoaded", boot, { once: true });

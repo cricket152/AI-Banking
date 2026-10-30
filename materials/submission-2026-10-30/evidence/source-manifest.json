@@ -1,0 +1,402 @@
+{
+  "base_commit": "2b63eba2539c787dc67b22f19a02ac92ba9c7fb9",
+  "branch": "codex/payees-transfer-workflow",
+  "working_tree_uncommitted": true,
+  "files": [
+    {
+      "path": ".editorconfig",
+      "bytes": 243,
+      "sha256": "f84308e13f790b05c1ee5068f035236fd8ffa0985f1d4d0caa86b4e6aece9b41"
+    },
+    {
+      "path": ".env.example",
+      "bytes": 2020,
+      "sha256": "b8e149b3bc8530e705ce90b9c59894ef0c8760f026fa4a91b97b780e9a4d1833"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 346,
+      "sha256": "e4f8fbb817845830ec1ab6dd1b4c86d405db30f35e4244f1dfe14adae545116a"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "bytes": 427,
+      "sha256": "ad50a322785040c87756e305bc5d53c1f57dff650aedb90e910e1bdcc292146c"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "bytes": 534,
+      "sha256": "beac80b91672ba8595e093cccc6fb7379815650fa9f58a7e529f4264f710dcb1"
+    },
+    {
+      "path": ".github/pull_request_template.md",
+      "bytes": 757,
+      "sha256": "5f75af283367690df218b0f8dbdabaa3822341e3db0c7a8d31c4797dfa6ac188"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 567,
+      "sha256": "e8956bdec3cee2e95e04616d0f4270e79bd2b6a7f01cba0c951e7eb9ce0cbac3"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 2925,
+      "sha256": "7661e4b707726424d551f2f9dda6b559ba405d6a985f1e2ee7770dfae68a5f10"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "bytes": 3280,
+      "sha256": "1cb47a22b6e056e05b1af9b7c8ef8fda8a88a0a2ecaf7f73426ec5a1b8684b15"
+    },
+    {
+      "path": "docs/agent-evaluation-results.md",
+      "bytes": 5020,
+      "sha256": "c7ecaff19473179759c39ff255c6f977ea4311503d6af71d8e75fbd7072fa62d"
+    },
+    {
+      "path": "docs/agent-evaluation.md",
+      "bytes": 6883,
+      "sha256": "a7c5e60ef0dacc6f8d21bf64818b5c09cdd936754787a91c5fe8aa625a87881b"
+    },
+    {
+      "path": "docs/agent-operations.md",
+      "bytes": 10589,
+      "sha256": "e77c9eba9cf51447f8ab8c87f44e33ac35d429c2a3a2febd4c58b4e339c86f93"
+    },
+    {
+      "path": "docs/architecture.md",
+      "bytes": 11158,
+      "sha256": "6ebb7e15f5cea9b4c4ccacfbe5529b8d91d4ed7801b9ff7808a3f3d144ad2abe"
+    },
+    {
+      "path": "docs/authentication.md",
+      "bytes": 17998,
+      "sha256": "fec1f8b9e59747bee6e1d2080325f09575622d011003f046b653943a6ca639a2"
+    },
+    {
+      "path": "docs/banking-services.md",
+      "bytes": 12836,
+      "sha256": "08c46b0ee82f621130907a7791595e4361c57bdf37a422b52864fe4f2f05c594"
+    },
+    {
+      "path": "docs/billing-insights.md",
+      "bytes": 4190,
+      "sha256": "6f27a010426273d3a99a48c7da8007905b7cf61ac1675897300af78dc5110d3c"
+    },
+    {
+      "path": "docs/competition.md",
+      "bytes": 6301,
+      "sha256": "37c9049f4a672656004c7c4cb66524011a0bf284e191a0c05bb77b893baeb49a"
+    },
+    {
+      "path": "docs/execution-plan.md",
+      "bytes": 28142,
+      "sha256": "c268644d2a4498962cfaf8793834c25d8d9ba08763ed32b1cad83b479206c0c2"
+    },
+    {
+      "path": "docs/langsmith.md",
+      "bytes": 8097,
+      "sha256": "159ee66ec3f12463a745b5c10a3ff6ec808cad90cf0b0eea52b6b1ba4346b0ac"
+    },
+    {
+      "path": "docs/local-development.md",
+      "bytes": 13237,
+      "sha256": "2a78e7af2e243b2b436da06de62453ca60048f837c474dbb12bac7f027b2990a"
+    },
+    {
+      "path": "docs/requirements.md",
+      "bytes": 6872,
+      "sha256": "8d814b7f45714380061e7370d75c8098260ffd06e4f8ecf28d48abb18a993d53"
+    },
+    {
+      "path": "docs/roadmap.md",
+      "bytes": 2207,
+      "sha256": "516d35e0a66e5b831b2e0211d64b1fc2f4e4d42f08d74bbf62ea29df06fab833"
+    },
+    {
+      "path": "docs/transfer-workflows.md",
+      "bytes": 5607,
+      "sha256": "030dfaba90644b8eebbeb470a49f6d3430379119ab8454cb26f23c7021efe061"
+    },
+    {
+      "path": "evals/banking-agent.json",
+      "bytes": 21641,
+      "sha256": "373825fc3267d2c700962432e8cdc7704876cc08024f0c6e8253dc223abc85e9"
+    },
+    {
+      "path": "PROJECT_STATUS.md",
+      "bytes": 39244,
+      "sha256": "f28c40ae148ed0a7cc892f661af4ff194be06b0a7dd3fdee7b0931b875b3cc00"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 891,
+      "sha256": "c8e64d5882076f2b5981c36fd3cefd901373cec0234d8d9f23fc6a645b070d0f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5190,
+      "sha256": "9bded7fc47b04302133d1310f81f5f772ca052d29556f6a42ea99168d12a6679"
+    },
+    {
+      "path": "requirements-dev.lock",
+      "bytes": 784,
+      "sha256": "5e425bfc967b8f9badd1b77f968ab83ec29ab0e6f02b867f3717e7224f6de627"
+    },
+    {
+      "path": "requirements-observability.lock",
+      "bytes": 412,
+      "sha256": "37997abc6e0bce6dbaafa4f9da75a8cc1466aebcf151baf5033e26d0acf17325"
+    },
+    {
+      "path": "src/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/ai_banking/__init__.py",
+      "bytes": 39,
+      "sha256": "d399f9d4b38c4603e6954fe69b9574cf5a690247f196ff981e2e9bcac03dd554"
+    },
+    {
+      "path": "src/ai_banking/__main__.py",
+      "bytes": 1220,
+      "sha256": "4876a51bdd23c188bf119d22d286a8756c2428cd4cdf0350177e9670829e427a"
+    },
+    {
+      "path": "src/ai_banking/agent.py",
+      "bytes": 37578,
+      "sha256": "406efae8b1be533af93ddfc75427100e5d5e701fb17e5a1cbbce52de2ccc77f0"
+    },
+    {
+      "path": "src/ai_banking/agent_operations.py",
+      "bytes": 11164,
+      "sha256": "7ee067f2685cc7063f22174772aa46a1916b75badd6758ebcaa06f7437e55f83"
+    },
+    {
+      "path": "src/ai_banking/app.py",
+      "bytes": 19303,
+      "sha256": "9806cd031ad26f6081430ff565b38d930d1ff174548fda64bddcb3f6ce1d9ff4"
+    },
+    {
+      "path": "src/ai_banking/auth/__init__.py",
+      "bytes": 10532,
+      "sha256": "96b904c3aee27f2207529615f4ace8653faf6b52fb8c028a55883cce641e9b17"
+    },
+    {
+      "path": "src/ai_banking/auth/cli.py",
+      "bytes": 1307,
+      "sha256": "ffc8201c976b991a5a65477e1b603dcd5c3642311df0cfee50ec7fce2f4d485e"
+    },
+    {
+      "path": "src/ai_banking/banking/__init__.py",
+      "bytes": 70,
+      "sha256": "c89a60ea39769ac8294c52c88d867b8b71caad58a5a43236df5a29d651db1b1c"
+    },
+    {
+      "path": "src/ai_banking/banking/api.py",
+      "bytes": 9183,
+      "sha256": "1b26eee9254628d6c6c6aebd4780cd7ecbb2995d2302d857c60bfe375fc5346c"
+    },
+    {
+      "path": "src/ai_banking/banking/cli.py",
+      "bytes": 2201,
+      "sha256": "e3ec1164b7a4aac569528b30a6e5890671043087caf74038c140fa06ad292827"
+    },
+    {
+      "path": "src/ai_banking/banking/contacts.py",
+      "bytes": 4539,
+      "sha256": "8e9b0ecdb2649d49cd7d37de1bf8a2cbfb1d23b35910c2638e95c5ed371f7541"
+    },
+    {
+      "path": "src/ai_banking/banking/reports.py",
+      "bytes": 9429,
+      "sha256": "ef7c25d916c318e32ab09be1e01138bb0a1cfca63834511fd391db028796d50e"
+    },
+    {
+      "path": "src/ai_banking/banking/schema.py",
+      "bytes": 5434,
+      "sha256": "8ca12e13d2dc5af16afd5a7ce8b0f6a7c0f845a360ecbb607daf99f5baa68677"
+    },
+    {
+      "path": "src/ai_banking/banking/service.py",
+      "bytes": 32982,
+      "sha256": "013bf95f082db1fec68a66dfd85456468b704e059ddda02326de43cd619523f4"
+    },
+    {
+      "path": "src/ai_banking/banking/subscriptions.py",
+      "bytes": 5816,
+      "sha256": "7cc0ca73874ba0cfeb50696598a78dd3b9df798198bfb6565e669779413f8b33"
+    },
+    {
+      "path": "src/ai_banking/banking/workflows.py",
+      "bytes": 7539,
+      "sha256": "cd1fee50656035afc6569675a9d87e96d9d40c3a2d43695b22987e410c0b332a"
+    },
+    {
+      "path": "src/ai_banking/catalog.py",
+      "bytes": 2200,
+      "sha256": "6ff6791b9de0b9522828773050aa196706b216b95660b458ba9c313bb4b56fcd"
+    },
+    {
+      "path": "src/ai_banking/config.py",
+      "bytes": 6461,
+      "sha256": "ad83826575650ffbe882c64495b70f25310a399c84119b9eca45aff4273491cf"
+    },
+    {
+      "path": "src/ai_banking/context.py",
+      "bytes": 6650,
+      "sha256": "12c70490a33fc1efa9099afbf80c3e793fe1a83bf3196df93812793845d664de"
+    },
+    {
+      "path": "src/ai_banking/evaluation.py",
+      "bytes": 21304,
+      "sha256": "433be577907ceaad2846bbfe559c0fed4dac87cd799ba290825b14b505e2fe19"
+    },
+    {
+      "path": "src/ai_banking/observability.py",
+      "bytes": 13163,
+      "sha256": "79858d37ea8264f8283f21e4458e4de48828bc6bf2076a7d2a2509b8ed979028"
+    },
+    {
+      "path": "src/ai_banking/store.py",
+      "bytes": 7313,
+      "sha256": "a3ca35d85f4155d12f45fa35f848170dd5124570e1fc2bf6906322ce794813a6"
+    },
+    {
+      "path": "src/ai_banking/tracing.py",
+      "bytes": 3359,
+      "sha256": "c02890778c753b24a591ab97f4e6aa36c21898eca8addcdd6c8d35eafafc691e"
+    },
+    {
+      "path": "src/ai_banking/web/app.css",
+      "bytes": 52827,
+      "sha256": "8fe9d54e9ded15216f09fd7b73531178020786e6211ac4e58621b6528a90338a"
+    },
+    {
+      "path": "src/ai_banking/web/app.js",
+      "bytes": 27191,
+      "sha256": "cc7d4b0141328961ec51cc81f9a0f5e026887fc5e9d306f3deabebbc87de769f"
+    },
+    {
+      "path": "src/ai_banking/web/banking.js",
+      "bytes": 40855,
+      "sha256": "cdaee8f96e7998c4ffe2115b6e88a9a834976ec8cbaedf1c28626514831fefd7"
+    },
+    {
+      "path": "src/ai_banking/web/index.html",
+      "bytes": 43556,
+      "sha256": "9cbe452c2ca4068d75ca4f2038b0d34d110bcf028cf99b1d367d5770c550b576"
+    },
+    {
+      "path": "src/ai_banking/web/insights.js",
+      "bytes": 12747,
+      "sha256": "d83debabbac97f09e64a319b62d4e5ae8b7a69f676f1b5c41570c9e7499b78cd"
+    },
+    {
+      "path": "src/ai_banking/web/mark.svg",
+      "bytes": 337,
+      "sha256": "6c25fe21185a6f8acf55b3213ea42d37add275521a22993fda6d67a63f477b81"
+    },
+    {
+      "path": "src/ai_banking/web/transfers.js",
+      "bytes": 12738,
+      "sha256": "cd98baa27829e020452293cf1243983e4fabe770e4b647f6fac5887775cde00f"
+    },
+    {
+      "path": "src/ai_banking.egg-info/dependency_links.txt",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "src/ai_banking.egg-info/PKG-INFO",
+      "bytes": 615,
+      "sha256": "0a9afd65b65db398eefdcbcb3dd5a0e7d85672310dbf356bb71710612ee9f199"
+    },
+    {
+      "path": "src/ai_banking.egg-info/requires.txt",
+      "bytes": 228,
+      "sha256": "7cb4f4d8dcf463c2a1b34f2ab12e7cc183202d717ed39c284f9edc1a6ce65445"
+    },
+    {
+      "path": "src/ai_banking.egg-info/SOURCES.txt",
+      "bytes": 938,
+      "sha256": "b5f4df73a516ad61b85ac3bebd77905c5cf63e6f1f2c5a7bf5b5f2fd514e19ce"
+    },
+    {
+      "path": "src/ai_banking.egg-info/top_level.txt",
+      "bytes": 11,
+      "sha256": "1b773dad77140e2d7dca91f035e1b079596b9c79a2a5b5caaf77409b8d68417b"
+    },
+    {
+      "path": "tests/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/test_agent_evaluation.py",
+      "bytes": 8822,
+      "sha256": "f9cb3481d3d559cd98ac888dad8ddeac647b70cd9be34d7724a58577c1fcc292"
+    },
+    {
+      "path": "tests/test_agent_intents.py",
+      "bytes": 13326,
+      "sha256": "4385e8f2bd1f7394d411061e898d1110a2acb3e4772fafd571c34d0d67185c20"
+    },
+    {
+      "path": "tests/test_agent_workflow.py",
+      "bytes": 21465,
+      "sha256": "ef5df8af5e6a69782f82c298ed2d031020969e79d8ba11649a4cc260cff713a4"
+    },
+    {
+      "path": "tests/test_application.py",
+      "bytes": 24069,
+      "sha256": "bb8befd5a37a4996a2e2a74f54d0bf0e78f670462f5c2bc958d481cd3295e9e5"
+    },
+    {
+      "path": "tests/test_banking.py",
+      "bytes": 17827,
+      "sha256": "bb82667b4a67d4d465d062414e8ced3e33df0f1144a08c51d39bf38c50b5a791"
+    },
+    {
+      "path": "tests/test_banking_edges.py",
+      "bytes": 9636,
+      "sha256": "2f988ac0ca8351229c8d27924c71e755f849e94cb93a7a0443af7dff003831a8"
+    },
+    {
+      "path": "tests/test_catalog.py",
+      "bytes": 4101,
+      "sha256": "598ddd2e7db90140319997ad30fbfe9af312f848904480152c3a5fcc07fb5ca2"
+    },
+    {
+      "path": "tests/test_context.py",
+      "bytes": 11899,
+      "sha256": "54a5591a616001255072e8042723e8c9bfea8fd6aa09c9351e9225971119d8e9"
+    },
+    {
+      "path": "tests/test_environment.py",
+      "bytes": 553,
+      "sha256": "78380e77d4682c4fd6d5e6ea1a8f848f2a643e2eea723f7411eb06a8a2d5c55c"
+    },
+    {
+      "path": "tests/test_insights.py",
+      "bytes": 12465,
+      "sha256": "8693a82e77dc1018279ed45eef9e3c76cfb59f59d602afa5ef817ba50fc84c39"
+    },
+    {
+      "path": "tests/test_observability.py",
+      "bytes": 16628,
+      "sha256": "aad023d2a8d2a8694e8d1238145474e32188b0a0c62cb42febe098074a44675e"
+    },
+    {
+      "path": "tests/test_tracing.py",
+      "bytes": 4017,
+      "sha256": "b51118270521acda528ccb1dfab60e41d4d0456f813c5c4913ce8f7d7f4d88e3"
+    },
+    {
+      "path": "tests/test_transfer_workflows.py",
+      "bytes": 16902,
+      "sha256": "e3bd427d400e90292d0ccaf6b3ecc9ef0256541c77d4147355f87d016d52a798"
+    }
+  ]
+}

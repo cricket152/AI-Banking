@@ -248,6 +248,7 @@ function renderMoney() {
   renderAccounts();
   renderTransactions();
   renderBanking();
+  renderInsights();
 }
 
 async function loadData() {
@@ -269,6 +270,11 @@ async function loadData() {
 }
 
 const pageTitles = {
+  insights: [
+    "账单洞察",
+    "让每一笔支出有依据",
+    "查看分类变化、核对异常线索，了解完整区间的模拟收支。",
+  ],
   overview: [
     "财务概览",
     "你的财务，一目了然",
@@ -314,9 +320,12 @@ function setPage(page) {
   $("#finance-pane").hidden = page === "assistant" || page === "banking";
   $("#bank-pane").hidden = page !== "banking";
   $("#overview-section").hidden = page !== "overview";
-  $("#accounts-section").hidden = page === "activity";
-  $("#activity-section").hidden = page === "accounts";
+  $("#accounts-section").hidden = page === "activity" || page === "insights";
+  $("#activity-section").hidden = page === "accounts" || page === "insights";
+  $("#insights-section").hidden = page !== "insights";
+  if (page === "insights") loadInsights();
   $(".content").classList.toggle("assistant-only", page === "assistant");
+  $(".content").classList.toggle("insights-only", page === "insights");
   const content = $(".content");
   content.classList.remove("page-enter");
   void content.offsetWidth;
@@ -547,7 +556,12 @@ async function loadConversation() {
     state.operationTask = operation_task;
     state.executionPolicy = execution_policy;
     for (const turn of turns) {
-      addMessage("user", turn.question);
+      if (turn.application_notice)
+        addMessage(
+          "application-note",
+          "独立确认已处理，已请求助手核对原操作并继续未完成步骤。",
+        );
+      else addMessage("user", turn.question);
       addMessage(
         turn.status === "succeeded" ? "assistant" : "error",
         turn.answer ||
@@ -671,6 +685,7 @@ $("#refresh").addEventListener("click", async () => {
   $("#app-error").hidden = true;
   try {
     await Promise.all([loadData(), loadBankData()]);
+    if (state.page === "insights") await loadInsights();
   } catch (error) {
     $("#app-error").textContent = error.message;
     $("#app-error").hidden = false;

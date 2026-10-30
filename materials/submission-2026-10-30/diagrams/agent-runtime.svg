@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="495.27559055118115" height="450" preserveAspectRatio="xMinYMin meet" viewBox="0 0 495 450" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="495.27559055118115" height="450"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-450)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="403" width="460" height="44" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(90%,94%,95%); fill-rule: evenodd;"/>
+			<text x="185.37109375" y="431" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,862) scale(1,-1)">用户问题 / 界面选择</text>
+			<text x="154.65048828125" y="416" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,832) scale(1,-1)">账单、订阅、转账、理财/卡片、操作进度</text>
+			<rect x="0" y="340" width="460" height="47" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(97%,90%,92%); fill-rule: evenodd;"/>
+			<text x="171.75537109375" y="371" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,742) scale(1,-1)">A  入口安全检查  |  FastAPI</text>
+			<text x="126.46899414062501" y="356" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,712) scale(1,-1)">会话身份 · Origin/Host · CSRF（写请求）· 输入大小与格式</text>
+			<polyline points="230 403, 230 387" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="230 387, 228 391, 232 391" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="263" width="215" height="57" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(95%,92%,87%); fill-rule: evenodd;"/>
+			<text x="50.859375" y="304" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,608) scale(1,-1)">上下文装配  |  每轮请求前</text>
+			<text x="48.33828125000001" y="289" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,578) scale(1,-1)">固定系统约束 + 状态 + 最新问题</text>
+			<text x="39.433593750000014" y="277" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,554) scale(1,-1)">历史超过12轮或预算紧张 → 有界摘录</text>
+			<rect x="245" y="263" width="215" height="57" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(88%,94%,91%); fill-rule: evenodd;"/>
+			<text x="293.5400390625" y="304" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,608) scale(1,-1)">单主 Agent / 模型工具循环</text>
+			<text x="298.8076171875" y="289" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,578) scale(1,-1)">理解问题 → 选工具 → 读返回</text>
+			<text x="299.2" y="277" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,554) scale(1,-1)">可继续调用、澄清或给出回答</text>
+			<polyline points="107 340, 107 320" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="107 320, 105 324, 109 324" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<polyline points="215 291, 245 291" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="245 291, 241 293, 241 289" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="195" width="460" height="47" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(97%,90%,92%); fill-rule: evenodd;"/>
+			<text x="164.4677734375" y="226" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,452) scale(1,-1)">B  每次工具调用前的安全校验</text>
+			<text x="123.64223632812501" y="211" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,422) scale(1,-1)">当前会话有效性 · 工具白名单 · Pydantic参数 · 业务对象归属</text>
+			<polyline points="352 263, 352 242" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="352 242, 350 246, 354 246" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="123" width="215" height="52" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(90%,94%,95%); fill-rule: evenodd;"/>
+			<text x="82.5" y="159" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,318) scale(1,-1)">查询类工具</text>
+			<text x="59.21289062500001" y="144" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,288) scale(1,-1)">账户 / 账单 / 收款人 / 目录</text>
+			<text x="54.20000000000001" y="132" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,264) scale(1,-1)">只读查询；返回可核对的数据</text>
+			<rect x="245" y="123" width="215" height="52" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(97%,90%,92%); fill-rule: evenodd;"/>
+			<text x="302.03125" y="159" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,318) scale(1,-1)">C  意图准备 / 任务约束</text>
+			<text x="303.3" y="144" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,288) scale(1,-1)">转账、取消订阅；固定方案</text>
+			<text x="308.312890625" y="132" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,264) scale(1,-1)">对象 / 金额 / 顺序 / 幂等</text>
+			<polyline points="107 195, 107 175" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="107 175, 105 179, 109 179" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<polyline points="352 195, 352 175" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="352 175, 350 179, 354 179" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="245" y="49" width="215" height="56" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(97%,90%,92%); fill-rule: evenodd;"/>
+			<text x="296.3232421875" y="89" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,178) scale(1,-1)">D  批准与执行前再次复核</text>
+			<text x="301.05380859375" y="74" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,148) scale(1,-1)">逐笔挑战 或 用户指定预授权</text>
+			<text x="294.31923828125" y="62" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,124) scale(1,-1)">额度 / 余额 / 期限 → SQLite事务</text>
+			<polyline points="352 123, 352 105" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="352 105, 350 109, 354 109" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<rect x="0" y="0" width="460" height="32" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(88%,94%,91%); fill-rule: evenodd;"/>
+			<text x="130.6689453125" y="16" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,32) scale(1,-1)">结果回到 Agent；最终回执以操作与账本为准</text>
+			<polyline points="107 123, 107 32" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="107 32, 105 36, 109 36" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<polyline points="352 49, 352 32" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="352 32, 350 36, 354 36" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<polyline points="460 16, 483 16, 483 291, 460 291" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="460 291, 464 293, 464 289" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<text x="470.0" y="228" style="font-family: Deng; font-size: 7px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,456) scale(1,-1)">返回</text>
+		</g>
+	</g>
+</svg>
