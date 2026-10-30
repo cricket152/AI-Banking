@@ -16,7 +16,7 @@ Argon2id密码哈希、服务端不透明会话和令牌摘要、HttpOnly/SameSi
 整数分、双边记账、SQLite事务、稳定操作幂等、预算预占、未知结果不释放未核实占用，参见 banking/service.py 及 test_banking*.py。
 模型无批准、创建授权、直接执行、任意SQL或Shell工具；商户/备注等作为不可信数据转义。真正权限由业务服务强制执行，XML和提示词不是安全边界。
 固定联动计划强制对象/金额/顺序；预览证据变化拒绝；新联系人不会进入旧授权，参见 tests/test_transfer_workflows.py。候选登记无扣款/授权副作用，参见 test_insights.py。
-默认日志正文关闭、LangSmith 正文默认关闭；响应启用 CSP、nosniff、frame-ancestors、Referrer/Permissions-Policy、COOP/CORP 与 no-store。全新 venv（Python 3.14.6）复测 229 项通过。
+默认日志正文关闭、LangSmith 正文默认关闭；响应启用 CSP、nosniff、frame-ancestors、Referrer/Permissions-Policy、COOP/CORP 与 no-store。全新 venv（Python 3.14.6）复测 232 项通过。
 卡片申请、调额、冻结、挂失均需重新验证登录密码并校验本人归属；跨场景计划只保存日期与预算，模拟下单复用既有待确认转账，不连接外部商户、不自动定时执行。
 
 ## 已知风险与处置

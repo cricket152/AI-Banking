@@ -1,7 +1,7 @@
 ........................................................................ [ 31%]
 ........................................................................ [ 62%]
-........................................................................ [ 94%]
-Exception ignored in atexit callback <function cleanup_numbered_dir at 0x000002AF494D5220>:
+........................................................................ [ 93%]
+Exception ignored in atexit callback <function cleanup_numbered_dir at 0x0000011DF1CA5220>:
 Traceback (most recent call last):
   File "M:\made by me\ai bank\.venv\Lib\site-packages\_pytest\pathlib.py", line 374, in cleanup_numbered_dir
     cleanup_dead_symlinks(root)
@@ -10,5 +10,5 @@ Traceback (most recent call last):
   File "I:\anaconda\Lib\pathlib\__init__.py", line 1042, in unlink
     os.unlink(self)
 PermissionError: [WinError 5] �ܾ����ʡ�: 'C:\\Users\\yd\\AppData\\Local\\Temp\\pytest-of-yd\\pytest-current'
-.............                                                            [100%]
-229 passed in 79.30s (0:01:19)
+................                                                         [100%]
+232 passed in 133.78s (0:02:13)

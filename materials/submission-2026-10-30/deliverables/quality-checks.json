@@ -1,34 +1,34 @@
 {
-  "technical_pages": 11,
-  "security_pages": 8,
+  "technical_pages": 12,
+  "security_pages": 9,
   "rendered_with": "Poppler 90 dpi (v1.1 review)",
   "visual_review": "17 pages inspected; no overlap, missing glyphs or cut tables; figures 3/4 replaced with cropped dialogs",
-  "test_nodes": 229,
+  "test_nodes": 232,
   "key_case_functions": 30,
   "manual_cases": 10,
-  "archive_retest": "source archive rebuilt from b2284f0; current worktree and clean venv: 229 passed",
+  "archive_retest": "source archive rebuilt from de66781; current worktree and clean venv: 232 passed",
   "pdf_checks": {
     "technical-document.pdf": {
-      "pages": 11,
+      "pages": 12,
       "encrypted": false,
       "text_extraction": "pass",
       "size_limit": "pass"
     },
     "security-self-assessment.pdf": {
-      "pages": 8,
+      "pages": 9,
       "encrypted": false,
       "text_extraction": "pass",
       "size_limit": "pass"
     }
   },
   "source_package": {
-    "bytes": 265688,
-    "sha256": "2e24b5852150f9eeac3e3ab2ae58bdca04cc6a4ce10d35769d89836bcfe92c5f",
-    "entries": 77,
+    "bytes": 270849,
+    "sha256": "897a83bd1d87b3704d89ad2a6f2c34e026922c08ae418a6ba05c1526de291e1b",
+    "entries": 80,
     "crc": "pass",
     "manifest": "pass"
   },
-  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability extras, 229 passed",
+  "clean_install": "pass: fresh venv Python 3.14.6, dev+observability extras, 232 passed",
   "revision": "v1.1",
   "manual_review": {
     "cases": 10,
