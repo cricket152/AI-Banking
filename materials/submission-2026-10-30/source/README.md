@@ -1,6 +1,6 @@
 # 源码审查包与部署素材
 
-source-review.zip 是冻结代码提交 `de66781`（分支 `feat/cards-scenarios`）的导出，包含源码、测试、evals、docs、README、项目配置与约束文件。不包含 .env、.local、数据库、凭据、虚拟环境、node_modules、浏览器会话或截图缓存。冻结版本不再含未提交工作树。
+source-review.zip 是冻结代码提交 `eb3a0ab`（分支 `feat/cards-scenarios`）的导出，包含源码、测试、evals、docs、README、项目配置与约束文件。不包含 .env、.local、数据库、凭据、虚拟环境、node_modules、浏览器会话或截图缓存。冻结版本不再含未提交工作树。
 
 Windows / Python 3.12+（历史实测3.13.12）：
 ```powershell

@@ -6,7 +6,7 @@
   "test_nodes": 232,
   "key_case_functions": 30,
   "manual_cases": 10,
-  "archive_retest": "source archive rebuilt from de66781; current worktree and clean venv: 232 passed",
+  "archive_retest": "source archive rebuilt from eb3a0ab; current worktree and clean venv: 232 passed",
   "pdf_checks": {
     "technical-document.pdf": {
       "pages": 12,
@@ -22,8 +22,8 @@
     }
   },
   "source_package": {
-    "bytes": 270849,
-    "sha256": "897a83bd1d87b3704d89ad2a6f2c34e026922c08ae418a6ba05c1526de291e1b",
+    "bytes": 271773,
+    "sha256": "00f40e19edd084806cfb40dace3c40058d55935bb84051535ef8627e8cb14329",
     "entries": 80,
     "crc": "pass",
     "manifest": "pass"

@@ -1,10 +1,10 @@
 {
   "file": "source-review.zip",
-  "bytes": 270849,
-  "sha256": "897a83bd1d87b3704d89ad2a6f2c34e026922c08ae418a6ba05c1526de291e1b",
+  "bytes": 271773,
+  "sha256": "00f40e19edd084806cfb40dace3c40058d55935bb84051535ef8627e8cb14329",
   "file_count": 80,
   "contains_uncommitted_work": false,
-  "source_commit": "de66781",
+  "source_commit": "eb3a0ab",
   "archive_integrity": "pass",
   "manifest_checksums": "pass",
   "clean_install_validation": "pass: fresh venv Python 3.14.6, 232 tests"

@@ -1,5 +1,5 @@
 {
-  "base_commit": "de66781b49d441a9f88914a52db333ee8685447d",
+  "base_commit": "eb3a0ab86a741d535f894f86a41b111476f8c221",
   "branch": "feat/cards-scenarios",
   "working_tree_uncommitted": false,
   "files": [
@@ -35,8 +35,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 7357,
-      "sha256": "25d75dd3a7eefff97120c8c771348cb11ee54080bda1b96e611d7deeddbb125f"
+      "bytes": 7379,
+      "sha256": "e090fb2e61393c812cb8de0311e5f448f583f2d8e5f4755eb5e29b386d4685fb"
     },
     {
       "path": "docs/agent-evaluation-results.md",
@@ -75,8 +75,8 @@
     },
     {
       "path": "docs/cards-and-scenarios.md",
-      "bytes": 2813,
-      "sha256": "c2301d991e7742d5f906818b7f15ebd183d039e4dd4d0c729af77694355b94b1"
+      "bytes": 3288,
+      "sha256": "0f46fa750073c92d369c0f9b52dcfb835cbe6a8081074d527c68fd2d56d8a47a"
     },
     {
       "path": "docs/competition.md",
@@ -180,13 +180,13 @@
     },
     {
       "path": "src/ai_banking/banking/api.py",
-      "bytes": 13427,
-      "sha256": "800dc0b9bdf31c39e8eb59b90f0815b498becfd7a44f04f26c3127b8fae59c3e"
+      "bytes": 13643,
+      "sha256": "132de70c52912c788bb44cc35245796c37e278e9f3c5afe67353034a4160515e"
     },
     {
       "path": "src/ai_banking/banking/cards.py",
-      "bytes": 5794,
-      "sha256": "a689f1ed58e8562c40eee1010f4c3809f4af3177dd169ccc79e013ee95592a96"
+      "bytes": 6302,
+      "sha256": "b0293fe27f039dd98038dc4176759e6a74373b2a4846f30ffedc8469bb85420f"
     },
     {
       "path": "src/ai_banking/banking/cli.py",
@@ -205,8 +205,8 @@
     },
     {
       "path": "src/ai_banking/banking/scenarios.py",
-      "bytes": 7177,
-      "sha256": "fbe5a1dd0381772d272eeb448cdd0ad9af94c166951338374b77b8353c7efc4c"
+      "bytes": 8554,
+      "sha256": "54c136a8f5d39375db78fefb5c1ea69550509f2bb0fb38b3941702fa41030d35"
     },
     {
       "path": "src/ai_banking/banking/schema.py",
@@ -285,8 +285,8 @@
     },
     {
       "path": "src/ai_banking/web/cards.js",
-      "bytes": 5612,
-      "sha256": "dbb5ccf64f1f9c267bc061edf0a41d5b566eb4b88b3ce82d03ec9c89f30e7f1a"
+      "bytes": 5655,
+      "sha256": "a124d5584cba53388a3e26dee9119512f0c0d6bf205b1692f00752976ae133b8"
     },
     {
       "path": "src/ai_banking/web/index.html",
@@ -305,8 +305,8 @@
     },
     {
       "path": "src/ai_banking/web/scenarios.js",
-      "bytes": 6273,
-      "sha256": "5127a34d328458e33e19015fa33da3115d68ccf8de1cb72f844d480219f5971d"
+      "bytes": 6752,
+      "sha256": "330e5c6fe499603fdeba4e58e1c314190cb3caed90b9f0a5afb277e1a81d9be6"
     },
     {
       "path": "src/ai_banking/web/transfers.js",
@@ -355,8 +355,8 @@
     },
     {
       "path": "tests/test_cards.py",
-      "bytes": 4290,
-      "sha256": "422660b0c0831c2bc71e945c49d1400b9acc1b336905d72cf0a4628d56b4c943"
+      "bytes": 4577,
+      "sha256": "98e63a62eeff69b8d617fe72776757cd8817770ef8e3679688fb8ecc19a85206"
     },
     {
       "path": "tests/test_catalog.py",
@@ -385,8 +385,8 @@
     },
     {
       "path": "tests/test_scenarios.py",
-      "bytes": 4963,
-      "sha256": "0d507bc19d4481c887d88ef524a1c53a38eb2f99cbeb35a182d5e112467a2e5a"
+      "bytes": 5336,
+      "sha256": "4ccb27ae04d975bea61ae7c5ead4b39c234370c6941a8268d945a1b23e7d49b9"
     },
     {
       "path": "tests/test_tracing.py",
