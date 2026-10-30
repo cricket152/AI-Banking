@@ -85,4 +85,4 @@ if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 - [技术文档PDF](technical-document.pdf)与[安全自评PDF](security-self-assessment.pdf)仍为历史导出，修订后的[技术文档源稿](technical-document-source.md)与[安全自评源稿](security-self-assessment-source.md)尚未重导PDF；不要将当前PDF作为最终提交版。
 - [源码与部署压缩包](source-and-deployment.zip)：历史归档快照，含代码、tests/、evals/和运行文档；并非当前冻结源码，正式提交前需按冻结版本重新打包和校验。
 
-材料包含2026-10-30留存的代码与证据快照，来源基线和未提交增量以各自manifest为准，不等同于当前Git HEAD。正式提交前补齐团队姓名、分工和签署信息，完成独立队友审查，冻结版本，并确认PDF、PPTX、源码与截图一致。
+材料包含2026-10-30留存的代码与证据快照，来源基线和历史增量以各自manifest为准；当前冻结提交为 `9389868`，标签为 `freeze-2026-10-31-v1.6`。正式提交前仍需补齐团队姓名、分工和签署信息，完成独立队友审查，并确认PDF、PPTX、源码与截图一致。
