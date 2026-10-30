@@ -333,7 +333,8 @@ class Bank:
             raise BankError("INSUFFICIENT_BALANCE")
 
     def prepare(self, context, values, kind="transfer", *, exclusive_task=False):
-        if kind not in {"transfer", "cancel_subscription"}:
+        wealth_kinds = {"wealth_purchase", "wealth_redeem"}
+        if kind not in {"transfer", "cancel_subscription", *wealth_kinds}:
             raise BankError("INVALID_OPERATION_KIND", 422)
         if values.get("currency", "CNY") != "CNY":
             raise BankError("UNSUPPORTED_CURRENCY", 422)
@@ -373,7 +374,13 @@ class Bank:
             ):
                 raise BankError("TASK_STEP_LIMIT")
             source = self._account(db, context.user_id, values["source_id"])
-            target_id, payee_id, subscription_id, amount = None, None, None, 0
+            target_id, payee_id, subscription_id, amount, product_id = (
+                None,
+                None,
+                None,
+                0,
+                None,
+            )
             if kind == "transfer":
                 amount = values["amount_minor"]
                 if type(amount) is not int or not 1 <= amount <= MAX_MINOR:
@@ -388,6 +395,14 @@ class Bank:
                 target = db.execute("SELECT * FROM accounts WHERE id=?", (target_id,)).fetchone()
                 if target_id == source["id"] or target["currency"] != source["currency"]:
                     raise BankError("INVALID_TRANSFER", 422)
+            elif kind in wealth_kinds:
+                from ai_banking.banking.wealth import validate_product
+
+                amount = values["amount_minor"]
+                product_id = values["product_id"]
+                validate_product(db, context.user_id, product_id, amount)
+                if values.get("mode") != "HUMAN_APPROVAL" or values.get("grant_id") is not None:
+                    raise BankError("INVALID_AUTHORIZATION_MODE", 422)
             else:
                 subscription_id = values["subscription_id"]
                 if not db.execute(
@@ -441,6 +456,15 @@ class Bank:
                 tuple(op.values()),
             )
             self._event(db, context.user_id, op["state"], op["id"], amount_minor=amount)
+            if kind in wealth_kinds:
+                self._event(
+                    db,
+                    context.user_id,
+                    "wealth_order_prepared",
+                    op["id"],
+                    product_id=product_id,
+                    action=kind,
+                )
             return self._public(op)
 
     def _public(self, row):
@@ -499,6 +523,26 @@ class Bank:
                 )
                 summary["balance_before_minor"] = source["balance_minor"]
                 summary["balance_after_minor"] = source["balance_minor"] - op["amount_minor"]
+            elif op["kind"] in {"wealth_purchase", "wealth_redeem"}:
+                from ai_banking.banking.wealth import holdings, product
+
+                row = db.execute(
+                    "SELECT detail FROM bank_events WHERE operation_id=? "
+                    "AND event='wealth_order_prepared' ORDER BY seq DESC LIMIT 1",
+                    (op["id"],),
+                ).fetchone()
+                if row is not None:
+                    item = product(json.loads(row["detail"])["product_id"])
+                    holding = next(
+                        (
+                            holding["amount_minor"]
+                            for holding in holdings(db, context.user_id)
+                            if item and holding["product"]["id"] == item["id"]
+                        ),
+                        0,
+                    )
+                    summary["wealth_product"] = item
+                    summary["holding_before_minor"] = holding
             return {"challenge": token, "summary": summary}
 
     def decide(self, context, operation_id, decision, token, parameters_digest):
@@ -562,11 +606,14 @@ class Bank:
                     minimum = self._policy(db, context, op)["minimum_minor"]
                     if op["kind"] != "transfer":
                         minimum = 0
-                self._available(
-                    db, context.user_id, op["source_id"], op["amount_minor"], minimum, op["id"]
-                )
+                if op["kind"] != "wealth_redeem":
+                    self._available(
+                        db, context.user_id, op["source_id"], op["amount_minor"], minimum, op["id"]
+                    )
                 if op["kind"] == "transfer":
                     self._transfer(db, op)
+                elif op["kind"] in {"wealth_purchase", "wealth_redeem"}:
+                    self._wealth(db, context, op)
                 else:
                     db.execute(
                         "UPDATE bank_subscriptions SET status='cancelled' WHERE id=?",
@@ -649,6 +696,67 @@ class Bank:
                 op["id"],
                 amount_minor=op["amount_minor"],
             )
+
+    def _wealth(self, db, context, op):
+        from ai_banking.banking.wealth import holdings, product
+
+        row = db.execute(
+            "SELECT detail FROM bank_events WHERE operation_id=? AND event='wealth_order_prepared' "
+            "ORDER BY seq DESC LIMIT 1",
+            (op["id"],),
+        ).fetchone()
+        if row is None:
+            raise BankError("WEALTH_ORDER_NOT_FOUND")
+        detail = json.loads(row["detail"])
+        product_id = detail["product_id"]
+        item = product(product_id)
+        if item is None:
+            raise BankError("WEALTH_PRODUCT_NOT_FOUND", 404)
+        amount = op["amount_minor"]
+        account = self._account(db, context.user_id, op["source_id"])
+        now = datetime.fromtimestamp(self.store.clock(), UTC).isoformat()
+        if op["kind"] == "wealth_purchase":
+            if account["balance_minor"] < amount:
+                raise BankError("INSUFFICIENT_BALANCE")
+            db.execute(
+                "UPDATE accounts SET balance_minor=balance_minor-? WHERE id=?",
+                (amount, account["id"]),
+            )
+            db.execute(
+                "INSERT INTO entries VALUES (?,?,?,?,?,?)",
+                (uuid4().hex, account["id"], -amount, "理财申购 · " + item["name"], "理财", now),
+            )
+            delta = amount
+        else:
+            current = next(
+                (
+                    holding["amount_minor"]
+                    for holding in holdings(db, context.user_id)
+                    if holding["product"]["id"] == product_id
+                ),
+                0,
+            )
+            if amount > current:
+                raise BankError("INSUFFICIENT_WEALTH_HOLDING")
+            if account["balance_minor"] + amount > MAX_MINOR:
+                raise BankError("TARGET_BALANCE_LIMIT")
+            db.execute(
+                "UPDATE accounts SET balance_minor=balance_minor+? WHERE id=?",
+                (amount, account["id"]),
+            )
+            db.execute(
+                "INSERT INTO entries VALUES (?,?,?,?,?,?)",
+                (uuid4().hex, account["id"], amount, "理财赎回 · " + item["name"], "理财", now),
+            )
+            delta = -amount
+        self._event(
+            db,
+            context.user_id,
+            "wealth_holding_changed",
+            op["id"],
+            product_id=product_id,
+            delta_minor=delta,
+        )
 
     def reconcile(self, context, operation_id):
         with self.store.transaction() as db:

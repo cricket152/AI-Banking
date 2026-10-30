@@ -64,6 +64,13 @@ class ScenarioBody(StrictBody):
     payee_id: Identifier
 
 
+class WealthOrderBody(StrictBody):
+    product_id: str = Field(min_length=1, max_length=64)
+    action: Literal["purchase", "redeem"]
+    source_id: Identifier
+    amount_minor: Amount
+
+
 class PayeeNoteBody(DemoPayeesBody):
     note: str = Field(max_length=64)
 
@@ -203,6 +210,36 @@ def router(bank, auth, identity, mutation):
         from ai_banking.banking.scenarios import list_scenarios
 
         return list_scenarios(bank, context)
+
+    @routes.get("/wealth")
+    def wealth(context=Depends(identity)):
+        from ai_banking.banking.wealth import summary
+
+        return summary(bank, context)
+
+    @routes.post("/wealth/orders", dependencies=[Depends(mutation)])
+    def wealth_order(body: WealthOrderBody, context=Depends(identity)):
+        from uuid import uuid4
+
+        task = bank.task(context, uuid4().hex)
+        kind = "wealth_purchase" if body.action == "purchase" else "wealth_redeem"
+        operation = bank.prepare(
+            context,
+            {
+                "task_id": task["id"],
+                "step_key": "wealth_" + uuid4().hex[:24],
+                "source_id": body.source_id,
+                "currency": "CNY",
+                "mode": "HUMAN_APPROVAL",
+                "grant_id": None,
+                "confirmation_seconds": 300,
+                "amount_minor": body.amount_minor,
+                "product_id": body.product_id,
+            },
+            kind,
+            exclusive_task=True,
+        )
+        return {"operation": operation}
 
     @routes.post("/scenarios", dependencies=[Depends(mutation)])
     def create_scenario(body: ScenarioBody, context=Depends(identity)):

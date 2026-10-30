@@ -687,6 +687,8 @@ function renderBanking() {
   if (typeof renderCards === "function") renderCards();
   if (typeof renderScenarioOptions === "function") renderScenarioOptions();
   if (typeof renderScenarios === "function") renderScenarios();
+  if (typeof renderWealthOptions === "function") renderWealthOptions();
+  if (typeof renderWealth === "function") renderWealth();
   $("#subscriptions-list").replaceChildren();
   for (const s of state.subscriptions) {
     const row = element("article", "operation-card");
@@ -801,7 +803,7 @@ async function loadBankData() {
   }
   const user = state.user,
     conversation = state.conversation;
-  const [payees, subscriptions, operations, grants, history, cards, scenarios] =
+  const [payees, subscriptions, operations, grants, history, cards, scenarios, wealth] =
     await Promise.all([
       api("/api/bank/payees"),
       api("/api/bank/subscriptions"),
@@ -812,6 +814,7 @@ async function loadBankData() {
         : Promise.resolve(null),
       api("/api/bank/cards"),
       api("/api/bank/scenarios"),
+      api("/api/bank/wealth"),
     ]);
   if (state.user !== user || revision !== state.workflowRevision) return;
   state.payees = payees.payees;
@@ -821,6 +824,7 @@ async function loadBankData() {
   state.grants = grants.grants;
   state.cards = cards.cards;
   state.scenarios = scenarios.scenarios;
+  state.wealth = wealth;
   if (conversation === state.conversation && history) {
     state.operationTask = history.operation_task;
     state.executionPolicy = history.execution_policy;
@@ -904,7 +908,13 @@ async function openOperation(id) {
   const op = approval.summary;
   $("#operation-summary").replaceChildren();
   $("#operation-dialog-title").textContent =
-    op.kind === "transfer" ? "核对转账" : "核对订阅取消";
+    op.kind === "transfer"
+      ? "核对转账"
+      : op.kind.startsWith("wealth_")
+        ? op.kind === "wealth_purchase"
+          ? "核对理财申购"
+          : "核对理财赎回"
+        : "核对订阅取消";
   appendSummary(
     "付款 / 扣费账户",
     op.source_display
@@ -928,6 +938,17 @@ async function openOperation(id) {
       );
       appendSummary("转账后预计余额", currency(op.balance_after_minor));
     }
+  } else if (op.kind.startsWith("wealth_")) {
+    appendSummary("理财产品", op.wealth_product?.name || "模拟产品");
+    appendSummary(
+      "操作",
+      op.kind === "wealth_purchase" ? "申购（从账户扣款）" : "赎回（回到账户）",
+    );
+    appendSummary("金额（CNY）", bankMoney(op.amount_minor));
+    appendSummary(
+      "当前持仓",
+      currency(op.holding_before_minor || 0),
+    );
   } else {
     appendSummary(
       "订阅",
@@ -943,7 +964,11 @@ async function openOperation(id) {
   $("#operation-approve").textContent =
     op.kind === "transfer"
       ? `确认转账 ${bankMoney(op.amount_minor)}`
-      : "确认取消订阅";
+      : op.kind.startsWith("wealth_")
+        ? op.kind === "wealth_purchase"
+          ? `确认申购 ${bankMoney(op.amount_minor)}`
+          : `确认赎回 ${bankMoney(op.amount_minor)}`
+        : "确认取消订阅";
   $("#operation-dialog").showModal();
   updateBankButtons();
 }

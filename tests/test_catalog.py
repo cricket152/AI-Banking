@@ -73,7 +73,7 @@ def test_wealth_catalog_is_static_and_explicitly_query_only(catalog_env):
         assert product["risk_level"] in {"R1", "R2", "R3"}
         assert product["min_amount_minor"] > 0
         assert "模拟" in product["yield_hint"]
-    assert "不支持申购" in products["note"]
+    assert "申购/赎回" in products["note"] and "不连接真实产品" in products["note"]
     assert call(catalog_env, "list_wealth_products") == products
 
 

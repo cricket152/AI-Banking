@@ -14,6 +14,7 @@
     <script src="/static/transfers.js" defer></script>
     <script src="/static/cards.js" defer></script>
     <script src="/static/scenarios.js" defer></script>
+    <script src="/static/wealth.js" defer></script>
   </head>
   <body>
     <a class="skip" href="#main">跳到主要内容</a>
@@ -621,6 +622,42 @@
                     </button>
                   </form>
                 </details>
+              </section>
+              <section class="bank-card" aria-labelledby="wealth-title">
+                <div class="section-heading">
+                  <h2 id="wealth-title">理财操作</h2>
+                  <span class="tag">模拟产品</span>
+                </div>
+                <p class="muted">
+                  模拟申购/赎回会改变本地模拟余额与持仓；需要逐笔核对确认，不连接真实产品。
+                </p>
+                <div id="wealth-products" class="bank-list"></div>
+                <div id="wealth-holdings" class="bank-list"></div>
+                <form id="wealth-form" class="bank-form">
+                  <label for="wealth-product">产品</label>
+                  <select id="wealth-product" required>
+                    <option value="">请选择产品</option>
+                  </select>
+                  <label for="wealth-action">操作</label>
+                  <select id="wealth-action">
+                    <option value="purchase">申购</option>
+                    <option value="redeem">赎回</option>
+                  </select>
+                  <label for="wealth-source">付款 / 入账账户</label>
+                  <select id="wealth-source" required>
+                    <option value="">请选择账户</option>
+                  </select>
+                  <label for="wealth-amount">金额（元）</label>
+                  <input
+                    id="wealth-amount"
+                    inputmode="decimal"
+                    placeholder="例如 100.00"
+                    required
+                  />
+                  <button class="button secondary bank-action" type="submit">
+                    核对并提交
+                  </button>
+                </form>
               </section>
               <section class="bank-card" aria-labelledby="subscriptions-title">
                 <div class="section-heading">
