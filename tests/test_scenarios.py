@@ -1,5 +1,7 @@
 """跨场景预算计划：纪念日/生日 + 模拟下单，不连接外部商户。"""
 
+from uuid import uuid4
+
 from test_application import env as shared_env
 from test_application import login, post
 
@@ -22,6 +24,7 @@ def setup(app, client):
 
 def create(client, source, payee, **changes):
     values = {
+        "request_id": uuid4().hex,
         "kind": "birthday",
         "title": "生日预算",
         "occasion_date": "2027-01-16",
@@ -61,6 +64,12 @@ def test_order_scenario_creates_single_confirmed_transfer(shared_env):
     assert operation["state"] == "awaiting_confirmation"
     same = post(client, f"/api/bank/scenarios/{scenario['scenario_id']}/order", {})
     assert same.json()["operation"]["id"] == operation["id"]
+    ordered = next(
+        item
+        for item in client.get("/api/bank/scenarios").json()["scenarios"]
+        if item["scenario_id"] == scenario["scenario_id"]
+    )
+    assert ordered["operation_state"] == "awaiting_confirmation"
 
     challenge = post(client, f"/api/bank/operations/{operation['id']}/challenge", {}).json()
     decided = post(
@@ -84,6 +93,7 @@ def test_scenario_validation_and_cross_user_isolation(shared_env):
         client,
         "/api/bank/scenarios",
         {
+            "request_id": uuid4().hex,
             "kind": "birthday",
             "title": "过期",
             "occasion_date": "2020-01-01",
@@ -107,6 +117,7 @@ def test_scenario_validation_and_cross_user_isolation(shared_env):
         client,
         "/api/bank/scenarios",
         {
+            "request_id": uuid4().hex,
             "kind": "birthday",
             "title": "越权",
             "occasion_date": "2027-01-16",

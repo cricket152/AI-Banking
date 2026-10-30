@@ -17,6 +17,7 @@ def cards(client):
 
 def apply_card(client, account_id, **changes):
     values = {
+        "request_id": uuid4().hex,
         "account_id": account_id,
         "kind": "credit",
         "daily_limit_minor": 123400,
@@ -52,6 +53,7 @@ def test_card_lifecycle_requires_password_and_preserves_funds(shared_env):
         client,
         "/api/bank/cards/apply",
         {
+            "request_id": uuid4().hex,
             "account_id": account["id"],
             "kind": "credit",
             "daily_limit_minor": 100,
@@ -61,6 +63,10 @@ def test_card_lifecycle_requires_password_and_preserves_funds(shared_env):
     card = apply_card(client, account["id"])
     assert card["kind"] == "信用卡" and card["daily_limit_minor"] == 123400
     assert card["id"] in {item["id"] for item in cards(client)}
+    same_request = uuid4().hex
+    first = apply_card(client, account["id"], request_id=same_request)
+    second = apply_card(client, account["id"], request_id=same_request)
+    assert first["id"] == second["id"]
 
     updated = post(
         client,

@@ -49,6 +49,13 @@ def _saved(bank, context, db):
                 plans[scenario_id]["operation_id"] = detail["operation_id"]
             else:
                 plans[scenario_id]["status"] = "cancelled"
+    for plan in plans.values():
+        if plan.get("operation_id"):
+            operation = db.execute(
+                "SELECT state FROM bank_operations WHERE id=? AND owner_id=?",
+                (plan["operation_id"], context.user_id),
+            ).fetchone()
+            plan["operation_state"] = operation["state"] if operation else None
     return [
         _public(plan, bank.store.clock())
         for plan in sorted(plans.values(), key=lambda item: item.get("created_at", 0), reverse=True)
@@ -77,10 +84,25 @@ def create_scenario(bank, context, values):
         raise BankError("INVALID_AMOUNT", 422)
     with bank.store.transaction() as db:
         bank._guard(db, context)
+        request_id = values.get("request_id")
+        if request_id:
+            for row in db.execute(
+                "SELECT detail FROM bank_events WHERE owner_id=? "
+                "AND event='scenario_plan_created' ORDER BY seq DESC",
+                (context.user_id,),
+            ):
+                detail = json.loads(row["detail"])
+                if detail.get("request_id") == request_id:
+                    plan = next(
+                        item
+                        for item in _saved(bank, context, db)
+                        if item["scenario_id"] == detail["scenario_id"]
+                    )
+                    return {"scenario": plan}
         if occasion < _today(bank.store.clock()):
             raise BankError("SCENARIO_DATE_PAST", 422)
         source = db.execute(
-            "SELECT id,name,suffix FROM accounts WHERE id=? AND owner_id=?",
+            "SELECT id,name,suffix,balance_minor FROM accounts WHERE id=? AND owner_id=?",
             (values["source_id"], context.user_id),
         ).fetchone()
         if source is None:
@@ -93,6 +115,13 @@ def create_scenario(bank, context, values):
             raise BankError("RESOURCE_NOT_FOUND", 404)
         if payee["account_id"] == source["id"]:
             raise BankError("INVALID_TRANSFER", 422)
+        planned = sum(
+            plan["budget_minor"]
+            for plan in _saved(bank, context, db)
+            if plan["status"] == "active" and plan["source_id"] == source["id"]
+        )
+        if planned + amount > source["balance_minor"]:
+            raise BankError("SCENARIO_BUDGET_EXCEEDED", 409)
         scenario_id = uuid4().hex
         detail = {
             "scenario_id": scenario_id,
@@ -103,6 +132,7 @@ def create_scenario(bank, context, values):
             "source_id": source["id"],
             "payee_id": payee["id"],
             "created_at": bank.store.clock(),
+            "request_id": request_id,
             "request_digest": fingerprint(values),
         }
         bank._event(db, context.user_id, "scenario_plan_created", **detail)

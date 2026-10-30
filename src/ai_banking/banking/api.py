@@ -39,6 +39,7 @@ class DemoPayeesBody(StrictBody):
 
 
 class CardApplyBody(StrictBody):
+    request_id: str = Field(min_length=32, max_length=36)
     account_id: Identifier
     kind: Literal["debit", "credit"] = "debit"
     daily_limit_minor: int = Field(default=500000, ge=0, le=10_000_000)
@@ -56,6 +57,7 @@ class CardStatusBody(StrictBody):
 
 
 class ScenarioBody(StrictBody):
+    request_id: str = Field(min_length=32, max_length=36)
     kind: Literal["birthday", "anniversary", "custom"]
     title: str = Field(min_length=1, max_length=40)
     occasion_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")
@@ -187,7 +189,14 @@ def router(bank, auth, identity, mutation):
         from ai_banking.banking.cards import apply_card as create
 
         reauth(request, context, body.password)
-        return create(bank, context, body.account_id, body.kind, body.daily_limit_minor)
+        return create(
+            bank,
+            context,
+            body.account_id,
+            body.kind,
+            body.daily_limit_minor,
+            body.request_id,
+        )
 
     @routes.post("/cards/{card_id}/limit", dependencies=[Depends(mutation)])
     def card_limit(card_id: str, body: CardLimitBody, request: Request, context=Depends(identity)):

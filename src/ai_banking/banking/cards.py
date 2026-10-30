@@ -97,13 +97,29 @@ def _find(bank, context, db, card_id):
     return card
 
 
-def apply_card(bank, context, account_id, kind="debit", daily_limit_minor=DEFAULT_LIMIT_MINOR):
+def apply_card(
+    bank,
+    context,
+    account_id,
+    kind="debit",
+    daily_limit_minor=DEFAULT_LIMIT_MINOR,
+    request_id=None,
+):
     if kind not in CARD_KINDS:
         raise BankError("INVALID_CARD_KIND", 422)
     if type(daily_limit_minor) is not int or not 0 <= daily_limit_minor <= MAX_LIMIT_MINOR:
         raise BankError("INVALID_CARD_LIMIT", 422)
     with bank.store.transaction() as db:
         bank._guard(db, context)
+        if request_id:
+            for row in db.execute(
+                "SELECT detail FROM bank_events WHERE owner_id=? "
+                "AND event='card_applied' ORDER BY seq DESC",
+                (context.user_id,),
+            ):
+                detail = json.loads(row["detail"])
+                if detail.get("request_id") == request_id:
+                    return {"card": _find(bank, context, db, detail["card_id"])}
         if not db.execute(
             "SELECT 1 FROM accounts WHERE id=? AND owner_id=?", (account_id, context.user_id)
         ).fetchone():
@@ -117,6 +133,7 @@ def apply_card(bank, context, account_id, kind="debit", daily_limit_minor=DEFAUL
             account_id=account_id,
             kind=kind,
             daily_limit_minor=daily_limit_minor,
+            request_id=request_id,
         )
         return {"card": _find(bank, context, db, card_id)}
 

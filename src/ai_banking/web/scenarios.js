@@ -80,7 +80,13 @@ function renderScenarios() {
         "p",
         "field-help",
         plan.status === "ordered"
-          ? "已生成待确认的模拟转账；请在操作记录或确认单中核对。"
+          ? plan.operation_state === "succeeded"
+            ? "模拟转账已完成；请核对账户与流水。"
+            : plan.operation_state === "failed" || plan.operation_state === "rejected"
+              ? "模拟转账失败或被拒绝；计划不会自动重试。"
+              : plan.operation_state === "expired"
+                ? "模拟转账已过期；如仍需执行，请在界面重新创建计划。"
+                : "已生成待确认的模拟转账；请在操作记录或确认单中核对。"
           : plan.status === "cancelled"
             ? "计划已取消。"
             : plan.status === "expired"
@@ -166,6 +172,7 @@ function bindScenarioForm() {
       await api("/api/bank/scenarios", {
         method: "POST",
         body: JSON.stringify({
+          request_id: crypto.randomUUID(),
           kind: $("#scenario-kind").value,
           title,
           occasion_date: date,

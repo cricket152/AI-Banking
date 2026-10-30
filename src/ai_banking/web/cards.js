@@ -155,6 +155,7 @@ function bindCardForm() {
       await api("/api/bank/cards/apply", {
         method: "POST",
         body: JSON.stringify({
+          request_id: crypto.randomUUID(),
           account_id: $("#card-apply-source").value,
           kind: $("#card-apply-kind").value,
           daily_limit_minor: limit,
