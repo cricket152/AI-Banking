@@ -1,0 +1,192 @@
+[
+  {
+    "file": "assets/details/bill-evidence.png",
+    "sha256": "64bbb6e4611046e086fa528d161c5616ed35b13f0033d6cdea9ad81368ca81f0",
+    "source": "images/04-anomaly-evidence.png",
+    "width": 1085,
+    "height": 540,
+    "crop_box": [
+      310,
+      440,
+      1395,
+      980
+    ],
+    "content_edited": false
+  },
+  {
+    "file": "assets/details/subscription-evidence.png",
+    "sha256": "594ceb9c6806981b4d413d1a4c5fa49ee427ca34275fb61600684d78a04274fc",
+    "source": "images/05-subscription-evidence.png",
+    "width": 540,
+    "height": 625,
+    "crop_box": [
+      450,
+      185,
+      990,
+      810
+    ],
+    "content_edited": false
+  },
+  {
+    "file": "assets/details/transfer-confirmation.png",
+    "sha256": "cc1fcf016115b65346556cdd074ec4b762089f80d84ee2860d9ed5b569c7fd17",
+    "source": "images/11-transfer-confirmation.png",
+    "width": 620,
+    "height": 770,
+    "crop_box": [
+      410,
+      115,
+      1030,
+      885
+    ],
+    "content_edited": false
+  },
+  {
+    "file": "assets/details/workflow-complete.png",
+    "sha256": "c5c53fd86111ae46f4e7f5ef3917ddb62f218d9c9969dcbd93bdd40b7925b647",
+    "source": "images/12-workflow-complete.png",
+    "width": 1080,
+    "height": 710,
+    "crop_box": [
+      310,
+      285,
+      1390,
+      995
+    ],
+    "content_edited": false
+  },
+  {
+    "file": "assets/diagrams/agent-runtime.png",
+    "sha256": "86d58b0ace5dd1c326eea531caaec83d65c2a2fde1777455baa1ef07e10c6c3e",
+    "source": "materials/submission-2026-10-30/diagrams/agent-runtime.png",
+    "width": 1101,
+    "height": 1000
+  },
+  {
+    "file": "assets/diagrams/agent-runtime.svg",
+    "sha256": "4eb9cf0f6a2fdb7cc70f354ef1f79062ef5111420656be30709d5064bd889c74",
+    "source": "materials/submission-2026-10-30/diagrams/agent-runtime.svg"
+  },
+  {
+    "file": "assets/diagrams/agent-tool-map.png",
+    "sha256": "6be5f1a35ab99e7af713098b83025d55f59478e544fcc91e87f154aa451f7e63",
+    "source": "materials/submission-2026-10-30/diagrams/agent-tool-map.png",
+    "width": 1101,
+    "height": 689
+  },
+  {
+    "file": "assets/diagrams/agent-tool-map.svg",
+    "sha256": "05b51d15ea5d73a6a4d1c151ada029732ad6053cdeffefde10195928b8150e38",
+    "source": "materials/submission-2026-10-30/diagrams/agent-tool-map.svg"
+  },
+  {
+    "file": "assets/diagrams/context-routing.png",
+    "sha256": "1c3cc115a940c0e932cbea84a058f600009eeebd4e5b12a3973370503108e5a2",
+    "source": "materials/submission-2026-10-30/diagrams/context-routing.png",
+    "width": 1101,
+    "height": 274
+  },
+  {
+    "file": "assets/diagrams/context-routing.svg",
+    "sha256": "c71324bc16ae0281ed15ab8a2e3c46d8c437981239dc319204e9707520c75e64",
+    "source": "materials/submission-2026-10-30/diagrams/context-routing.svg"
+  },
+  {
+    "file": "assets/screenshots/01-login.png",
+    "sha256": "f4a6eae05f50d8567d221a84bab3eae9958b2f0cf3af4f254bf78a81f312aa0d",
+    "source": "materials/submission-2026-10-30/images/01-login.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/02-overview.png",
+    "sha256": "5a53db610f03997b3bb382f3c255975b4e59864d8dcf8c6246edf4e58f70e227",
+    "source": "materials/submission-2026-10-30/images/02-overview.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/03-billing-analysis.png",
+    "sha256": "145ee2735ccd2f5448ffffa12d1d4319b08f8de52167e859e33cf28b6c7d8c37",
+    "source": "materials/submission-2026-10-30/images/03-billing-analysis.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/04-anomaly-evidence.png",
+    "sha256": "bf2558e125fe0d6c3343d34e5e70c8321e87acb4978428670de76bb6a2825f83",
+    "source": "materials/submission-2026-10-30/images/04-anomaly-evidence.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/05-subscription-evidence.png",
+    "sha256": "8b6c08da4767f69eb037ca191d1e8818e982e8d1223d36f3fcc287851685c898",
+    "source": "materials/submission-2026-10-30/images/05-subscription-evidence.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/06-payees.png",
+    "sha256": "64cb17350d80ecc10447098ab0a3ae0109b67ac0aef50c54af0f733909755a09",
+    "source": "materials/submission-2026-10-30/images/06-payees.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/07-workflow-preview.png",
+    "sha256": "952fabdc3d7ef98aa955040e3bc44fc341d813a81990f1c07d4b4703e7cd5935",
+    "source": "materials/submission-2026-10-30/images/07-workflow-preview.png",
+    "width": 1440,
+    "height": 1200
+  },
+  {
+    "file": "assets/screenshots/08-plan-saved.png",
+    "sha256": "757e64f73be004efbc43cf77f2d9a1502bca2235bd23d72ce692394d8162f06a",
+    "source": "materials/submission-2026-10-30/images/08-plan-saved.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/09-plan-pending.png",
+    "sha256": "6b32e860b49e66695fd96bbf4f74fd406967cd78d0a1834fc8f229bd9ec4a955",
+    "source": "materials/submission-2026-10-30/images/09-plan-pending.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/10-cancel-confirmation.png",
+    "sha256": "64393c5523b968a6fd1fafbe8adb4cc7c735e4d35794a007fbdc81d8f015327b",
+    "source": "materials/submission-2026-10-30/images/10-cancel-confirmation.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/11-transfer-confirmation.png",
+    "sha256": "9a4b1099d9caff186fb12a757aff4749e1b5d89fb8f11ec877eaad3bb82ced62",
+    "source": "materials/submission-2026-10-30/images/11-transfer-confirmation.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "file": "assets/screenshots/12-workflow-complete.png",
+    "sha256": "da3feb542371ef1d318cc771d925a7f5a77593e0ecb4ed15891749d2737f9904",
+    "source": "materials/submission-2026-10-30/images/12-workflow-complete.png",
+    "width": 1440,
+    "height": 1200
+  },
+  {
+    "file": "assets/screenshots/13-workflow-mobile.png",
+    "sha256": "c14094076c2369e0982a93223eccc4c2aa6a7749f05a661ebbc51640180b5726",
+    "source": "materials/submission-2026-10-30/images/13-workflow-mobile.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "file": "assets/screenshots/14-authorization-scope.png",
+    "sha256": "039cf891fe59084943a909c51ebc7d08e3c9fe90299715cbcc1b5e362a0c793c",
+    "source": "materials/submission-2026-10-30/images/14-authorization-scope.png",
+    "width": 1440,
+    "height": 1200
+  }
+]

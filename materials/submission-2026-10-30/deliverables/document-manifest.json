@@ -1,12 +1,12 @@
 {
   "technical-document.pdf": {
-    "pages": 12,
-    "bytes": 672761,
-    "sha256": "e8c4e35690956517b4c0740bc8402442e2c2add48175d76c34c4233864e148bd"
+    "pages": 11,
+    "bytes": 1103602,
+    "sha256": "8a5d167fa50bec1a530a95c752fb617d3fa96fc7eed584bffd752a897252249a"
   },
   "security-self-assessment.pdf": {
-    "pages": 9,
-    "bytes": 387260,
-    "sha256": "f88589c838c43c10c21ed45b6625521baf6dfc256d138612916e518d94cc3aff"
+    "pages": 7,
+    "bytes": 347795,
+    "sha256": "9a0398b924c0cd74892eedb0983d5d98133c8cff0811a76b3826af8ed3507da8"
   }
 }

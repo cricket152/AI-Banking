@@ -1,55 +1,46 @@
 {
-  "technical_pages": 12,
-  "security_pages": 9,
-  "rendered_with": "Poppler 90 dpi (v1.1 review)",
-  "visual_review": "17 pages inspected; no overlap, missing glyphs or cut tables; figures 3/4 replaced with cropped dialogs",
-  "test_nodes": 232,
-  "current_worktree_test_nodes": 235,
-  "key_case_functions": 30,
-  "manual_cases": 10,
-  "archive_retest": "historical source archive rebuilt from 9febd92; archive-era retest: 232 passed; current worktree revalidation: Python 3.14.6, 235 passed; Python 3.13 clean-environment focused tests: 39 passed",
-  "pdf_checks": {
+  "revision": "v1.2",
+  "date": "2026-10-31",
+  "pdfs": {
     "technical-document.pdf": {
-      "pages": 12,
-      "encrypted": false,
-      "text_extraction": "pass",
-      "size_limit": "pass"
+      "pages": 11,
+      "bytes": 1103602,
+      "sha256": "8a5d167fa50bec1a530a95c752fb617d3fa96fc7eed584bffd752a897252249a"
     },
     "security-self-assessment.pdf": {
-      "pages": 9,
-      "encrypted": false,
-      "text_extraction": "pass",
-      "size_limit": "pass"
+      "pages": 7,
+      "bytes": 347795,
+      "sha256": "9a0398b924c0cd74892eedb0983d5d98133c8cff0811a76b3826af8ed3507da8"
     }
   },
-  "source_package": {
-    "bytes": 272349,
-    "sha256": "52ae7684a7132c2a490316bc4e6c2b3941843727e5fb4d840856bf077eb2dca4",
-    "entries": 80,
-    "crc": "pass",
-    "manifest": "pass"
+  "pdf_text_source_completeness": "pass",
+  "pdf_visual_review": "18 pages inspected after Poppler rendering",
+  "guide": {
+    "pages": 13,
+    "slides": 10,
+    "duration_seconds": 520,
+    "assets": 24,
+    "renderer": "Microsoft Word PDF export and Poppler; packaged render_docx.py unavailable because LibreOffice is absent",
+    "visual_review": "all 13 pages inspected; title borders and table widths corrected"
   },
-  "clean_install": "historical v1.1 record: fresh venv Python 3.14.6, dev+observability extras, 232 passed; current clean-environment revalidation: Python 3.13, pip check passed, focused tests 39 passed; Python 3.12 unavailable",
-  "revision": "v1.1",
+  "source_package": {
+    "entries": 109,
+    "sha256": "bfeed4402273319b6bc7e4a5cbcf46c388999eb960bc7c9e03050b44cb242b61",
+    "crc": "pass",
+    "manifest": "pass",
+    "source_test_eval_byte_match": "pass",
+    "retest": "235 passed in 69.72s",
+    "environment": "Windows / Python 3.14.6; extracted src on PYTHONPATH; existing local dependencies"
+  },
+  "test_nodes": 235,
   "manual_review": {
     "cases": 10,
     "result": "已人工审核（通过）",
-    "basis": "项目负责人确认",
-    "date": "2026-10-30"
+    "date": "2026-10-30",
+    "basis": "负责人既有确认记录"
   },
-  "independent_model_statistics": "not_run",
-  "security_hardening": {
-    "default_log_content": "off; explicit AGENT_TRACE_CONTENT=true required",
-    "response_headers": [
-      "Content-Security-Policy",
-      "X-Content-Type-Options",
-      "Referrer-Policy",
-      "X-Frame-Options",
-      "Permissions-Policy",
-      "Cross-Origin-Opener-Policy",
-      "Cross-Origin-Resource-Policy",
-      "Cache-Control: no-store"
-    ],
-    "verified_by": "tests/test_application.py::test_static_assets_and_security_headers"
-  }
+  "new_live_model_calls": false,
+  "new_ppt_created": false,
+  "business_source_changed": false,
+  "limited_credential_pattern_check": "pass; not a full security audit"
 }

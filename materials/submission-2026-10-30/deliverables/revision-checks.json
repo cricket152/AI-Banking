@@ -1,29 +1,46 @@
 {
-  "revision": "v1.1",
+  "revision": "v1.2",
+  "date": "2026-10-31",
   "pdfs": {
     "technical-document.pdf": {
-      "pages": 12,
-      "sha256": "e8c4e35690956517b4c0740bc8402442e2c2add48175d76c34c4233864e148bd",
-      "text": "pass"
+      "pages": 11,
+      "bytes": 1103602,
+      "sha256": "8a5d167fa50bec1a530a95c752fb617d3fa96fc7eed584bffd752a897252249a"
     },
     "security-self-assessment.pdf": {
-      "pages": 9,
-      "sha256": "f88589c838c43c10c21ed45b6625521baf6dfc256d138612916e518d94cc3aff",
-      "text": "pass"
+      "pages": 7,
+      "bytes": 347795,
+      "sha256": "9a0398b924c0cd74892eedb0983d5d98133c8cff0811a76b3826af8ed3507da8"
     }
   },
-  "visual_review": "pass; 21 rendered pages inspected (12 technical + 9 security)",
+  "pdf_text_source_completeness": "pass",
+  "pdf_visual_review": "18 pages inspected after Poppler rendering",
+  "guide": {
+    "pages": 13,
+    "slides": 10,
+    "duration_seconds": 520,
+    "assets": 24,
+    "renderer": "Microsoft Word PDF export and Poppler; packaged render_docx.py unavailable because LibreOffice is absent",
+    "visual_review": "all 13 pages inspected; title borders and table widths corrected"
+  },
+  "source_package": {
+    "entries": 109,
+    "sha256": "bfeed4402273319b6bc7e4a5cbcf46c388999eb960bc7c9e03050b44cb242b61",
+    "crc": "pass",
+    "manifest": "pass",
+    "source_test_eval_byte_match": "pass",
+    "retest": "235 passed in 69.72s",
+    "environment": "Windows / Python 3.14.6; extracted src on PYTHONPATH; existing local dependencies"
+  },
+  "test_nodes": 235,
   "manual_review": {
     "cases": 10,
     "result": "已人工审核（通过）",
-    "basis": "项目负责人确认",
-    "date": "2026-10-30"
+    "date": "2026-10-30",
+    "basis": "负责人既有确认记录"
   },
-  "source_test_files_unchanged": 50,
-  "new_business_code_changes": false,
-  "unit_tests": "historical v1.1 record: current worktree 232 passed; previous archive snapshot: 222 passed in 40.14s; current revalidation: Python 3.14.6 worktree 235 passed, Python 3.13 clean-environment focused tests 39 passed",
-  "markdown_links": "pass",
-  "automated_result_changes": false,
-  "independent_model_statistics_changes": false,
-  "clean_install": "historical v1.1 record: fresh venv Python 3.14.6, dev+observability, 232 passed; current clean-environment revalidation: Python 3.13, pip check passed, focused tests 39 passed; Python 3.12 unavailable"
+  "new_live_model_calls": false,
+  "new_ppt_created": false,
+  "business_source_changed": false,
+  "limited_credential_pattern_check": "pass; not a full security audit"
 }

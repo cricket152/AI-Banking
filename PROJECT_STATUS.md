@@ -1,12 +1,12 @@
 # 项目状态
 
-更新日期：2026-10-31（Asia/Shanghai）。当前工作分支为 `feat/cards-scenarios`，基线 `2189ddc`（标签 `freeze-2026-10-30-v1.5`），本轮继续完成跨场景预算语义、Agent 只读边界、浏览器自动化与材料校正。当前 `.venv`（Python 3.14.6）全量 `pytest` 为 `235 passed`，其中包含新增前端浏览器冒烟 `1 passed`。按锁文件新建 Python 3.13 环境安装 `.[dev]` 后 `pip check` 通过，核心与前端定向测试 `39 passed`。本机没有 Python 3.12（`py -0p` 仅列 3.13），因此 3.12 未实测；本轮未配置可用真实模型凭据，新增卡片/场景/理财专项真实模型评测未运行。未新增运行时依赖或数据库迁移。团队姓名、分工、独立审查与最终签署仍保留 TODO，不把结构测试当作语义或安全审计。
+更新日期：2026-10-31（Asia/Shanghai）。本轮按用户明确授权将 `feat/cards-scenarios` 的功能与最终参赛材料同步至 `main`；功能基线为 `9389868`（标签 `freeze-2026-10-31-v1.6`），后续文档和答辩PPT随本轮提交。当前 `.venv`（Python 3.14.6）全量 `pytest` 为 `235 passed`，其中包含新增前端浏览器冒烟 `1 passed`。按锁文件新建 Python 3.13 环境安装 `.[dev]` 后 `pip check` 通过，核心与前端定向测试 `39 passed`。本机没有 Python 3.12（`py -0p` 仅列 3.13），因此 3.12 未实测；本轮未配置可用真实模型凭据，新增卡片/场景/理财专项真实模型评测未运行。未新增运行时依赖或数据库迁移。团队姓名、分工、独立审查与最终签署仍保留 TODO，不把结构测试当作语义或安全审计。
 
 ## 新对话接续
 
 - 本批发布范围：源代码、实际tests/、项目文档，以及materials/中的两份PDF、面向大众的README、用例/部署说明、14张合成截图、Agent图和最终交付ZIP。浏览器会话、临时output及早期素材总包仅留本地。归档与PDF保留生成时的基线/工作树说明，属于2026-10-30的审查快照，不将旧Archify来源伪改成新提交。
 - 2026-10-30 用户确认已完成人工测试，列示MAN-01至MAN-10记录为“已人工审核（通过）”，来源与日期见材料中的manual-review-record.json。文档升级v1.1：Agent运行与A-D安全关卡图、问题到12工具映射、每轮预算装配/超过12轮旧历史摘录说明；根README与交付README改为面向大众介绍。未改业务实现，未增加模型统计成功率。
-- 参赛材料见 [交付文档](materials/submission-2026-10-30/deliverables/README.md) 和 [素材入口](materials/submission-2026-10-30/README.md)：技术/安全修订源稿、评审README、自动化与人工用例、部署说明、浏览器冒烟入口、截图与答辩材料均保留；历史PDF与源码ZIP仍标注为旧快照，不能冒充当前冻结版本。截图中的Agent为明确标记的脚本化演示，不是真实模型新样本；PPTX已生成并通过10页结构与视觉检查，当前仍是可编辑材料审校稿，未上传或正式提交。
+- 参赛材料见 [交付文档](materials/submission-2026-10-30/deliverables/README.md) 和 [素材入口](materials/submission-2026-10-30/README.md)：技术/安全PDF、提交README、自动化与人工用例、部署说明、浏览器冒烟入口、截图与答辩制作素材均已整理；当前交付使用deliverables中的v1.2 PDF与源码ZIP，历史来源资料另行保留。截图中的Agent为明确标记的脚本化演示，不是真实模型新样本；答辩PPTX已按ppt-kit指南重制为10页正文加2页备选附录，并通过逐页渲染复核，当前仍是可编辑材料审校稿，未上传或正式提交。
 - 收款人与联动验收见 [收款人与转账方案](docs/transfer-workflows.md)。本地服务使用 `http://127.0.0.1:8001`，保留 `.env`。在“业务办理 → 收款人 → 载入虚构联系人”重新验证密码后，才为本人创建两位同名张明与林晓的独立虚构收款账户；不自动改运行数据。跨场景方案先预览、用户选择，再交给助手，默认逐笔确认。
 
 - 当前审查入口为“账单洞察”和“业务办理 → 疑似订阅”，规则与操作见 [账单洞察](docs/billing-insights.md)。默认样本缺少三次周期流水时候选为空，不为演示改写现有数据；隔离浏览器 QA 使用独立虚构数据库。
@@ -21,6 +21,13 @@
 
 ## 已完成
 
+- 2026-10-31 main交付轮：用户明确授权提交并推送到GitHub main，采用正常快进方式，不改保护规则、不强推。核对四项提交文件：技术PDF11页、安全PDF7页、PPTX12页（10页正文与2页备选）、源码部署ZIP；CRC、文件哈希、代码/测试/evals字节一致性与大小限制通过。本轮完整pytest 235 passed（36.48s），Ruff lint及43文件格式检查、pip check和git diff --check通过。新增submission-index.md，修正submission-checklist.md和材料README中的过期导出状态；tmp/为既有95个临时渲染文件，本轮保留本地、不纳入提交。
+
+- 2026-10-31 答辩PPT制作：按`materials/submission-2026-10-30/ppt-kit/`的DOCX指南与slides.json重制`defense/AI-Banking-defense.pptx`，10页正文（8分40秒）加2页备选附录（上下文装配、390×844窄屏视口），生成脚本`defense/create-defense-deck.py`同步重写。文字、流程节点与图框全部为可编辑元素，架构页按agent-runtime.svg重绘为可编辑步骤链，工具图按agent-tool-map重绘为六张场景卡；截图只做等比裁切与取景，未改动界面文字、模拟标识与完成状态。已用本机PowerPoint导出12页PNG逐页复核版式并修正溢出与图框不匹配。未新增运行时依赖、未改业务代码与测试，未导出PDF、未上传、未正式提交；团队署名仍待补。
+
+- 2026-10-31 答辩制作交接与提交文案：新增 `ppt-kit/`，含13页DOCX制作指南、10页配文/讲稿（8分40秒）、14张运行原图、4张细节裁切和3组PNG/SVG图表，共24个图像文件；打包 `deliverables/ppt-materials.zip`，本轮未制作或修改PPTX。技术/安全PDF统一为竞赛提交版v1.2，清理过期交付状态与过程待办，保留真实结果、模拟范围与风险。更新README、部署/测试说明、235项节点及源码包；解压包使用现有本机依赖完整复测 `235 passed in 69.72s`。PDF18页与DOCX13页渲染复核、源稿完整性、资产/归档哈希及CRC通过。标准DOCX脚本因缺少LibreOffice失败，改用已安装Word导出PDF并以Poppler检查全部页面；未新增真实模型调用。
+
+- 2026-10-31 材料篇章重组：保留已有源稿调整，将原末尾“补记”中的卡片、理财、日期场景、专项验证与残余风险归入对应正文；更新 `materials/submission-2026-10-30/deliverables/` 中技术文档（11页）、安全自评（7页）及 PDF 页数/哈希清单。原有业务事实、验证数字和证据边界保持原口径；源稿逐段对照 PDF 全部存在、无“补记”字样，Poppler 逐页渲染复核通过。本次仅调整材料，未重跑业务测试。
 - 当前冻结提交：功能与材料提交 `9389868`（`feat(scenarios): finalize budget semantics and validation materials`）已推送到 `origin/feat/cards-scenarios`，标签 `freeze-2026-10-31-v1.6` 指向该提交；随后状态文档提交 `01aa9e2` 已推送，当前分支与最新状态标签的远程引用已核对。当前 `.venv` 全量 `pytest -q` 为 `235 passed`，Ruff check、Ruff format（43 files）、`pip check` 和前端 Edge headless 冒烟均通过。完整测试需在 Windows 上进程内清理异常的 `NO_PROXY` 值（其中 `[::1]` 会被 HTTPX 误解析），这是本机环境问题；代码不依赖该环境修正。
 - 安全加固与材料指标（2026-10-31 本机）：终端日志正文改为默认关闭，显式开启才输出脱敏内容；响应新增 Permissions-Policy、COOP/CORP 等安全头并由测试覆盖；当前 `.venv`（Python 3.14.6）全量 235 项通过；新建 Python 3.13 环境按锁文件安装后 `pip check` 通过并完成 39 项核心/前端定向测试。Python 3.12 本机不可用，未宣称已验证。
 - 卡片管理与跨场景 MVP（2026-10-30 本机）：新增 `banking/cards.py`（账户派生卡 + 申请/调额/冻结/挂失，事件持久化，全部写操作密码再认证）与 `banking/scenarios.py`（纪念日/生日计划、日期/预算/收款人）；前端新增卡片管理与跨场景计划区块；Agent 只保留动态 `list_cards` 查询，卡片写操作不暴露给模型；`bank_state` 注入 `scenario_plans` 供准确解释。场景计划只保存日期与预算，创建时校验当时可用余额但不累计预占，达到日期后仍须用户手动按钮生成待确认操作；新增 `tests/test_cards.py`、`tests/test_scenarios.py`。
@@ -104,6 +111,14 @@
 
 ## 最近修改文件
 
+- main交付轮：新增 `materials/submission-2026-10-30/submission-index.md`，更新材料README、submission-checklist.md、交付总ZIP与哈希及本状态；提交用户已完成的PPTX与其生成脚本，连同此前文档/制作素材调整。
+
+- 答辩PPT制作轮：`materials/submission-2026-10-30/defense/AI-Banking-defense.pptx`与`defense/create-defense-deck.py`重制；`defense/storyboard.md`、`defense/asset-map.md`、`materials/submission-2026-10-30/README.md`、`submission-checklist.md`、`evidence/verification-summary.md`与本状态同步口径。业务源码、测试、依赖与数据库未改。
+
+- 答辩交接轮：新增 `materials/submission-2026-10-30/ppt-kit/` 和 `deliverables/ppt-materials.zip`、`source-package-validation.txt`；更新两份PDF及源稿、文档/验证清单、README、部署/测试说明、源码ZIP、defense三份文字入口及交付总ZIP/哈希；业务源码与测试文件未改。
+
+- 材料篇章轮：`materials/submission-2026-10-30/deliverables/` 内两份 PDF、两份 `*-source.md`、`render-reorganized-pdfs.py` 与 `document-manifest.json`；同步本状态。
+
 - 发布轮：更新本状态与.gitignore，排除浏览器会话/临时输出/旧总包；本批功能、测试和当前参赛交付材料统一提交。
 - 安全加固与材料轮（2026-10-30 本机）：`config.py`、`app.py`、`tests/test_tracing.py`、`tests/test_application.py`、`.env.example`、README、`docs/local-development.md`；素材 `technical/figures/`、技术/安全 PDF、两份安全自评源稿、README、`document-manifest.json`、`revision-checks.json`、`quality-checks.json` 与本状态。未提交、未推送。
 - 卡片 / 跨场景轮（2026-10-30 本机）：新增 `banking/cards.py`、`banking/scenarios.py`、`web/cards.js`、`web/scenarios.js` 与 `docs/cards-and-scenarios.md`；更新 `banking/api.py`、`agent.py`、`catalog.py`、`web/index.html`、`web/banking.js`、`web/app.css`、`tests/test_catalog.py` 及新增测试与本状态。未新增表或依赖。
@@ -128,6 +143,8 @@
 - 2026-10-29 本机（上下文状态可见）：更新 `tracing.py`、`agent.py`、`app.py`、`web/app.js`、`web/app.css`、`tests/test_context.py`、`docs/agent-operations.md` 与本状态文件。
 
 ## 已确认设计决策
+
+- 答辩PPT以ppt-kit为唯一制作依据：10页正文对应slides.json逐页配文与版式，另加2页备选附录（上下文装配、窄屏视口）并在页脚标注。标题、正文与流程节点必须为可编辑元素；截图只做等比裁切与取景，保留模拟标识、待确认与完成状态，不得为排版改动界面文字或数值。封面只保留项目名，未确认署名不写占位团队名。旧稿PPTX已被本次重制覆盖，历史版本仍可从Git历史取回。
 
 - 上下文压缩不是“固定每N轮”：每轮装配，默认成功历史超过12轮摘录旧轮，预算压力可能更早压缩；工具循环内超预算停止新增操作。安全检查在请求入口、每次工具调用、意图准备、批准/执行事务四处，由确定性后端实施，无独立审核模型。
 - 参赛素材保留模拟数据、脚本化 Agent、历史真实模型和测试替身的区别；不将35/36结构断言或旧232项自动化通过写成业务成功率、独立安全审计或生产落地证明。此前“只准备材料、不制作PPT”的阶段决定已结束；当前可编辑PPTX已生成并核验，但仍是材料审校稿。
@@ -193,7 +210,11 @@
 
 ## 后续计划
 
-- 列示人工用例已确认审核通过；团队署名、分工、签署与独立队友审查仍待补齐。当前可编辑PPTX已生成并完成结构与视觉核验，仍标为材料审校稿，不能视为正式提交；技术/安全PDF需从修订源稿重导，剩余可选项与截止日期时区继续保留 TODO。
+- 用户按submission-index.md将四项成果分别上传；每类只保留一个有效版本。GitHub main同步不等于赛事平台已提交，本轮不操作赛事上传。
+
+- 用户将 `deliverables/ppt-materials.zip` 交给下一位PPT制作Agent，按DOCX指南制作10页、10分钟以内的答辩材料；本轮文档与源码包已同步到v1.2，本轮未执行上传、提交或推送。
+
+- 列示人工用例已确认审核通过；团队署名、分工、签署与独立队友审查仍待补齐。当前可编辑PPTX已生成并完成结构与视觉核验，仍标为材料审校稿，不能视为正式提交；技术/安全PDF已按本次篇章调整从修订源稿重导，剩余可选项与截止日期时区继续保留 TODO。
 - 本轮先由用户验收收款人、转账确认和固定跨场景方案，再按新授权整理提交 / PR；独立真实模型评测重点为同名澄清、备注注入、取消对象和部分完成 / 计划修改，不把脚本化模型验证当作真实语义通过。
 
 - 本轮优先：用户按 [账单洞察](docs/billing-insights.md) 审查分类 / 时间对比、异常解释与订阅确认；队友复核规则和权限边界，再按新授权提交、PR 和合并。新增工具后的真实模型语义评测仍待安排，不将当前离线自动化当作真实模型通过。

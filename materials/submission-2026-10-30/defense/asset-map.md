@@ -1,18 +1,20 @@
-# 答辩幻灯片选图表
+# 答辩配图索引
 
-| 页 | 内容 | 推荐资产 |
-| --- | --- | --- |
-| 1 | 产品全景 | ../images/02-overview.png |
-| 2 | 问题与风险 | 使用可编辑文字与流程，不放未经验证的市场统计 |
-| 3 | 能力与权限边界 | ../diagrams/agent-tool-map.png |
-| 4 | Agent链路和系统结构 | ../diagrams/agent-runtime.png；../diagrams/system-architecture.png |
-| 5 | 账单异常依据 | ../images/04-anomaly-evidence.png |
-| 6 | 订阅证据与固定工作流 | ../images/05-subscription-evidence.png、09-plan-pending.png、12-workflow-complete.png |
-| 7 | 日期场景计划 | PPT内可编辑流程图；当前images目录无对应日期计划截图 |
-| 8 | 授权与独立确认 | ../images/14-authorization-scope.png、11-transfer-confirmation.png |
-| 9 | 验证状态 | 可编辑数字与边界说明，不制作模型成功率图表 |
-| 10 | 结论与待办 | 不需要截图 |
+原图、细节图和PNG/SVG图表统一收录于[ppt-kit/assets](../ppt-kit/assets)，每页的布局与图注见[DOCX指南](../ppt-kit/ppt-production-guide.docx)。
 
-现有图中07-12展示的是固定“取消所选订阅后转账”工作流，不能标成生日/纪念日日期计划。图13只是390×844浏览器视口，不代表真实手机设备验收。架构图与工具图保留脚本化演示、模拟环境与状态标签，不裁掉待确认/成功状态。
+| 页 | 主素材 |
+| --- | --- |
+| 01 | ../ppt-kit/assets/screenshots/02-overview.png |
+| 02 | ../ppt-kit/assets/screenshots/06-payees.png |
+| 03 | ../ppt-kit/assets/diagrams/agent-tool-map.png |
+| 04 | ../ppt-kit/assets/diagrams/agent-runtime.png |
+| 05 | ../ppt-kit/assets/details/bill-evidence.png |
+| 06 | ../ppt-kit/assets/details/workflow-complete.png |
+| 07 | ../ppt-kit/assets/screenshots/07-workflow-preview.png |
+| 08 | ../ppt-kit/assets/details/transfer-confirmation.png |
+| 09 | ../ppt-kit/assets/diagrams/context-routing.png |
+| 10 | ../ppt-kit/assets/screenshots/02-overview.png |
+| 附录A | ../ppt-kit/assets/diagrams/context-routing.png |
+| 附录B | ../ppt-kit/assets/screenshots/13-workflow-mobile.png |
 
-上下文压缩图另见 ../diagrams/context-routing.svg / PNG；每轮按预算检查，默认近期12轮并不表示每隔12轮定时压缩。
+第07页按指南使用可编辑流程节点，不使用固定工作流截图冒充日期计划。第06页配合subscription-evidence细节图，并以同一张workflow-complete图裁出"已完成 2/2 步"放大标注，保留截图原文。第08页可配授权表单；当前版取其额度、最低余额与截止时间区域，不含密码输入区。图中模拟标识与待确认或完成状态必须完整保留。

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="495.27559055118115" height="123" preserveAspectRatio="xMinYMin meet" viewBox="0 0 495 123" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="495.27559055118115" height="123"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-123)" style="clip-path: url(#clip)">
+		<g transform="">
+			<rect x="0" y="56" width="145" height="61" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(90%,94%,95%); fill-rule: evenodd;"/>
+			<text x="47.5" y="101" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,202) scale(1,-1)">每轮先组装</text>
+			<text x="32.108593750000004" y="86" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,172) scale(1,-1)">系统约束 / 工具 / 状态</text>
+			<text x="26.519140625000006" y="74" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,148) scale(1,-1)">最新问题 + 最近成功历史</text>
+			<rect x="174" y="56" width="145" height="61" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(95%,92%,87%); fill-rule: evenodd;"/>
+			<text x="211.5" y="101" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,202) scale(1,-1)">必要时摘录旧轮</text>
+			<text x="213.47978515625" y="86" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,172) scale(1,-1)">默认最近12轮原文</text>
+			<text x="201.4" y="74" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,148) scale(1,-1)">更旧历史或预算压力触发</text>
+			<rect x="348" y="56" width="145" height="61" rx="6" ry="6" style="stroke: rgb(74%,80%,82%); stroke-linecap: butt; stroke-width: 0.7; fill: rgb(97%,90%,92%); fill-rule: evenodd;"/>
+			<text x="385.5" y="101" style="font-family: Deng; font-size: 10px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,202) scale(1,-1)">调用前再查预算</text>
+			<text x="377.73828125" y="86" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,172) scale(1,-1)">消息 + 工具 + 输出预留</text>
+			<text x="383.6" y="74" style="font-family: Deng; font-size: 8.2px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,148) scale(1,-1)">不足则停止新增操作</text>
+			<polyline points="145 86, 174 86" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="174 86, 170 88, 170 84" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<polyline points="319 86, 348 86" style="stroke: rgb(35%,41%,43%); stroke-linecap: butt; stroke-width: 0.9; fill: None; fill-rule: evenodd;"/>
+			<polygon points="348 86, 344 88, 344 84" style="stroke: none; stroke-linecap: butt; stroke-width: 1; fill: rgb(35%,41%,43%); fill-rule: evenodd;"/>
+			<text x="109.35947496309055" y="30" style="font-family: Deng; font-size: 9px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,60) scale(1,-1)">不是每隔N轮定时压缩；工具循环中超预算会停写，不继续冒险执行。</text>
+			<text x="136.07529527559058" y="12" style="font-family: Deng; font-size: 8.4px;fill: rgb(12%,19%,23%); stroke:none;" transform="translate(0,24) scale(1,-1)">默认：32000估算tokens · 摘要800 · 输出1500 · 工具预留4000</text>
+		</g>
+	</g>
+</svg>

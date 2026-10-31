@@ -2,9 +2,9 @@
 
 ## 1. 适用环境
 
-最低要求 Python 3.12+。本轮完整回归在 Windows / Python 3.14.6 通过；另在全新 venv（Python 3.14.6，dev+observability）复测通过。最低版本3.12及其他操作系统未实测；全新venv验证不等于全新机器或全新依赖源安装验收。单进程SQLite、本机回环HTTP；无需Node或前端编译。不能把本机HTTP与短密码测试策略用于公网。
+最低要求Python 3.12+；已验证环境为Windows / Python 3.14.6完整235项回归，以及新建Python 3.13环境的锁文件安装、依赖一致性与39项定向测试。采用单进程SQLite、本机回环HTTP，无需Node或前端编译。公网运行需独立配置认证、TLS和会话部署。
 
-源码来自配套source-review.zip中的AI-Banking目录；不要用git clone远程main替代冻结版本。先核对archive-info.json和source-manifest.json，再在新目录解压。压缩包不含.env、运行数据库或实际凭据。
+源码位于source-and-deployment.zip中的AI-Banking目录。新目录解压后，使用submission/package-manifest.json核对文件及SHA256；submission/archive-info.json记录功能基线和打包时Git HEAD。压缩包不含.env、运行数据库或实际凭据。
 
 ## 2. 新目录安装
 
@@ -47,7 +47,7 @@ Invoke-RestMethod http://127.0.0.1:8000/api/health
 ## 5. 功能与截图复现
 
 默认样本不足三笔周期流水时，“疑似订阅”为空是预期。不要为演示修改既有运行库。
-如需复现材料环境，把素材包evidence/demo-environment.py复制到源码所在机器，以项目根目录为工作目录运行该脚本。它显式构造Settings，不读取.env，使用独立.local/materials-reproduction-2026-10-30.sqlite3，监听127.0.0.1:8003，账号reviewer密码由操作者首次设置。Agent为明确标注的确定性脚本，无供应商调用；真实工具和执行器处理操作。重复运行保留状态，使用首次密码。
+如需复现材料环境，使用包内submission/demo-environment.py，以项目根目录为工作目录运行该脚本。它显式构造Settings，不读取.env，使用独立.local/materials-reproduction-2026-10-30.sqlite3，监听127.0.0.1:8003，账号reviewer密码由操作者首次设置。Agent为明确标注的确定性脚本，无供应商调用；真实工具和执行器处理操作。重复运行保留状态，使用首次密码。
 
 操作顺序：登录→账单洞察→异常原流水→订阅证据确认弹窗→密码复核载入虚构联系人→选择日常账户/云盘订阅/同事张明4712/1元→预览→保存→交给助手→每笔独立确认→核对2/2回执。该脚本不能评估真实模型能力。
 
@@ -69,6 +69,6 @@ Invoke-RestMethod http://127.0.0.1:8000/api/health
 
 Ctrl+C停止前台服务；确认所属进程后再操作后台服务。备份、恢复或搬移数据库前先停止写入，使用SQLite备份机制或在完全停止后复制；不要在运行时只复制主文件漏掉WAL，也不要覆盖既有数据来“重置演示”。
 
-## 8. 验证与交付状态
+## 8. 验证与复现
 
-执行test-cases.md命令并记录日志。当前工作树在Python 3.14.6通过235项自动化（含前端浏览器冒烟1项）；另以新建Python 3.13 venv按`requirements-dev.lock`安装`.[dev]`，`pip check`通过并完成39项核心/前端定向测试。最低Python 3.12、其他OS、全新机器和真实模型均未验证；不宣称Docker、云端或生产部署已完成。正式交付需冻结源码、复测并更新哈希。
+执行test-cases.md命令并记录日志。当前工作树在Python 3.14.6通过235项自动化（含前端浏览器冒烟1项）；另以新建Python 3.13 venv按`requirements-dev.lock`安装`.[dev]`，`pip check`通过并完成39项核心/前端定向测试。验证结论适用于上述Windows环境。目标环境或供应商发生变化时，按同一测试入口重新验证。
